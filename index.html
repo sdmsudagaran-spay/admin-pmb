@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Smart PMB Sudagaran</title>
+    
+    <!-- Favicon sesuai permintaan -->
+    <link rel="icon" type="image/png" href="https://iili.io/nuUTLcN.md.png">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Tambahan Chart.js untuk panel Penganalisis -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: '#0F2747',
+                            gold: '#D9A441',
+                            goldlight: '#F8E9C9',
+                            bg: '#F4F7FB',
+                            text: '#1E293B',
+                            muted: '#64748B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Poppins', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'app': '16px',
+                        'app-lg': '24px',
+                    },
+                    boxShadow: {
+                        'premium': '0 10px 25px -5px rgba(15, 39, 71, 0.08), 0 8px 10px -6px rgba(15, 39, 71, 0.04)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F4F7FB;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            color: #1E293B;
+            overflow-x: hidden;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .fade-enter { opacity: 0; transform: translateY(10px); }
+        .fade-enter-active { opacity: 1; transform: translateY(0); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .fade-exit-active { opacity: 0; transform: translateY(-10px); transition: all 0.3s ease; }
+
+        .btn-press { transition: all 0.2s ease; }
+        .btn-press:active { transform: scale(0.96); }
+
+        /* Custom Scrollbar for table */
+        .custom-scrollbar::-webkit-scrollbar { height: 8px; width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Transition untuk Sidebar Collapse Desktop & Mobile */
+        #sidebar { transition: width 0.3s ease-in-out, transform 0.3s ease-in-out; }
+        .nav-text, .logo-text { transition: opacity 0.2s; white-space: nowrap; }
+        
+        /* Modal Transitions */
+        .modal-overlay { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content { transform: scale(0.95) translateY(20px); opacity: 0; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-overlay.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden">
+
+    <div id="view-login" class="fixed inset-0 bg-brand-navy flex flex-col items-center justify-center p-6 z-50 transition-opacity duration-500">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-10 pointer-events-none overflow-hidden">
+            <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path d="M0,0 L100,100 M100,0 L0,100" stroke="#D9A441" stroke-width="0.5" fill="none"/>
+                <circle cx="50" cy="50" r="30" stroke="#D9A441" stroke-width="0.5" fill="none"/>
+            </svg>
+        </div>
+
+        <div class="w-full max-w-md bg-white rounded-app-lg p-8 shadow-2xl relative z-10 fade-enter-active">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-brand-bg rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-brand-gold p-2">
+                    <img src="https://iili.io/nuUTLcN.md.png" alt="Logo SDM" class="w-full h-full object-contain">
+                </div>
+                <h1 class="font-heading font-bold text-2xl text-brand-navy">Admin Panel</h1>
+                <p class="text-sm text-brand-muted mt-1">Smart PMB Sudagaran</p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-blue-50 border border-blue-100 p-3 rounded-lg text-xs text-blue-700 mb-4 text-center">
+                    Gunakan kredensial default untuk demo:<br><strong>Username:</strong> admin | <strong>Password:</strong> admin123
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-brand-navy mb-1">Username Admin</label>
+                    <div class="relative">
+                        <i class="ph ph-user absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted"></i>
+                        <input type="text" id="admin-username" onkeydown="if(event.key === 'Enter') handleLogin()" class="w-full bg-brand-bg border border-gray-200 rounded-app py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-brand-gold transition-colors" placeholder="Ketik username">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-brand-navy mb-1">Password</label>
+                    <div class="relative">
+                        <i class="ph ph-lock absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted"></i>
+                        <input type="password" id="admin-password" onkeydown="if(event.key === 'Enter') handleLogin()" class="w-full bg-brand-bg border border-gray-200 rounded-app py-3 pl-10 pr-12 text-sm focus:outline-none focus:border-brand-gold transition-colors" placeholder="Ketik password">
+                        <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-brand-muted hover:text-brand-navy focus:outline-none">
+                            <i id="toggle-icon" class="ph ph-eye text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button id="login-btn" onclick="handleLogin()" class="btn-press w-full bg-brand-navy text-white font-medium rounded-app py-3.5 shadow-premium hover:bg-opacity-90 flex justify-center items-center gap-2 mt-4">
+                    Masuk Dashboard
+                    <i class="ph ph-sign-in font-bold"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-dashboard" class="hidden w-full h-full flex relative">
+        
+        <!-- Mobile Overlay -->
+        <div id="mobile-overlay" onclick="toggleSidebarMobile()" class="fixed inset-0 bg-brand-navy/50 backdrop-blur-sm z-30 hidden md:hidden"></div>
+        
+        <!-- Sidebar -->
+        <!-- Desktop: w-64, collapsed: w-20. Mobile: absolute, transform -->
+        <aside id="sidebar" class="w-64 bg-brand-navy text-white flex flex-col fixed md:relative z-40 h-full shadow-2xl md:shadow-none -translate-x-full md:translate-x-0">
+            <div class="p-5 flex items-center gap-3 border-b border-white/10 shrink-0 h-[73px]">
+                <div class="w-10 h-10 bg-white rounded-lg p-1 shrink-0">
+                    <img src="https://iili.io/nuUTLcN.md.png" alt="Logo" class="w-full h-full object-contain">
+                </div>
+                <div class="logo-text overflow-hidden">
+                    <h2 class="font-heading font-bold text-lg leading-tight">Admin PMB</h2>
+                    <p class="text-[10px] text-brand-goldlight">SDM Sudagaran</p>
+                </div>
+            </div>
+            
+            <nav class="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto custom-scrollbar" id="sidebar-nav">
+                <a href="#" onclick="switchPanel('dashboard', this)" class="nav-item flex items-center gap-3 bg-brand-gold/20 text-brand-gold px-3 py-3 rounded-xl font-medium transition-colors" title="Dashboard">
+                    <i class="ph-fill ph-squares-four text-xl shrink-0"></i>
+                    <span class="nav-text overflow-hidden text-sm">Dashboard Utama</span>
+                </a>
+                
+                <div class="pt-4 pb-1">
+                    <p class="nav-text text-[10px] uppercase tracking-wider text-brand-muted px-3 font-semibold overflow-hidden">Manajemen Peran</p>
+                    <hr class="nav-icon-only hidden border-white/10 my-2">
+                </div>
+
+                <a href="#" onclick="switchPanel('sekretaris', this)" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Panel Sekretaris">
+                    <i class="ph ph-files text-xl shrink-0"></i>
+                    <span class="nav-text overflow-hidden text-sm">Sekretaris</span>
+                </a>
+                <a href="#" onclick="switchPanel('bendahara', this)" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Panel Bendahara">
+                    <i class="ph ph-wallet text-xl shrink-0"></i>
+                    <span class="nav-text overflow-hidden text-sm">Bendahara</span>
+                </a>
+                <a href="#" onclick="switchPanel('pewawancara', this)" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Panel Pewawancara">
+                    <i class="ph ph-microphone-stage text-xl shrink-0"></i>
+                    <span class="nav-text overflow-hidden text-sm">Pewawancara</span>
+                </a>
+                <a href="#" onclick="switchPanel('penganalisis', this)" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Panel Penganalisis">
+                    <i class="ph ph-chart-polar text-xl shrink-0"></i>
+                    <span class="nav-text overflow-hidden text-sm">Penganalisis</span>
+                </a>
+                <a href="#" onclick="switchPanel('perlengkapan', this)" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Panel Perlengkapan">
+                    <i class="ph ph-t-shirt text-xl shrink-0"></i>
+                    <span class="nav-text overflow-hidden text-sm">Perlengkapan</span>
+                </a>
+            </nav>
+            
+            <div class="p-4 border-t border-white/10 shrink-0">
+                <button onclick="logout()" class="flex items-center gap-3 text-red-400 hover:bg-red-500/10 hover:text-red-300 px-3 py-3 rounded-xl font-medium w-full transition-colors btn-press justify-center md:justify-start" title="Keluar">
+                    <i class="ph ph-sign-out text-xl shrink-0"></i>
+                    <span class="nav-text overflow-hidden text-sm">Keluar</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col h-full w-full bg-brand-bg relative overflow-hidden">
+            
+            <!-- Top Header -->
+            <header class="bg-white px-4 md:px-6 py-4 flex items-center justify-between shadow-sm z-20 shrink-0 h-[73px]">
+                <div class="flex items-center gap-4">
+                    <!-- Toggle Mobile -->
+                    <button onclick="toggleSidebarMobile()" class="md:hidden text-brand-navy btn-press p-1">
+                        <i class="ph ph-list text-2xl"></i>
+                    </button>
+                    <!-- Toggle Desktop -->
+                    <button onclick="toggleSidebarDesktop()" class="hidden md:block text-brand-navy btn-press p-1 hover:bg-gray-100 rounded-lg">
+                        <i class="ph ph-list text-2xl"></i>
+                    </button>
+                    
+                    <h1 class="font-heading font-bold text-xl text-brand-navy hidden sm:block" id="header-title">Dashboard Utama</h1>
+                </div>
+                <div class="flex items-center gap-3 md:gap-4">
+                    <button onclick="fetchData()" class="btn-press w-10 h-10 rounded-full bg-brand-bg flex items-center justify-center text-brand-muted hover:text-brand-navy border border-gray-200" title="Refresh Data">
+                        <i class="ph ph-arrows-clockwise text-xl" id="refresh-icon"></i>
+                    </button>
+                    <div class="flex items-center gap-3 pl-3 md:pl-4 border-l border-gray-200">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-sm font-semibold text-brand-navy leading-tight">Admin Master</p>
+                            <p class="text-[10px] text-brand-muted">Administrator</p>
+                        </div>
+                        <div class="w-10 h-10 bg-brand-navy rounded-full flex items-center justify-center text-brand-gold border-2 border-brand-gold">
+                            <i class="ph-fill ph-user-gear text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area - Tabbed Panels -->
+            <div class="flex-1 overflow-y-auto custom-scrollbar relative p-4 md:p-6" id="main-content">
+                
+                <div id="panel-dashboard" class="panel-view block fade-enter-active">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                                <i class="ph-fill ph-users text-2xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-brand-muted font-medium uppercase tracking-wider mb-1">Total Pendaftar</p>
+                                <h3 class="font-heading font-bold text-2xl text-brand-navy" id="stat-total">0</h3>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-full bg-yellow-50 text-yellow-600 flex items-center justify-center shrink-0">
+                                <i class="ph-fill ph-clock-counter-clockwise text-2xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-brand-muted font-medium uppercase tracking-wider mb-1">Pending Berkas</p>
+                                <h3 class="font-heading font-bold text-2xl text-brand-navy" id="stat-pending">0</h3>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-full bg-green-50 text-green-600 flex items-center justify-center shrink-0">
+                                <i class="ph-fill ph-check-circle text-2xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-brand-muted font-medium uppercase tracking-wider mb-1">Lunas / Terkonfirmasi</p>
+                                <h3 class="font-heading font-bold text-2xl text-brand-navy" id="stat-lunas">0</h3>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                                <i class="ph-fill ph-check-square-offset text-2xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-brand-muted font-medium uppercase tracking-wider mb-1">Selesai Wawancara</p>
+                                <h3 class="font-heading font-bold text-2xl text-brand-navy" id="stat-wawancara">0</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+                        <div class="p-5 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <h3 class="font-heading font-semibold text-brand-navy">Ringkasan Calon Siswa Terbaru</h3>
+                        </div>
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left border-collapse min-w-[700px]">
+                                <thead>
+                                    <tr class="bg-brand-bg text-brand-muted text-xs uppercase tracking-wider">
+                                        <th class="p-4 font-semibold w-16">No</th>
+                                        <th class="p-4 font-semibold">No Pendaftaran</th>
+                                        <th class="p-4 font-semibold">Nama Siswa</th>
+                                        <th class="p-4 font-semibold text-center">Keuangan</th>
+                                        <th class="p-4 font-semibold text-center">Wawancara</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tb-dashboard" class="text-sm divide-y divide-gray-100">
+                                    <tr><td colspan="5" class="p-8 text-center text-brand-muted">Memuat data...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="panel-sekretaris" class="panel-view hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+                        <div class="p-5 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50/50">
+                            <div>
+                                <h3 class="font-heading font-semibold text-brand-navy">Database Pendaftar</h3>
+                                <p class="text-xs text-brand-muted">Kelola seluruh data siswa dan gelombang.</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                                <div class="relative flex-1 md:flex-none">
+                                    <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted"></i>
+                                    <input type="text" id="search-sekretaris" onkeyup="filterTable('sekretaris')" placeholder="Cari nama/no..." class="bg-white border border-gray-200 rounded-lg py-2 pl-9 pr-3 text-sm focus:outline-none focus:border-brand-gold w-full md:w-48">
+                                </div>
+                                <button onclick="bukaModalForm()" class="bg-brand-navy hover:bg-opacity-90 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 btn-press flex-1 md:flex-none">
+                                    <i class="ph-bold ph-plus"></i> Tambah
+                                </button>
+                                <button onclick="showToast('Data berhasil diekspor ke Excel', 'success')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 btn-press flex-1 md:flex-none">
+                                    <i class="ph-bold ph-download-simple"></i> Export
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left border-collapse min-w-[900px]">
+                                <thead>
+                                    <tr class="bg-brand-bg text-brand-muted text-xs uppercase tracking-wider">
+                                        <th class="p-4 font-semibold w-16">No</th>
+                                        <th class="p-4 font-semibold">No PPDB</th>
+                                        <th class="p-4 font-semibold">Nama Lengkap</th>
+                                        <th class="p-4 font-semibold">Asal Sekolah</th>
+                                        <th class="p-4 font-semibold">Tgl Daftar</th>
+                                        <th class="p-4 font-semibold text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tb-sekretaris" class="text-sm divide-y divide-gray-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="panel-bendahara" class="panel-view hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+                        <div class="p-5 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-orange-50/30">
+                            <div>
+                                <h3 class="font-heading font-semibold text-brand-navy">Validasi Pembayaran</h3>
+                                <p class="text-xs text-brand-muted">Cek bukti transfer dan konfirmasi pembayaran.</p>
+                            </div>
+                            <div class="relative">
+                                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted"></i>
+                                <input type="text" id="search-bendahara" onkeyup="filterTable('bendahara')" placeholder="Cari siswa..." class="bg-white border border-gray-200 rounded-lg py-2 pl-9 pr-3 text-sm focus:outline-none focus:border-brand-gold w-full md:w-64">
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left border-collapse min-w-[800px]">
+                                <thead>
+                                    <tr class="bg-brand-bg text-brand-muted text-xs uppercase tracking-wider">
+                                        <th class="p-4 font-semibold w-16">No</th>
+                                        <th class="p-4 font-semibold">No PPDB</th>
+                                        <th class="p-4 font-semibold">Nama Siswa</th>
+                                        <th class="p-4 font-semibold text-center">Bukti Transfer</th>
+                                        <th class="p-4 font-semibold text-center">Status</th>
+                                        <th class="p-4 font-semibold text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tb-bendahara" class="text-sm divide-y divide-gray-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="panel-pewawancara" class="panel-view hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+                        <div class="p-5 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-blue-50/30">
+                            <div>
+                                <h3 class="font-heading font-semibold text-brand-navy">Penilaian Wawancara</h3>
+                                <p class="text-xs text-brand-muted">Input nilai wawancara calon siswa & orangtua.</p>
+                            </div>
+                            <div class="relative">
+                                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted"></i>
+                                <input type="text" id="search-pewawancara" onkeyup="filterTable('pewawancara')" placeholder="Cari siswa..." class="bg-white border border-gray-200 rounded-lg py-2 pl-9 pr-3 text-sm focus:outline-none focus:border-brand-gold w-full md:w-64">
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left border-collapse min-w-[700px]">
+                                <thead>
+                                    <tr class="bg-brand-bg text-brand-muted text-xs uppercase tracking-wider">
+                                        <th class="p-4 font-semibold w-16">No</th>
+                                        <th class="p-4 font-semibold">Nama Siswa</th>
+                                        <th class="p-4 font-semibold text-center">Nilai Saat Ini</th>
+                                        <th class="p-4 font-semibold text-center">Status</th>
+                                        <th class="p-4 font-semibold text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tb-pewawancara" class="text-sm divide-y divide-gray-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="panel-penganalisis" class="panel-view hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+                            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-purple-50/30">
+                                <div>
+                                    <h3 class="font-heading font-semibold text-brand-navy">Daftar Analisis Siswa</h3>
+                                    <p class="text-xs text-brand-muted">Pilih siswa untuk melihat grafik radar.</p>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto custom-scrollbar h-[500px]">
+                                <table class="w-full text-left border-collapse min-w-[500px]">
+                                    <thead>
+                                        <tr class="bg-brand-bg text-brand-muted text-xs uppercase tracking-wider sticky top-0 z-10">
+                                            <th class="p-4 font-semibold">Nama Siswa</th>
+                                            <th class="p-4 font-semibold text-center">Rata-rata Skor</th>
+                                            <th class="p-4 font-semibold text-center">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tb-penganalisis" class="text-sm divide-y divide-gray-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col">
+                            <h3 class="font-heading font-semibold text-brand-navy text-center mb-1">Grafik Kesiapan Belajar</h3>
+                            <p class="text-xs text-brand-muted text-center mb-4" id="chart-student-name">Pilih siswa dari tabel</p>
+                            
+                            <div class="relative w-full aspect-square max-h-[350px] mx-auto flex-1 flex items-center justify-center">
+                                <canvas id="adminRadarChart" class="hidden"></canvas>
+                                <div id="chart-placeholder" class="text-brand-muted flex flex-col items-center">
+                                    <i class="ph ph-chart-polar text-5xl mb-2 opacity-50"></i>
+                                    <span class="text-sm">Pilih data untuk melihat grafik</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="panel-perlengkapan" class="panel-view hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+                        <div class="p-5 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-teal-50/30">
+                            <div>
+                                <h3 class="font-heading font-semibold text-brand-navy">Distribusi Perlengkapan</h3>
+                                <p class="text-xs text-brand-muted">Ceklist seragam dan buku yang telah diambil.</p>
+                            </div>
+                            <div class="relative">
+                                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted"></i>
+                                <input type="text" id="search-perlengkapan" onkeyup="filterTable('perlengkapan')" placeholder="Cari siswa..." class="bg-white border border-gray-200 rounded-lg py-2 pl-9 pr-3 text-sm focus:outline-none focus:border-brand-gold w-full md:w-64">
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left border-collapse min-w-[800px]">
+                                <thead>
+                                    <tr class="bg-brand-bg text-brand-muted text-xs uppercase tracking-wider">
+                                        <th class="p-4 font-semibold w-16">No</th>
+                                        <th class="p-4 font-semibold">Nama Siswa</th>
+                                        <th class="p-4 font-semibold text-center">Ukuran Seragam</th>
+                                        <th class="p-4 font-semibold text-center">Buku Diambil</th>
+                                        <th class="p-4 font-semibold text-center">Seragam Diambil</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tb-perlengkapan" class="text-sm divide-y divide-gray-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 text-center text-xs text-brand-muted pb-4">
+                    &copy; 2026 Smart PMB - SD Muhammadiyah Sudagaran. Admin Panel.
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Input Nilai Wawancara -->
+    <div id="modal-nilai" class="fixed inset-0 z-[60] flex items-center justify-center modal-overlay">
+        <div class="absolute inset-0 bg-brand-navy/60 backdrop-blur-sm" onclick="closeModal('modal-nilai')"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 relative z-10 modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-heading font-bold text-brand-navy text-lg">Input Nilai Interview</h3>
+                <button onclick="closeModal('modal-nilai')" class="text-gray-400 hover:text-gray-700 btn-press"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            <p class="text-sm font-medium text-brand-navy mb-4" id="modal-nilai-nama">-</p>
+            
+            <input type="hidden" id="modal-nilai-id">
+            
+            <div class="mb-5">
+                <label class="block text-xs font-semibold text-brand-muted uppercase mb-1">Skor Interview (0-100)</label>
+                <input type="number" id="modal-nilai-input" min="0" max="100" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-3 px-4 text-sm font-bold text-brand-navy focus:outline-none focus:border-brand-gold text-center text-xl">
+            </div>
+            
+            <button onclick="simpanNilai()" class="w-full bg-brand-navy text-white rounded-lg py-3 font-medium hover:bg-opacity-90 btn-press">Simpan Nilai</button>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Pembayaran -->
+    <div id="modal-konfirmasi" class="fixed inset-0 z-[60] flex items-center justify-center modal-overlay">
+        <div class="absolute inset-0 bg-brand-navy/60 backdrop-blur-sm" onclick="closeModal('modal-konfirmasi')"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative z-10 modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-heading font-bold text-brand-navy text-lg">Validasi Pembayaran</h3>
+                <button onclick="closeModal('modal-konfirmasi')" class="text-gray-400 hover:text-gray-700 btn-press"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            
+            <div class="bg-gray-50 rounded-xl p-4 mb-4 border border-gray-100">
+                <p class="text-xs text-brand-muted uppercase font-semibold mb-1">Siswa</p>
+                <p class="text-sm font-bold text-brand-navy" id="modal-konf-nama">-</p>
+            </div>
+
+            <div class="mb-5 text-center">
+                <p class="text-xs font-semibold text-brand-muted uppercase mb-2">Bukti Transfer</p>
+                <!-- Simulasi gambar bukti -->
+                <div class="w-full h-48 bg-gray-200 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center mb-2 overflow-hidden">
+                    <img src="https://placehold.co/400x300/e2e8f0/64748B?text=Bukti+Transfer" alt="Bukti" class="w-full h-full object-cover opacity-70">
+                </div>
+                <a href="#" class="text-xs text-blue-600 font-medium hover:underline"><i class="ph ph-download-simple"></i> Unduh Asli</a>
+            </div>
+            
+            <input type="hidden" id="modal-konf-id">
+            
+            <div class="flex gap-3">
+                <button onclick="closeModal('modal-konfirmasi')" class="flex-1 bg-gray-100 text-gray-700 rounded-lg py-3 font-medium hover:bg-gray-200 btn-press">Batal</button>
+                <button onclick="prosesKonfirmasi()" class="flex-1 bg-green-600 text-white rounded-lg py-3 font-medium hover:bg-green-700 btn-press flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-check"></i> Konfirmasi Lunas
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Analisis & Input Nilai -->
+    <div id="modal-analisis" class="fixed inset-0 z-[60] flex items-center justify-center modal-overlay">
+        <div class="absolute inset-0 bg-brand-navy/60 backdrop-blur-sm" onclick="closeModal('modal-analisis')"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl p-6 relative z-10 modal-content h-full max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4 shrink-0">
+                <div>
+                    <h3 class="font-heading font-bold text-brand-navy text-lg">Input Analisis & Nilai</h3>
+                    <p class="text-sm font-medium text-brand-muted" id="modal-analisis-nama">-</p>
+                </div>
+                <button onclick="closeModal('modal-analisis')" class="text-gray-400 hover:text-gray-700 btn-press"><i class="ph ph-x text-2xl"></i></button>
+            </div>
+            
+            <input type="hidden" id="modal-analisis-id">
+            
+            <div class="flex-1 overflow-y-auto custom-scrollbar pr-2 mb-4 space-y-4">
+                <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex items-start gap-3">
+                    <i class="ph-fill ph-info text-blue-600 text-xl shrink-0 mt-0.5"></i>
+                    <p class="text-xs text-blue-800">
+                        <strong>Petunjuk:</strong> Masukkan nilai <strong>0 - 100</strong>. Keterangan rincian penilaian akan otomatis dibuat dan disesuaikan berdasarkan nilai yang Anda ketikkan.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Mengenal Huruf -->
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 hover:border-brand-gold transition-colors">
+                        <label class="block text-xs font-bold text-brand-navy uppercase mb-2">1. Mengenal Huruf</label>
+                        <input type="number" id="input-huruf" min="0" max="100" class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold mb-3 font-semibold text-brand-navy" oninput="updateDeskripsiAnalisis()">
+                        <p id="desc-huruf" class="text-xs text-brand-muted leading-relaxed min-h-[40px]"></p>
+                    </div>
+                    <!-- Mengenal Bilangan -->
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 hover:border-brand-gold transition-colors">
+                        <label class="block text-xs font-bold text-brand-navy uppercase mb-2">2. Mengenal Bilangan</label>
+                        <input type="number" id="input-bilangan" min="0" max="100" class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold mb-3 font-semibold text-brand-navy" oninput="updateDeskripsiAnalisis()">
+                        <p id="desc-bilangan" class="text-xs text-brand-muted leading-relaxed min-h-[40px]"></p>
+                    </div>
+                    <!-- Menggunting & Menempel -->
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 hover:border-brand-gold transition-colors">
+                        <label class="block text-xs font-bold text-brand-navy uppercase mb-2">3. Menggunting & Menempel Puzzle</label>
+                        <input type="number" id="input-motorik" min="0" max="100" class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold mb-3 font-semibold text-brand-navy" oninput="updateDeskripsiAnalisis()">
+                        <p id="desc-motorik" class="text-xs text-brand-muted leading-relaxed min-h-[40px]"></p>
+                    </div>
+                    <!-- Menyanyi Lagu Nasional -->
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 hover:border-brand-gold transition-colors">
+                        <label class="block text-xs font-bold text-brand-navy uppercase mb-2">4. Menyanyi Lagu Nasional</label>
+                        <input type="number" id="input-menyanyi" min="0" max="100" class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold mb-3 font-semibold text-brand-navy" oninput="updateDeskripsiAnalisis()">
+                        <p id="desc-menyanyi" class="text-xs text-brand-muted leading-relaxed min-h-[40px]"></p>
+                    </div>
+                    <!-- Melafalkan Surat Pendek & Doa -->
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 hover:border-brand-gold transition-colors">
+                        <label class="block text-xs font-bold text-brand-navy uppercase mb-2">5. Melafalkan Surat Pendek & Doa</label>
+                        <input type="number" id="input-doa" min="0" max="100" class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold mb-3 font-semibold text-brand-navy" oninput="updateDeskripsiAnalisis()">
+                        <p id="desc-doa" class="text-xs text-brand-muted leading-relaxed min-h-[40px]"></p>
+                    </div>
+                    <!-- Interview -->
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 hover:border-brand-gold transition-colors">
+                        <label class="block text-xs font-bold text-brand-navy uppercase mb-2">6. Interview</label>
+                        <input type="number" id="input-interview2" min="0" max="100" class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold mb-3 font-semibold text-brand-navy" oninput="updateDeskripsiAnalisis()">
+                        <p id="desc-interview2" class="text-xs text-brand-muted leading-relaxed min-h-[40px]"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="shrink-0 flex gap-3 pt-4 border-t border-gray-100">
+                <button onclick="closeModal('modal-analisis')" class="flex-1 bg-gray-100 text-gray-700 rounded-lg py-3.5 font-medium hover:bg-gray-200 btn-press">Tutup</button>
+                <button id="btn-simpan-analisis" onclick="simpanAnalisis()" class="flex-1 bg-brand-navy text-white rounded-lg py-3.5 font-medium hover:bg-opacity-90 btn-press flex justify-center items-center gap-2">
+                    <i class="ph-bold ph-floppy-disk text-lg"></i> Simpan Penilaian
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Form Siswa (Tambah/Edit) -->
+    <div id="modal-form-siswa" class="fixed inset-0 z-[60] flex items-center justify-center modal-overlay p-4">
+        <div class="absolute inset-0 bg-brand-navy/60 backdrop-blur-sm" onclick="closeModal('modal-form-siswa')"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative z-10 modal-content flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center p-5 border-b border-gray-100 shrink-0">
+                <h3 class="font-heading font-bold text-brand-navy text-lg" id="modal-form-title">Tambah Siswa Baru</h3>
+                <button onclick="closeModal('modal-form-siswa')" class="text-gray-400 hover:text-gray-700 btn-press"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            
+            <div class="p-5 overflow-y-auto custom-scrollbar flex-1 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-brand-navy uppercase mb-1">Nama Lengkap Siswa</label>
+                    <input type="text" id="form-nama" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold" placeholder="Contoh: Ahmad Budi">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-brand-navy uppercase mb-1">No Pendaftaran (PPDB)</label>
+                        <input type="text" id="form-no" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold" placeholder="Contoh: PMB-2027-001">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-brand-navy uppercase mb-1">Jenis Kelamin</label>
+                        <select id="form-jk" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold">
+                            <option value="L">Laki-laki (L)</option>
+                            <option value="P">Perempuan (P)</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-brand-navy uppercase mb-1">Asal Sekolah / TK</label>
+                    <input type="text" id="form-tk" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold" placeholder="Contoh: TK ABA 1">
+                </div>
+            </div>
+            
+            <div class="p-5 border-t border-gray-100 shrink-0 flex gap-3">
+                <button onclick="closeModal('modal-form-siswa')" class="flex-1 bg-gray-100 text-gray-700 rounded-lg py-3 font-medium hover:bg-gray-200 btn-press">Batal</button>
+                <button id="btn-simpan-form" onclick="simpanDataSiswa()" class="flex-1 bg-brand-navy text-white rounded-lg py-3 font-medium hover:bg-opacity-90 btn-press flex justify-center items-center gap-2">
+                    <i class="ph-bold ph-floppy-disk text-lg"></i> Simpan Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="modal-confirm" class="fixed inset-0 z-[70] flex items-center justify-center modal-overlay p-4">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeModal('modal-confirm')"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 relative z-10 modal-content text-center">
+            <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ph-fill ph-warning-circle text-3xl"></i>
+            </div>
+            <h3 class="font-heading font-bold text-brand-navy text-lg mb-2">Hapus Data Siswa?</h3>
+            <p class="text-sm text-brand-muted mb-6">Anda yakin ingin menghapus data <strong id="confirm-nama" class="text-brand-navy"></strong>? Data yang dihapus tidak dapat dikembalikan.</p>
+            
+            <input type="hidden" id="confirm-id">
+            
+            <div class="flex gap-3">
+                <button onclick="closeModal('modal-confirm')" class="flex-1 bg-gray-100 text-gray-700 rounded-lg py-3 font-medium hover:bg-gray-200 btn-press">Batal</button>
+                <button id="btn-hapus" onclick="eksekusiHapus()" class="flex-1 bg-red-600 text-white rounded-lg py-3 font-medium hover:bg-red-700 btn-press flex justify-center items-center gap-2">
+                    <i class="ph-bold ph-trash"></i> Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi Database Supabase
+        const SUPABASE_URL = 'https://ckbarwrfpktcdoydbjzy.supabase.co/rest/v1/';
+        const SUPABASE_KEY = 'sb_publishable_jBXJV3WzlzbTlRkpEqGebA_BOlcBWoO';
+
+        // State Global
+        let allStudentsData = [];
+        let radarChartInstance = null;
+        let isSidebarCollapsed = false;
+
+        // Fitur Custom Toast
+        function showToast(msg, type = 'info') {
+            const toast = document.createElement('div');
+            const bgClass = type === 'error' ? 'bg-red-500' : (type === 'success' ? 'bg-green-600' : 'bg-brand-navy');
+            const iconClass = type === 'error' ? 'ph-warning-circle' : (type === 'success' ? 'ph-check-circle' : 'ph-info');
+            
+            toast.className = `fixed top-6 right-6 transform translate-x-full ${bgClass} text-white px-5 py-3 rounded-xl shadow-lg z-[100] flex items-center gap-2 transition-transform duration-300 font-medium text-sm`;
+            toast.innerHTML = `<i class="ph ${iconClass} text-xl"></i> ${msg}`;
+            
+            document.body.appendChild(toast);
+            setTimeout(() => toast.style.transform = 'translateX(0)', 10);
+            setTimeout(() => {
+                toast.style.transform = 'translateX(120%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function togglePassword() {
+            const passInput = document.getElementById('admin-password');
+            const icon = document.getElementById('toggle-icon');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                icon.classList.replace('ph-eye', 'ph-eye-slash');
+            } else {
+                passInput.type = 'password';
+                icon.classList.replace('ph-eye-slash', 'ph-eye');
+            }
+        }
+
+        function handleLogin() {
+            const user = document.getElementById('admin-username').value.trim();
+            const pass = document.getElementById('admin-password').value.trim();
+            const btn = document.getElementById('login-btn');
+
+            if (!user || !pass) {
+                showToast("Username dan password wajib diisi!", "error");
+                return;
+            }
+
+            btn.innerHTML = '<i class="ph ph-spinner animate-spin text-xl"></i> Autentikasi...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                if (user === 'admin' && pass === 'admin123') {
+                    showToast("Login berhasil, memuat dashboard...", "success");
+                    document.getElementById('view-login').classList.add('fade-exit-active');
+                    
+                    setTimeout(() => {
+                        document.getElementById('view-login').classList.add('hidden');
+                        document.getElementById('view-dashboard').classList.remove('hidden');
+                        fetchData();
+                    }, 300);
+                } else {
+                    showToast("Kredensial salah! Gunakan admin / admin123", "error");
+                    btn.innerHTML = 'Masuk Dashboard <i class="ph ph-sign-in font-bold"></i>';
+                    btn.disabled = false;
+                }
+            }, 800);
+        }
+
+        function logout() {
+            document.getElementById('view-dashboard').classList.add('hidden');
+            const login = document.getElementById('view-login');
+            login.classList.remove('hidden', 'fade-exit-active');
+            login.classList.add('fade-enter-active');
+            document.getElementById('admin-password').value = '';
+            showToast("Anda telah keluar dari sistem.");
+        }
+
+        // --- Sidebar Management ---
+        function toggleSidebarMobile() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        function toggleSidebarDesktop() {
+            const sidebar = document.getElementById('sidebar');
+            isSidebarCollapsed = !isSidebarCollapsed;
+            
+            if (isSidebarCollapsed) {
+                sidebar.classList.remove('w-64');
+                sidebar.classList.add('w-[80px]'); // Collapsed width
+                document.querySelectorAll('.nav-text').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('.logo-text').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('.nav-icon-only').forEach(el => el.classList.remove('hidden'));
+            } else {
+                sidebar.classList.remove('w-[80px]');
+                sidebar.classList.add('w-64'); // Expanded width
+                document.querySelectorAll('.nav-text').forEach(el => el.classList.remove('hidden'));
+                document.querySelectorAll('.logo-text').forEach(el => el.classList.remove('hidden'));
+                document.querySelectorAll('.nav-icon-only').forEach(el => el.classList.add('hidden'));
+            }
+        }
+
+        // --- Panel Navigation ---
+        function switchPanel(panelId, element = null) {
+            // Hide all panels
+            document.querySelectorAll('.panel-view').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.panel-view').forEach(p => p.classList.remove('block'));
+            
+            // Show selected panel
+            const target = document.getElementById(`panel-${panelId}`);
+            if (target) {
+                target.classList.remove('hidden');
+                target.classList.add('block');
+            }
+
+            // Update Nav Active State
+            if (element) {
+                document.querySelectorAll('.nav-item').forEach(el => {
+                    el.classList.remove('bg-brand-gold/20', 'text-brand-gold');
+                    el.classList.add('text-white/70');
+                });
+                element.classList.remove('text-white/70', 'hover:bg-white/5');
+                element.classList.add('bg-brand-gold/20', 'text-brand-gold');
+                
+                // Update Header Title
+                const titleText = element.querySelector('.nav-text').innerText;
+                document.getElementById('header-title').innerText = titleText;
+            }
+
+            // Close mobile sidebar if open
+            if(window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+                document.getElementById('mobile-overlay').classList.add('hidden');
+            }
+        }
+
+        // --- Data Fetching & Rendering ---
+        async function fetchData() {
+            const refreshIcon = document.getElementById('refresh-icon');
+            refreshIcon.classList.add('animate-spin');
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}pendaftar?select=*&order=id.desc`, {
+                    method: 'GET',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    allStudentsData = await response.json();
+                    showToast("Data tersinkronisasi dengan database", "success");
+                } else {
+                    throw new Error("API Failed");
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                showToast("Gagal mengambil data dari database", "error");
+                allStudentsData = []; // Mengosongkan data (hanya mengandalkan database)
+            } finally {
+                refreshIcon.classList.remove('animate-spin');
+                renderAllPanels();
+                updateDashboardStats();
+            }
+        }
+
+        function updateDashboardStats() {
+            const total = allStudentsData.length;
+            const lunas = allStudentsData.filter(s => s.konfirmasi === true).length;
+            const pending = total - lunas;
+            const wawancara = allStudentsData.filter(s => s.interview && s.interview > 0).length;
+
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-pending').innerText = pending;
+            document.getElementById('stat-lunas').innerText = lunas;
+            document.getElementById('stat-wawancara').innerText = wawancara;
+        }
+
+        function renderAllPanels() {
+            renderTable('dashboard', allStudentsData);
+            renderTable('sekretaris', allStudentsData);
+            renderTable('bendahara', allStudentsData);
+            renderTable('pewawancara', allStudentsData);
+            renderTable('penganalisis', allStudentsData);
+            renderTable('perlengkapan', allStudentsData);
+        }
+
+        function filterTable(panel) {
+            const query = document.getElementById(`search-${panel}`).value.toLowerCase();
+            const filteredData = allStudentsData.filter(s => {
+                const nama = (s.nama_murid || '').toLowerCase();
+                const no = (s.no_ppdb || '').toLowerCase();
+                return nama.includes(query) || no.includes(query);
+            });
+            renderTable(panel, filteredData);
+        }
+
+        // --- Specific Table Renderers based on panel type ---
+        function renderTable(panelType, data) {
+            const tbody = document.getElementById(`tb-${panelType}`);
+            if (!tbody) return;
+
+            if (!data || data.length === 0) {
+                const cols = tbody.parentElement.querySelectorAll('th').length;
+                tbody.innerHTML = `<tr><td colspan="${cols}" class="p-6 text-center text-brand-muted">Belum ada data pendaftar.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            data.forEach((student, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0';
+                
+                // Helper Badges
+                const badgeLunas = student.konfirmasi 
+                    ? `<span class="bg-green-100 text-green-700 px-2 py-1 rounded-md text-[10px] font-bold border border-green-200">LUNAS</span>`
+                    : `<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-md text-[10px] font-bold border border-yellow-200">PENDING</span>`;
+                
+                const scoreWawancara = student.interview || 0;
+                const badgeWawancara = scoreWawancara > 0
+                    ? `<span class="text-green-600 font-bold">${scoreWawancara}</span>`
+                    : `<span class="text-brand-muted text-xs">-</span>`;
+
+                if (panelType === 'dashboard') {
+                    tr.innerHTML = `
+                        <td class="p-4 text-brand-muted">${index + 1}</td>
+                        <td class="p-4 font-mono text-sm text-brand-navy">${student.no_ppdb || '-'}</td>
+                        <td class="p-4 font-medium text-brand-navy">${student.nama_murid || '-'}</td>
+                        <td class="p-4 text-center">${badgeLunas}</td>
+                        <td class="p-4 text-center">${badgeWawancara}</td>
+                    `;
+                } 
+                else if (panelType === 'sekretaris') {
+                    // Escape single quotes untuk fungsi JS onclick
+                    const safeNameForHapus = (student.nama_murid || '').replace(/'/g, "\\'");
+                    tr.innerHTML = `
+                        <td class="p-4 text-brand-muted">${index + 1}</td>
+                        <td class="p-4 font-mono text-sm">${student.no_ppdb || '-'}</td>
+                        <td class="p-4 font-medium text-brand-navy">${student.nama_murid || '-'}</td>
+                        <td class="p-4 text-xs text-brand-muted">${student.tk || '-'}</td>
+                        <td class="p-4 text-xs text-brand-muted">${student.tgl_daftar || '-'}</td>
+                        <td class="p-4 text-center">
+                            <div class="flex justify-center gap-1">
+                                <button onclick="bukaModalForm(${student.id})" class="text-blue-600 hover:bg-blue-50 p-2 rounded-lg btn-press" title="Edit Siswa"><i class="ph-bold ph-pencil-simple text-lg"></i></button>
+                                <button onclick="konfirmasiHapus(${student.id}, '${safeNameForHapus}')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg btn-press" title="Hapus Siswa"><i class="ph-bold ph-trash text-lg"></i></button>
+                            </div>
+                        </td>
+                    `;
+                }
+                else if (panelType === 'bendahara') {
+                    const btnKonfirmasi = student.konfirmasi
+                        ? `<button class="text-green-600 p-1.5 opacity-50 cursor-not-allowed" title="Sudah Lunas"><i class="ph-fill ph-check-circle text-xl"></i></button>`
+                        : `<button onclick="bukaModalKonfirmasi(${student.id})" class="bg-brand-gold text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-yellow-600 btn-press">Validasi</button>`;
+                    
+                    const teksBukti = student.bukti_transfer ? `<span class="text-xs text-blue-600 underline cursor-pointer">Lihat</span>` : `<span class="text-[10px] text-gray-400">Belum ada</span>`;
+
+                    tr.innerHTML = `
+                        <td class="p-4 text-brand-muted">${index + 1}</td>
+                        <td class="p-4 font-mono text-xs">${student.no_ppdb || '-'}</td>
+                        <td class="p-4 font-medium text-brand-navy text-sm">${student.nama_murid || '-'}</td>
+                        <td class="p-4 text-center">${teksBukti}</td>
+                        <td class="p-4 text-center">${badgeLunas}</td>
+                        <td class="p-4 text-center">${btnKonfirmasi}</td>
+                    `;
+                }
+                else if (panelType === 'pewawancara') {
+                    const btnNilai = scoreWawancara > 0
+                        ? `<button onclick="bukaModalNilai(${student.id})" class="text-brand-gold p-2 rounded-lg hover:bg-orange-50 btn-press"><i class="ph-bold ph-pencil-simple text-lg"></i></button>`
+                        : `<button onclick="bukaModalNilai(${student.id})" class="bg-brand-navy text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-opacity-90 btn-press">Beri Nilai</button>`;
+
+                    tr.innerHTML = `
+                        <td class="p-4 text-brand-muted">${index + 1}</td>
+                        <td class="p-4 font-medium text-brand-navy text-sm">${student.nama_murid || '-'}</td>
+                        <td class="p-4 text-center">${badgeWawancara}</td>
+                        <td class="p-4 text-center text-[10px] uppercase font-bold ${scoreWawancara > 0 ? 'text-green-600' : 'text-brand-muted'}">${scoreWawancara > 0 ? 'Selesai' : 'Belum'}</td>
+                        <td class="p-4 text-center">${btnNilai}</td>
+                    `;
+                }
+                else if (panelType === 'penganalisis') {
+                    // Hitung rata-rata skor kesiapan (simulasi 5 parameter)
+                    let totalSkor = (student.mengenal_huruf||0) + (student.mengenal_bilangan||0) + (student.menggunting_dan_menempel_puzzle||0) + (student.melafalkan_surat_pendek_doa_harian||0) + (student.menyanyi_lagu_nasional||0);
+                    let avg = totalSkor / 5;
+                    let avgDisplay = isNaN(avg) || avg === 0 ? '-' : avg.toFixed(1);
+
+                    tr.innerHTML = `
+                        <td class="p-4 font-medium text-brand-navy text-sm">${student.nama_murid || '-'}</td>
+                        <td class="p-4 text-center text-sm font-bold text-brand-gold">${avgDisplay}</td>
+                        <td class="p-4 text-center">
+                            <div class="flex justify-center gap-2">
+                                <button onclick="tampilkanGrafik(${student.id})" class="bg-purple-100 text-purple-700 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-purple-200 btn-press flex items-center gap-1">
+                                    <i class="ph-bold ph-chart-polar"></i> Grafik
+                                </button>
+                                <button onclick="bukaModalAnalisis(${student.id})" class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-200 btn-press flex items-center gap-1">
+                                    <i class="ph-bold ph-pencil-simple"></i> Input
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                }
+                else if (panelType === 'perlengkapan') {
+                    const chkBuku = student.perlengkapan_buku ? 'checked' : '';
+                    const chkSeragam = student.perlengkapan_seragam ? 'checked' : '';
+                    
+                    tr.innerHTML = `
+                        <td class="p-4 text-brand-muted">${index + 1}</td>
+                        <td class="p-4 font-medium text-brand-navy text-sm">${student.nama_murid || '-'}</td>
+                        <td class="p-4 text-center text-sm font-bold">${student.ukuran_seragam || '-'}</td>
+                        <td class="p-4 text-center">
+                            <input type="checkbox" ${chkBuku} onchange="updatePerlengkapan(${student.id}, 'buku', this.checked)" class="w-5 h-5 text-brand-navy rounded focus:ring-brand-gold cursor-pointer">
+                        </td>
+                        <td class="p-4 text-center">
+                            <input type="checkbox" ${chkSeragam} onchange="updatePerlengkapan(${student.id}, 'seragam', this.checked)" class="w-5 h-5 text-brand-navy rounded focus:ring-brand-gold cursor-pointer">
+                        </td>
+                    `;
+                }
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- Modal Handlers ---
+        function bukaModalNilai(id) {
+            const student = allStudentsData.find(s => s.id === id);
+            if (!student) return;
+            document.getElementById('modal-nilai-id').value = id;
+            document.getElementById('modal-nilai-nama').innerText = student.nama_murid || '-';
+            document.getElementById('modal-nilai-input').value = student.interview || '';
+            document.getElementById('modal-nilai').classList.add('active');
+        }
+
+        function bukaModalKonfirmasi(id) {
+            const student = allStudentsData.find(s => s.id === id);
+            if (!student) return;
+            document.getElementById('modal-konf-id').value = id;
+            document.getElementById('modal-konf-nama').innerText = student.nama_murid || '-';
+            document.getElementById('modal-konfirmasi').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // --- CRUD Master Data (Form Siswa) ---
+        let currentEditId = null;
+
+        function bukaModalForm(id = null) {
+            currentEditId = id;
+            const titleEl = document.getElementById('modal-form-title');
+            
+            if (id) {
+                // Mode Edit
+                titleEl.innerText = "Edit Data Siswa";
+                const student = allStudentsData.find(s => s.id === id);
+                if (student) {
+                    document.getElementById('form-nama').value = student.nama_murid || '';
+                    document.getElementById('form-no').value = student.no_ppdb || '';
+                    document.getElementById('form-jk').value = student.jk === 'P' || student.jk === 'p' ? 'P' : 'L';
+                    document.getElementById('form-tk').value = student.tk || '';
+                }
+            } else {
+                // Mode Tambah Baru
+                titleEl.innerText = "Tambah Siswa Baru";
+                document.getElementById('form-nama').value = '';
+                document.getElementById('form-no').value = '';
+                document.getElementById('form-jk').value = 'L';
+                document.getElementById('form-tk').value = '';
+            }
+            
+            document.getElementById('modal-form-siswa').classList.add('active');
+        }
+
+        async function simpanDataSiswa() {
+            const nama = document.getElementById('form-nama').value.trim();
+            const no_ppdb = document.getElementById('form-no').value.trim();
+            const jk = document.getElementById('form-jk').value;
+            const tk = document.getElementById('form-tk').value.trim();
+            
+            if(!nama || !no_ppdb) {
+                showToast("Nama Lengkap dan No PPDB wajib diisi!", "error");
+                return;
+            }
+
+            const payload = {
+                nama_murid: nama,
+                no_ppdb: no_ppdb,
+                jk: jk,
+                tk: tk
+            };
+
+            const btn = document.getElementById('btn-simpan-form');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-lg"></i> Menyimpan...';
+            btn.disabled = true;
+
+            try {
+                let url = `${SUPABASE_URL}pendaftar`;
+                let method = 'POST';
+
+                if (currentEditId) {
+                    // Update data (PATCH)
+                    url = `${SUPABASE_URL}pendaftar?id=eq.${currentEditId}`;
+                    method = 'PATCH';
+                } else {
+                    // Create data (POST) - Set tanggal otomatis hari ini
+                    const today = new Date();
+                    payload.tgl_daftar = today.toISOString().split('T')[0]; 
+                }
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    showToast(currentEditId ? "Data siswa berhasil diperbarui!" : "Siswa baru berhasil ditambahkan!", "success");
+                    closeModal('modal-form-siswa');
+                    fetchData(); // Reload data untuk menampilkan perubahan
+                } else {
+                    throw new Error("Gagal menyimpan data ke database");
+                }
+            } catch (error) {
+                showToast("Gagal menyimpan. Periksa koneksi internet Anda.", "error");
+                console.error(error);
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+
+        // --- Hapus Data Siswa ---
+        function konfirmasiHapus(id, nama) {
+            document.getElementById('confirm-id').value = id;
+            document.getElementById('confirm-nama').innerText = nama || 'Siswa Ini';
+            document.getElementById('modal-confirm').classList.add('active');
+        }
+
+        async function eksekusiHapus() {
+            const id = document.getElementById('confirm-id').value;
+            if(!id) return;
+
+            const btn = document.getElementById('btn-hapus');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-lg"></i> Menghapus...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    showToast("Data siswa berhasil dihapus secara permanen.", "success");
+                    closeModal('modal-confirm');
+                    fetchData(); // Reload data dari database
+                } else {
+                    throw new Error("Gagal menghapus data");
+                }
+            } catch (error) {
+                showToast("Gagal menghapus data. Silakan coba lagi.", "error");
+                console.error(error);
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+
+        // --- Penganalisis Handlers ---
+        let currentAnalisisNama = "";
+        
+        function bukaModalAnalisis(id) {
+            const student = allStudentsData.find(s => s.id === id);
+            if (!student) return;
+            
+            currentAnalisisNama = student.nama_murid || '';
+            document.getElementById('modal-analisis-id').value = id;
+            document.getElementById('modal-analisis-nama').innerText = currentAnalisisNama;
+            
+            // Masukkan data saat ini ke dalam input
+            const setVal = (elId, val) => { document.getElementById(elId).value = (val !== null && val !== undefined) ? val : ''; };
+            
+            setVal('input-huruf', student.mengenal_huruf);
+            setVal('input-bilangan', student.mengenal_bilangan);
+            setVal('input-motorik', student.menggunting_dan_menempel_puzzle);
+            setVal('input-menyanyi', student.menyanyi_lagu_nasional);
+            setVal('input-doa', student.melafalkan_surat_pendek_doa_harian);
+            setVal('input-interview2', student.interview);
+            
+            updateDeskripsiAnalisis(); // Render teks narasi secara otomatis
+            
+            document.getElementById('modal-analisis').classList.add('active');
+        }
+        
+        // Fungsi pembentuk kalimat berdasarkan aturan rentang nilai
+        function generateDeskripsiStr(nama, nilaiStr, indikator) {
+            if (nilaiStr === '' || nilaiStr === null || nilaiStr === undefined) return '<span class="text-gray-400 italic">Belum ada nilai yang diinput.</span>';
+            const nilai = parseInt(nilaiStr);
+            if (isNaN(nilai) || nilai < 0 || nilai > 100) return '<span class="text-red-500 font-medium">⚠️ Masukkan angka yang valid (0-100).</span>';
+            
+            // Mengambil nama panggilan (kata pertama) dan menghindari error jika nama kosong
+            const firstName = (nama || '').trim().split(/\s+/)[0] || 'Siswa';
+            
+            if (nilai >= 0 && nilai <= 60) {
+                return `Ananda <span class="font-bold text-brand-navy">${firstName}</span> masih perlu bimbingan dalam <span class="font-bold text-brand-navy">${indikator}</span>.`;
+            } else if (nilai >= 61 && nilai <= 75) {
+                return `Ananda <span class="font-bold text-brand-navy">${firstName}</span> sudah dapat <span class="font-bold text-brand-navy">${indikator}</span> namun masih perlu pendampingan.`;
+            } else if (nilai >= 76 && nilai <= 89) {
+                return `Ananda <span class="font-bold text-brand-navy">${firstName}</span> sudah lancar <span class="font-bold text-brand-navy">${indikator}</span> namun masih perlu sedikit pendampingan.`;
+            } else if (nilai >= 90 && nilai <= 100) {
+                return `Ananda <span class="font-bold text-brand-navy">${firstName}</span> sudah lancar <span class="font-bold text-brand-navy">${indikator}</span> dan mandiri.`;
+            }
+            return '';
+        }
+        
+        // Fungsi dipanggil saat oninput di modal
+        function updateDeskripsiAnalisis() {
+            document.getElementById('desc-huruf').innerHTML = generateDeskripsiStr(currentAnalisisNama, document.getElementById('input-huruf').value, 'mengenal huruf');
+            document.getElementById('desc-bilangan').innerHTML = generateDeskripsiStr(currentAnalisisNama, document.getElementById('input-bilangan').value, 'mengenal bilangan');
+            document.getElementById('desc-motorik').innerHTML = generateDeskripsiStr(currentAnalisisNama, document.getElementById('input-motorik').value, 'menggunting dan menempel');
+            document.getElementById('desc-menyanyi').innerHTML = generateDeskripsiStr(currentAnalisisNama, document.getElementById('input-menyanyi').value, 'menyanyi lagu nasional');
+            document.getElementById('desc-doa').innerHTML = generateDeskripsiStr(currentAnalisisNama, document.getElementById('input-doa').value, 'melafalkan surat dan doa');
+            document.getElementById('desc-interview2').innerHTML = generateDeskripsiStr(currentAnalisisNama, document.getElementById('input-interview2').value, 'interview');
+        }
+
+        async function simpanAnalisis() {
+            const id = parseInt(document.getElementById('modal-analisis-id').value);
+            
+            const getVal = (elId) => {
+                const v = document.getElementById(elId).value;
+                return v === '' ? null : parseInt(v);
+            };
+
+            const payload = {
+                mengenal_huruf: getVal('input-huruf'),
+                mengenal_bilangan: getVal('input-bilangan'),
+                menggunting_dan_menempel_puzzle: getVal('input-motorik'),
+                menyanyi_lagu_nasional: getVal('input-menyanyi'),
+                melafalkan_surat_pendek_doa_harian: getVal('input-doa'),
+                interview: getVal('input-interview2') // tersinkron dengan form pewawancara
+            };
+
+            // Validasi Max Min
+            for (const key in payload) {
+                if (payload[key] !== null && (payload[key] < 0 || payload[key] > 100)) {
+                    showToast("Pastikan semua nilai berada di rentang 0 - 100", "error");
+                    return;
+                }
+            }
+
+            const btn = document.getElementById('btn-simpan-analisis');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-lg"></i> Menyimpan...';
+            btn.disabled = true;
+
+            try {
+                // Simpan ke Supabase (Database)
+                const response = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    showToast("Nilai analisis berhasil disimpan ke database!", "success");
+                    
+                    // Update Local UI
+                    const student = allStudentsData.find(s => s.id === id);
+                    if(student) {
+                        student.mengenal_huruf = payload.mengenal_huruf;
+                        student.mengenal_bilangan = payload.mengenal_bilangan;
+                        student.menggunting_dan_menempel_puzzle = payload.menggunting_dan_menempel_puzzle;
+                        student.menyanyi_lagu_nasional = payload.menyanyi_lagu_nasional;
+                        student.melafalkan_surat_pendek_doa_harian = payload.melafalkan_surat_pendek_doa_harian;
+                        student.interview = payload.interview;
+                    }
+                    
+                    closeModal('modal-analisis');
+                    renderAllPanels(); 
+                    updateDashboardStats();
+                    tampilkanGrafik(id); 
+                } else {
+                    throw new Error("Gagal update data");
+                }
+            } catch (error) {
+                showToast("Gagal menyimpan ke database", "error");
+                console.error(error);
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+
+        // --- Action Handlers ---
+        async function simpanNilai() {
+            const id = parseInt(document.getElementById('modal-nilai-id').value);
+            const val = parseInt(document.getElementById('modal-nilai-input').value);
+            
+            if(isNaN(val) || val < 0 || val > 100) {
+                showToast("Masukkan nilai 0-100", "error"); return;
+            }
+
+            // Update UI secara langsung
+            const student = allStudentsData.find(s => s.id === id);
+            if(student) student.interview = val;
+
+            closeModal('modal-nilai');
+            renderAllPanels();
+            updateDashboardStats();
+            
+            // Simpan ke Supabase (Database)
+            try {
+                const response = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({ interview: val })
+                });
+                if (response.ok) {
+                    showToast("Nilai wawancara berhasil disimpan ke database!", "success");
+                } else {
+                    throw new Error("Gagal update data");
+                }
+            } catch (error) {
+                showToast("Gagal menyimpan ke database", "error");
+                console.error(error);
+            }
+        }
+
+        async function prosesKonfirmasi() {
+            const id = parseInt(document.getElementById('modal-konf-id').value);
+            
+            // Update UI secara langsung
+            const student = allStudentsData.find(s => s.id === id);
+            if(student) student.konfirmasi = true;
+
+            closeModal('modal-konfirmasi');
+            renderAllPanels();
+            updateDashboardStats();
+            
+            // Simpan ke Supabase (Database)
+            try {
+                const response = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({ konfirmasi: true })
+                });
+                if (response.ok) {
+                    showToast("Pembayaran berhasil dikonfirmasi di database!", "success");
+                } else {
+                    throw new Error("Gagal update data");
+                }
+            } catch (error) {
+                showToast("Gagal konfirmasi ke database", "error");
+                console.error(error);
+            }
+        }
+
+        async function updatePerlengkapan(id, tipe, isChecked) {
+            const student = allStudentsData.find(s => s.id === id);
+            let updatePayload = {};
+            
+            if(student) {
+                if(tipe === 'buku') {
+                    student.perlengkapan_buku = isChecked;
+                    updatePayload = { perlengkapan_buku: isChecked };
+                }
+                if(tipe === 'seragam') {
+                    student.perlengkapan_seragam = isChecked;
+                    updatePayload = { perlengkapan_seragam: isChecked };
+                }
+            }
+
+            // Simpan ke Supabase (Database)
+            try {
+                const response = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(updatePayload)
+                });
+                if (response.ok) {
+                    showToast(`Status ${tipe} diperbarui di database.`, "success");
+                } else {
+                    throw new Error("Gagal update data");
+                }
+            } catch (error) {
+                showToast(`Gagal memperbarui status ${tipe}`, "error");
+                console.error(error);
+            }
+        }
+
+        // --- Penganalisis Chart Logic ---
+        function tampilkanGrafik(id) {
+            const student = allStudentsData.find(s => s.id === id);
+            if(!student) return;
+
+            document.getElementById('chart-placeholder').classList.add('hidden');
+            const canvas = document.getElementById('adminRadarChart');
+            canvas.classList.remove('hidden');
+            document.getElementById('chart-student-name').innerText = `Data: ${student.nama_murid}`;
+
+            const dataPoints = [
+                student.mengenal_huruf || 0,
+                student.mengenal_bilangan || 0,
+                student.menggunting_dan_menempel_puzzle || 0,
+                student.melafalkan_surat_pendek_doa_harian || 0,
+                student.menyanyi_lagu_nasional || 0,
+                student.interview || 0
+            ];
+
+            if (radarChartInstance) {
+                radarChartInstance.destroy();
+            }
+
+            const ctx = canvas.getContext('2d');
+            radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Huruf', 'Bilangan', 'Motorik', 'Doa', 'Menyanyi', 'Wawancara'],
+                    datasets: [{
+                        label: 'Skor',
+                        data: dataPoints,
+                        backgroundColor: 'rgba(15, 39, 71, 0.2)', // Brand Navy with opacity
+                        borderColor: '#0F2747',
+                        pointBackgroundColor: '#D9A441', // Brand Gold
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#D9A441',
+                        borderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { r: { ticks: { display: false, min: 0, max: 100 } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>
