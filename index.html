@@ -1074,7 +1074,21 @@
                 if (response.ok) {
                     showToast(currentEditId ? "Data siswa berhasil diperbarui!" : "Siswa baru berhasil ditambahkan!", "success");
                     closeModal('modal-form-siswa');
-                    fetchData(); // Reload data untuk menampilkan perubahan
+                    
+                    // Update UI seketika tanpa harus fetch ulang semua data (Lebih Cepat)
+                    if (currentEditId) {
+                        const student = allStudentsData.find(s => s.id === currentEditId);
+                        if (student) {
+                            student.nama_murid = payload.nama_murid;
+                            student.no_ppdb = payload.no_ppdb;
+                            student.jk = payload.jk;
+                            student.tk = payload.tk;
+                        }
+                        renderAllPanels();
+                    } else {
+                        // Jika tambah baru, fetch data agar mendapatkan ID baru dari database
+                        fetchData(); 
+                    }
                 } else {
                     throw new Error("Gagal menyimpan data ke database");
                 }
@@ -1228,7 +1242,7 @@
                 if (response.ok) {
                     showToast("Nilai analisis berhasil disimpan ke database!", "success");
                     
-                    // Update Local UI
+                    // Update Local UI seketika agar grafik dan tabel langsung berubah
                     const student = allStudentsData.find(s => s.id === id);
                     if(student) {
                         student.mengenal_huruf = payload.mengenal_huruf;
@@ -1242,6 +1256,8 @@
                     closeModal('modal-analisis');
                     renderAllPanels(); 
                     updateDashboardStats();
+                    
+                    // Tampilkan grafik secara otomatis dengan nilai yang baru dimasukkan
                     tampilkanGrafik(id); 
                 } else {
                     throw new Error("Gagal update data");
