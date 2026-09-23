@@ -117,7 +117,6 @@
 
         <div id="panel-container" class="flex-1 overflow-y-auto p-4 sm:p-8 pb-24 relative z-0">
             
-            <!-- PANEL KELOLA MENU APP -->
             <div id="panel-menu-app" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-6">
@@ -143,7 +142,6 @@
                 </div>
             </div>
 
-            <!-- PANEL SEKRETARIS -->
             <div id="panel-sekretaris" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-6">
@@ -171,7 +169,6 @@
                 </div>
             </div>
 
-            <!-- PANEL PENGANALISIS -->
             <div id="panel-penganalisis" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-4">
@@ -196,7 +193,6 @@
                 </div>
             </div>
 
-            <!-- PANEL PEWAWANCARA -->
             <div id="panel-pewawancara" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-4">
@@ -223,7 +219,6 @@
                 </div>
             </div>
 
-            <!-- PANEL BENDAHARA -->
             <div id="panel-bendahara" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <h2 class="font-heading font-semibold text-lg text-brand-navy mb-4">Validasi Pembayaran (Transfer/Tunai)</h2>
@@ -244,7 +239,6 @@
                 </div>
             </div>
 
-            <!-- PANEL PERLENGKAPAN -->
             <div id="panel-perlengkapan" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-4">
@@ -270,7 +264,6 @@
                 </div>
             </div>
 
-            <!-- PANEL AKUN & PROGRESS -->
             <div id="panel-akun-progress" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-4">
@@ -300,7 +293,6 @@
                 </div>
             </div>
 
-            <!-- PANEL PENGATURAN GLOBAL -->
             <div id="panel-pengaturan" class="panel-view hidden space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
@@ -340,7 +332,6 @@
                 </div>
             </div>
 
-            <!-- PANEL KELOLA AKSES STAF -->
             <div id="panel-kelola-akses" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-6">
@@ -370,7 +361,6 @@
 
 <!-- ================= MODALS ================= -->
 
-<!-- MODAL MENU APP -->
 <div id="modal-menu-app" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl slide-up flex flex-col">
         <div class="flex justify-between items-center mb-4 border-b pb-4">
@@ -394,7 +384,6 @@
     </div>
 </div>
 
-<!-- MODAL FORM SISWA -->
 <div id="modal-form-siswa" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl slide-up">
         <div class="flex justify-between items-center mb-4 border-b pb-4 shrink-0">
@@ -448,7 +437,6 @@
     </div>
 </div>
 
-<!-- MODAL BIODATA -->
 <div id="modal-biodata" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md max-h-[85vh] flex flex-col shadow-2xl slide-up">
         <div class="flex justify-between items-center mb-4 border-b pb-4 shrink-0">
@@ -459,7 +447,6 @@
     </div>
 </div>
 
-<!-- MODAL PENGANALISIS (NILAI 0-100) -->
 <div id="modal-analisis" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-lg max-h-[90vh] flex flex-col shadow-2xl slide-up">
         <div class="flex justify-between items-center mb-4 shrink-0 border-b pb-4">
@@ -528,7 +515,6 @@
     </div>
 </div>
 
-<!-- MODAL GRAFIK PENGANALISIS -->
 <div id="modal-grafik" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl slide-up flex flex-col">
         <div class="flex justify-between items-center mb-4 border-b pb-4">
@@ -552,14 +538,14 @@
             <input type="hidden" id="pewa-id">
             <div>
                 <label class="text-xs font-medium text-brand-navy block mb-1">Daftar Ulang</label>
-                <select id="pewa-daftar-ulang" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white">
+                <select id="pewa-daftar-ulang" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white focus:border-brand-gold">
                     <option value="3780000">Putra (PA) - Rp 3.780.000</option>
                     <option value="3805000">Putri (PI) - Rp 3.805.000</option>
                 </select>
             </div>
             <div>
                 <label class="text-xs font-medium text-brand-navy block mb-1">Biaya BOPD</label>
-                <select id="pewa-bopd" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white">
+                <select id="pewa-bopd" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white focus:border-brand-gold">
                     <option value="9750000">Tipe A - Rp 9.750.000</option>
                     <option value="10750000">Tipe B - Rp 10.750.000</option>
                     <option value="11750000">Tipe C - Rp 11.750.000</option>
@@ -571,6 +557,7 @@
                     <select id="pewa-early" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white focus:outline-none focus:border-brand-gold">
                         <option value="1500000">Rp 1.500.000</option>
                         <option value="1000000">Rp 1.000.000</option>
+                        <option value="0">Rp 0</option>
                     </select>
                 </div>
                 <div>
@@ -581,7 +568,6 @@
                     </select>
                 </div>
             </div>
-            <!-- Potongan Keringanan Lainnya Dihapus Sesuai Permintaan -->
         </div>
         <div class="pt-4 mt-4 border-t shrink-0">
             <button onclick="simpanPewawancara()" id="btn-simpan-pewa" class="btn-press w-full bg-brand-navy text-white py-3.5 rounded-xl font-medium shadow-md">Simpan Biaya</button>
@@ -640,7 +626,7 @@
         </div>
         <div class="space-y-4">
             <input type="hidden" id="akun-id-target">
-            <div><label class="text-xs font-medium text-brand-navy block mb-1">Ruang Ujian / Lokasi</label><input type="text" id="akun-ruang" class="w-full border rounded-lg p-2.5 text-sm" placeholder="Contoh: Ruang Utama"></div>
+            <div><label class="text-xs font-medium text-brand-navy block mb-1">Ruang Ujian / Lokasi</label><input type="text" id="akun-ruang" class="w-full border rounded-lg p-2.5 text-sm focus:border-brand-gold" placeholder="Contoh: Ruang Utama"></div>
             <div>
                 <label class="text-xs font-medium text-brand-navy block mb-2">Checklist Timeline (Terselesaikan)</label>
                 <div class="space-y-2 text-sm bg-gray-50 p-3 rounded-lg border border-gray-200">
@@ -695,7 +681,6 @@
     let currentUserRoleArr = [];
     let currentUsername = '';
     let selectedIdsForMassAction = [];
-    let perlengkapanFilter = 'all';
     let chartInstanceAdmin = null;
 
     let staffAccounts = JSON.parse(localStorage.getItem('staff_acc')) || [
@@ -720,7 +705,7 @@
         { id: 'panel-perlengkapan', role: 'perlengkapan', icon: 'ph-t-shirt', text: 'Perlengkapan' }
     ];
 
-    // ----- UI HELPERS -----
+    // ----- UI HELPERS & CORE API -----
     function formatRp(angka) { 
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka || 0); 
     }
@@ -728,11 +713,33 @@
     function showToast(msg, isError = false) {
         const c = document.getElementById('toast-container');
         const t = document.createElement('div');
-        t.className = `px-4 py-3 rounded-xl shadow-lg text-sm text-white flex items-center gap-2 transform translate-x-full transition-transform duration-300 ease-out ${isError ? 'bg-red-500' : 'bg-brand-navy'}`;
-        t.innerHTML = `<i class="ph-bold ${isError ? 'ph-warning' : 'ph-check-circle'} text-lg"></i> ${msg}`;
+        t.className = `px-4 py-3 rounded-xl shadow-lg text-sm text-white flex items-center gap-3 transform translate-x-full transition-transform duration-300 ease-out ${isError ? 'bg-red-500' : 'bg-brand-navy'}`;
+        t.innerHTML = `<i class="ph-bold ${isError ? 'ph-warning' : 'ph-check-circle'} text-lg shrink-0"></i> <span class="break-words max-w-[280px]">${msg}</span>`;
         c.appendChild(t);
         requestAnimationFrame(() => t.classList.remove('translate-x-full'));
-        setTimeout(() => { t.classList.add('translate-x-full'); setTimeout(() => t.remove(), 300); }, 3000);
+        setTimeout(() => { t.classList.add('translate-x-full'); setTimeout(() => t.remove(), 300); }, 5000); // 5 detik agar bisa dibaca jika ada error database
+    }
+
+    // Fungsi canggih untuk menangkap dan menampilkan Error dari Supabase secara detail
+    async function apiRequest(url, method, body = null) {
+        const options = {
+            method: method,
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        };
+        if (body) {
+            options.headers['Content-Type'] = 'application/json';
+            options.body = JSON.stringify(body);
+        }
+        const res = await fetch(url, options);
+        if (!res.ok) {
+            let errMsg = `Gagal (HTTP ${res.status})`;
+            try { 
+                const errData = await res.json(); 
+                errMsg = errData.message || errData.details || errData.hint || errMsg; 
+            } catch(ex) {}
+            throw new Error(errMsg);
+        }
+        return res;
     }
 
     function toggleSidebar() {
@@ -755,7 +762,6 @@
 
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
 
-    // ----- LOGIN & INIT -----
     function handleLogin() {
         const u = document.getElementById('login-username').value.trim().toLowerCase();
         const p = document.getElementById('login-password').value.trim();
@@ -795,18 +801,18 @@
         loadData();
     }
 
-    // ----- DATA FETCHING -----
     async function loadData() {
         try {
-            const r1 = await fetch(`${SUPABASE_URL}pendaftar?select=*`, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
-            if(r1.ok) allStudentsData = await r1.json();
+            const r1 = await apiRequest(`${SUPABASE_URL}pendaftar?select=*`, 'GET');
+            allStudentsData = await r1.json();
             
-            const r2 = await fetch(`${SUPABASE_URL}menu_aplikasi?select=*`, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
-            if(r2.ok) menuAppData = await r2.json();
+            try {
+                const r2 = await apiRequest(`${SUPABASE_URL}menu_aplikasi?select=*`, 'GET');
+                menuAppData = await r2.json();
+            } catch(e) { console.log("Tabel menu_aplikasi belum ada/kosong"); }
 
-            // Fetch setting global dari tabel pengaturan_sistem
-            const r3 = await fetch(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
-            if(r3.ok) {
+            try {
+                const r3 = await apiRequest(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, 'GET');
                 const sett = await r3.json();
                 if(sett.length > 0) {
                     const dataSett = sett[0];
@@ -815,12 +821,14 @@
                     document.getElementById('tl-3').value = dataSett.tl_3 || 'Verifikasi Berkas';
                     document.getElementById('tl-4').value = dataSett.tl_4 || 'Tes Kesiapan & Lulus';
                 }
-            }
+            } catch(e) { console.log("Tabel pengaturan_sistem belum ada/kosong"); }
+            
             updateTimelineLabelsUI();
-
             renderAll(); 
             showToast("Sinkronisasi Berhasil");
-        } catch(e) { showToast("Gagal menarik data", true); }
+        } catch(e) { 
+            showToast("Gagal tarik data: " + e.message, true); 
+        }
     }
 
     function renderAll() {
@@ -833,7 +841,6 @@
         if(isAdmin) { renderAkunProgress(); renderStaf(); renderMenuApp(); }
     }
 
-    // ----- 1. AKUN & PROGRESS & TIMELINE -----
     function renderAkunProgress() {
         const tbody = document.getElementById('tbody-akun-progress'); if(!tbody) return;
         document.getElementById('check-all').checked = false; selectedIdsForMassAction = [];
@@ -870,14 +877,16 @@
         const pl = { ruang: document.getElementById('akun-ruang').value.trim(), t1: document.getElementById('chk-tl1').checked, t2: document.getElementById('chk-tl2').checked, t3: document.getElementById('chk-tl3').checked, t4: document.getElementById('chk-tl4').checked };
         const btn = document.getElementById('btn-simpan-akun'); btn.disabled = true; btn.innerHTML = 'Processing...';
         try {
-            if(id) { await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(pl) }); } 
-            else { await Promise.all(selectedIdsForMassAction.map(selId => fetch(`${SUPABASE_URL}pendaftar?id=eq.${selId}`, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(pl) }))); }
+            if(id) { 
+                await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl); 
+            } else { 
+                await Promise.all(selectedIdsForMassAction.map(selId => apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${selId}`, 'PATCH', pl))); 
+            }
             showToast("Timeline Berhasil Diupdate"); closeModal('modal-akun'); loadData();
-        } catch(e) { showToast("Gagal", true); }
+        } catch(e) { showToast(e.message, true); }
         btn.disabled = false; btn.innerHTML = 'Simpan Perubahan';
     }
 
-    // PENGATURAN GLOBAL (TIMELINE & PENGUMUMAN) TO PENGATURAN_SISTEM
     async function simpanPengaturanDB(tipeData) {
         let payload = {};
         if(tipeData === 'timeline') {
@@ -899,17 +908,11 @@
         }
 
         try {
-            const r = await fetch(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, { 
-                method: 'PATCH', 
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(payload) 
-            });
-            if(r.ok || r.status === 404) { 
-                showToast(`${tipeData} berhasil disimpan`); 
-                if(tipeData === 'pengumuman'){ document.getElementById('info-judul').value=''; document.getElementById('info-isi').value=''; } 
-            } else throw Error;
+            await apiRequest(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, 'PATCH', payload);
+            showToast(`${tipeData} berhasil disimpan`); 
+            if(tipeData === 'pengumuman'){ document.getElementById('info-judul').value=''; document.getElementById('info-isi').value=''; } 
         } catch(e) { 
-            showToast(`Gagal. Pastikan tabel pengaturan_sistem sudah dibuat di Supabase.`, true); 
+            showToast(`Gagal. Pastikan tabel pengaturan_sistem sudah dibuat. Error: ${e.message}`, true); 
         } 
     }
 
@@ -924,7 +927,6 @@
         document.querySelectorAll('.lbl-tl-4').forEach(el => el.innerText = v4);
     }
 
-    // ----- 2. SEKRETARIS & BIODATA -----
     function renderSekretaris() {
         const tbody = document.getElementById('tbody-sekretaris'); if(!tbody) return;
         tbody.innerHTML = allStudentsData.map(s => `
@@ -973,15 +975,18 @@
         
         const btn = document.getElementById('btn-simpan-siswa'); btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
         try { 
-            const res = await fetch(`${SUPABASE_URL}pendaftar${id ? `?id=eq.${id}` : ''}`, { method: id ? 'PATCH' : 'POST', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(pl) }); 
-            if(res.ok) { showToast("Data Siswa Disimpan"); closeModal('modal-form-siswa'); loadData(); } else throw Error;
-        } catch(e) { showToast("Gagal menyimpan", true); }
+            await apiRequest(`${SUPABASE_URL}pendaftar${id ? `?id=eq.${id}` : ''}`, id ? 'PATCH' : 'POST', pl);
+            showToast("Data Siswa Disimpan"); closeModal('modal-form-siswa'); loadData();
+        } catch(e) { showToast(e.message, true); }
         btn.disabled = false; btn.innerHTML = 'Simpan Data Siswa';
     }
 
     async function hapusSiswa(id) {
         if(!confirm(`Hapus permanen data siswa ini?`)) return;
-        try { const res = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, { method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }); if(res.ok) { showToast("Dihapus"); loadData(); } else throw Error; } catch(e) { showToast("Gagal hapus", true); }
+        try { 
+            await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'DELETE'); 
+            showToast("Dihapus"); loadData(); 
+        } catch(e) { showToast(e.message, true); }
     }
 
     function bukaModalBiodata(id) {
@@ -994,7 +999,6 @@
         document.getElementById('modal-biodata').classList.replace('hidden', 'flex');
     }
 
-    // ----- 3. PENGANALISIS (FILTER & GRAFIK) -----
     function renderPenganalisisFilter() {
         const sel = document.getElementById('filter-ruang-analisis');
         const rCache = sel.value; sel.innerHTML = '<option value="all">Semua Ruang</option>';
@@ -1013,7 +1017,7 @@
             const arr = [
                 s.mengenal_huruf, 
                 s.mengenal_bilangan, 
-                s.menggunting_dan_menempel_puzzel, // MUST match exact DB naming
+                s.menggunting_dan_menempel_puzzel, // Harus sama persis
                 s.menyanyi_lagu_nasional, 
                 s.melafalkan_surat_pendek_doa_harian, 
                 s.interview
@@ -1048,15 +1052,14 @@
         document.getElementById('analisis-nama').innerText = s.nama_murid; 
         document.getElementById('analisis-nama').dataset.panggilan = s.nama_panggilan || s.nama_murid;
         
-        // Exact DB column mappings
         document.getElementById(`val-huruf`).value = s.mengenal_huruf !== null ? s.mengenal_huruf : '';
         document.getElementById(`val-bilangan`).value = s.mengenal_bilangan !== null ? s.mengenal_bilangan : '';
-        document.getElementById(`val-motorik`).value = s.menggunting_dan_menempel_puzzel !== null ? s.menggunting_dan_menempel_puzzel : ''; // EXACT spelling 'puzzel'
+        document.getElementById(`val-motorik`).value = s.menggunting_dan_menempel_puzzel !== null ? s.menggunting_dan_menempel_puzzel : ''; 
         document.getElementById(`val-lagu`).value = s.menyanyi_lagu_nasional !== null ? s.menyanyi_lagu_nasional : '';
         document.getElementById(`val-doa`).value = s.melafalkan_surat_pendek_doa_harian !== null ? s.melafalkan_surat_pendek_doa_harian : '';
         document.getElementById(`val-interview`).value = s.interview !== null ? s.interview : '';
 
-        // Tampilkan deskripsi jika sudah ada di database
+        // Tampilkan teks deskripsi narasi
         document.getElementById(`ket-huruf`).value = s.ket_mengenal_huruf || '';
         document.getElementById(`ket-bilangan`).value = s.ket_mengenal_bilangan || '';
         document.getElementById(`ket-motorik`).value = s.ket_menggunting_dan_menempel_puzzel || '';
@@ -1064,7 +1067,6 @@
         document.getElementById(`ket-doa`).value = s.ket_melafalkan_surat_pendek_doa_harian || '';
         document.getElementById(`ket-interview`).value = s.ket_interview || '';
 
-        // Auto generate description based on existing value HANYA JIKA deskripsi kosong
         if(!s.ket_mengenal_huruf) autoDes('huruf', 'mengenal huruf');
         if(!s.ket_mengenal_bilangan) autoDes('bilangan', 'mengenal bilangan');
         if(!s.ket_menggunting_dan_menempel_puzzel) autoDes('motorik', 'menggunting dan menempel');
@@ -1079,14 +1081,15 @@
         const id = document.getElementById('analisis-id').value;
         const getVal = (elId) => { const v = parseInt(document.getElementById(elId).value); return isNaN(v) ? null : v; };
 
-        // EXACT matching as requested - Sekarang termasuk ket_ karena kolom di Supabase sudah dibuat
         const pl = { 
             mengenal_huruf: getVal('val-huruf'), 
             mengenal_bilangan: getVal('val-bilangan'), 
-            menggunting_dan_menempel_puzzel: getVal('val-motorik'), // 'puzzel'
+            menggunting_dan_menempel_puzzel: getVal('val-motorik'), // Ejaan harus persis di Supabase
             menyanyi_lagu_nasional: getVal('val-lagu'), 
             melafalkan_surat_pendek_doa_harian: getVal('val-doa'), 
             interview: getVal('val-interview'),
+            
+            // Kolom ini wajib ada di tabel pendaftar
             ket_mengenal_huruf: document.getElementById('ket-huruf').value,
             ket_mengenal_bilangan: document.getElementById('ket-bilangan').value,
             ket_menggunting_dan_menempel_puzzel: document.getElementById('ket-motorik').value,
@@ -1096,16 +1099,10 @@
         };
         const btn = document.getElementById('btn-simpan-analisis'); btn.disabled = true; btn.innerHTML = 'Processing...';
         try { 
-            const res = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, { 
-                method: 'PATCH', 
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(pl) 
-            }); 
-            if(res.ok) { 
-                showToast("Nilai Tersimpan"); closeModal('modal-analisis'); loadData(); 
-            } else throw Error; 
+            await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl);
+            showToast("Nilai Tersimpan"); closeModal('modal-analisis'); loadData(); 
         } catch(e) { 
-            showToast("Gagal menyimpan", true); 
+            showToast("Gagal (Nilai): " + e.message, true); 
         }
         btn.disabled = false; btn.innerHTML = 'Simpan Nilai & Deskripsi';
     }
@@ -1124,7 +1121,7 @@
                     data: [
                         parseInt(s.mengenal_huruf)||0, 
                         parseInt(s.mengenal_bilangan)||0, 
-                        parseInt(s.menggunting_dan_menempel_puzzel)||0, // update this!
+                        parseInt(s.menggunting_dan_menempel_puzzel)||0, 
                         parseInt(s.menyanyi_lagu_nasional)||0, 
                         parseInt(s.melafalkan_surat_pendek_doa_harian)||0, 
                         parseInt(s.interview)||0
@@ -1136,7 +1133,6 @@
         });
     }
 
-    // ----- 4. PEWAWANCARA -----
     function renderPewawancara() {
         const tbody = document.getElementById('tbody-pewawancara'); if(!tbody) return;
         const q = document.getElementById('filter-cari-biaya')?.value.toLowerCase() || '';
@@ -1157,14 +1153,13 @@
         document.getElementById('pewa-daftar-ulang').value = s.daftar_ulang || (s.jk === 'P' ? 3805000 : 3780000);
         document.getElementById('pewa-bopd').value = s.bopd || 9750000;
         
-        // Sesuaikan dengan opsi dropdown
-        const valEarly = s.early_bird !== null ? s.early_bird : 1500000;
         const selEarly = document.getElementById('pewa-early');
-        if([...selEarly.options].some(o => o.value == valEarly)) { selEarly.value = valEarly; } else { selEarly.value = "1500000"; }
+        selEarly.value = s.early_bird !== null ? s.early_bird : 1500000;
+        if(selEarly.selectedIndex === -1) selEarly.value = "1500000"; // fallback
         
-        const valAum = s.kader_aum !== null ? s.kader_aum : 1000000;
         const selAum = document.getElementById('pewa-aum');
-        if([...selAum.options].some(o => o.value == valAum)) { selAum.value = valAum; } else { selAum.value = "0"; }
+        selAum.value = s.kader_aum !== null ? s.kader_aum : 1000000;
+        if(selAum.selectedIndex === -1) selAum.value = "1000000"; // fallback
 
         document.getElementById('modal-pewawancara').classList.replace('hidden', 'flex');
     }
@@ -1176,25 +1171,17 @@
             bopd: parseInt(document.getElementById('pewa-bopd').value)||0, 
             early_bird: parseInt(document.getElementById('pewa-early').value)||0, 
             kader_aum: parseInt(document.getElementById('pewa-aum').value)||0
-            // Keterangan lainnya dihapus.
         };
         const btn = document.getElementById('btn-simpan-pewa'); btn.disabled = true; btn.innerHTML = 'Processing...';
         try { 
-            const res = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, { 
-                method: 'PATCH', 
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(pl) 
-            }); 
-            if(res.ok) { 
-                showToast("Biaya Disimpan"); closeModal('modal-pewawancara'); loadData(); 
-            } else throw Error; 
+            await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl);
+            showToast("Biaya Disimpan"); closeModal('modal-pewawancara'); loadData(); 
         } catch(e) { 
-            showToast("Gagal", true); 
+            showToast("Gagal (Biaya): " + e.message, true); 
         }
         btn.disabled = false; btn.innerHTML = 'Simpan Biaya';
     }
 
-    // ----- 5. BENDAHARA -----
     function renderBendahara() {
         const tbody = document.getElementById('tbody-bendahara'); if(!tbody) return;
         tbody.innerHTML = allStudentsData.map(s => {
@@ -1217,13 +1204,9 @@
 
     async function toggleValidasi(id, ok) {
         try { 
-            const res = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, { 
-                method: 'PATCH', 
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, 
-                body: JSON.stringify({ konfirmasi: ok, kasir: ok ? currentUsername : null }) 
-            }); 
-            if(res.ok) { showToast(ok ? "Tervalidasi" : "Batal"); loadData(); } else throw Error; 
-        } catch(e) { showToast("Gagal update", true); }
+            await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', { konfirmasi: ok, kasir: ok ? currentUsername : null });
+            showToast(ok ? "Tervalidasi Lunas" : "Validasi Dibatalkan"); loadData(); 
+        } catch(e) { showToast(e.message, true); }
     }
 
     function cetakStruk(id) {
@@ -1232,7 +1215,6 @@
         w.document.write(`<html><body style="font-family:monospace; padding:20px; max-width:350px; margin:auto;"><h3 style="text-align:center; border-bottom:2px dashed #000; padding-bottom:10px;">SDM SUDAGARAN<br>BUKTI LUNAS</h3><p>No PPDB: ${s.no_ppdb||'-'}</p><p>Nama   : ${s.nama_murid||'-'}</p><p>Kasir  : ${s.kasir||'Admin'}</p><h2 style="text-align:center; border:2px dashed #000; padding:10px;">LUNAS</h2><p style="text-align:center; font-size:10px; margin-top:20px;">Simpan struk sebagai bukti.</p><script>window.onload=()=>window.print();</`+`script></body></html>`); w.document.close();
     }
 
-    // ----- 6. PERLENGKAPAN -----
     function renderPerlengkapan() {
         const tbody = document.getElementById('tbody-perlengkapan'); if(!tbody) return;
         const f = document.getElementById('filter-perlengkapan').value;
@@ -1267,17 +1249,12 @@
         for(let i=1; i<=13; i++) { pl[`s${i}`] = document.getElementById(`chk-s${i}`).checked; }
         const btn = document.getElementById('btn-simpan-perkap'); btn.disabled = true; btn.innerHTML = 'Processing...';
         try { 
-            const res = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, { 
-                method: 'PATCH', 
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(pl) 
-            }); 
-            if(res.ok) { showToast("Checklist Disimpan"); closeModal('modal-perlengkapan'); loadData(); } else throw Error; 
-        } catch(e) { showToast("Gagal", true); }
+            await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl);
+            showToast("Checklist Disimpan"); closeModal('modal-perlengkapan'); loadData(); 
+        } catch(e) { showToast(e.message, true); }
         btn.disabled = false; btn.innerHTML = 'Simpan Checklist';
     }
 
-    // ----- 7. KELOLA AKSES & MENU APP -----
     function renderStaf() {
         const tbody = document.getElementById('tbody-staf'); if(!tbody) return;
         tbody.innerHTML = staffAccounts.map(s => `
@@ -1322,13 +1299,9 @@
     async function simpanMenuApp() {
         const id = document.getElementById('menu-id').value; const nama = document.getElementById('menu-nama').value; const letak = document.getElementById('menu-letak').value; const aktif = document.getElementById('menu-aktif').value === "true";
         try { 
-            const res = await fetch(`${SUPABASE_URL}menu_aplikasi?id=eq.${id}`, { 
-                method: 'PATCH', 
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, 
-                body: JSON.stringify({ nama_menu: nama, letak: letak, aktif: aktif }) 
-            }); 
-            if(res.ok) { showToast("Menu Diupdate"); closeModal('modal-menu-app'); loadData(); } else throw Error; 
-        } catch(e) { showToast("Gagal update menu", true); }
+            await apiRequest(`${SUPABASE_URL}menu_aplikasi?id=eq.${id}`, 'PATCH', { nama_menu: nama, letak: letak, aktif: aktif });
+            showToast("Menu Diupdate"); closeModal('modal-menu-app'); loadData(); 
+        } catch(e) { showToast(e.message, true); }
     }
 
 </script>
