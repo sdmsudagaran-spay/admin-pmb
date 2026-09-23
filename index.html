@@ -41,7 +41,6 @@
 
 <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-2 pointer-events-none"></div>
 
-<!-- VIEW LOGIN -->
 <div id="view-login" class="fixed inset-0 bg-brand-navy flex flex-col items-center justify-center p-6 z-[60] transition-opacity duration-500">
     <div class="w-full max-w-sm bg-white rounded-[24px] p-8 shadow-2xl relative z-10">
         <div class="text-center mb-8">
@@ -68,9 +67,7 @@
     </div>
 </div>
 
-<!-- VIEW DASHBOARD -->
 <div id="view-dashboard" class="hidden h-screen w-full flex">
-    
     <aside id="sidebar" class="bg-brand-navy text-white w-64 flex-shrink-0 flex flex-col sidebar-transition relative z-50 shadow-xl">
         <div class="p-5 flex items-center justify-between border-b border-white/10 shrink-0">
             <div class="flex items-center gap-3 overflow-hidden">
@@ -303,7 +300,7 @@
                 </div>
             </div>
 
-            <!-- PANEL PENGATURAN GLOBAL (Tabel pengaturan_sistem) -->
+            <!-- PANEL PENGATURAN GLOBAL -->
             <div id="panel-pengaturan" class="panel-view hidden space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
@@ -572,11 +569,7 @@
                 <div><label class="text-xs font-medium text-brand-navy block mb-1">Diskon Early Bird</label><input type="number" id="pewa-early" class="w-full border rounded-lg p-2.5 text-sm" value="1500000"></div>
                 <div><label class="text-xs font-medium text-brand-navy block mb-1">Kader AUM</label><input type="number" id="pewa-aum" class="w-full border rounded-lg p-2.5 text-sm" value="1000000"></div>
             </div>
-            <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
-                <label class="text-xs font-medium text-brand-navy block mb-2">Potongan / Keringanan Lainnya</label>
-                <input type="text" id="pewa-ketlain" class="w-full border rounded-lg p-2.5 text-sm mb-2" placeholder="Keterangan (Misal: Anak Guru)">
-                <input type="number" id="pewa-vallain" class="w-full border rounded-lg p-2.5 text-sm" placeholder="Nominal Rp (Misal: 500000)">
-            </div>
+            <!-- Potongan Keringanan Lainnya Dihapus Sesuai Permintaan -->
         </div>
         <div class="pt-4 mt-4 border-t shrink-0">
             <button onclick="simpanPewawancara()" id="btn-simpan-pewa" class="btn-press w-full bg-brand-navy text-white py-3.5 rounded-xl font-medium shadow-md">Simpan Biaya</button>
@@ -799,7 +792,7 @@
             const r2 = await fetch(`${SUPABASE_URL}menu_aplikasi?select=*`, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
             if(r2.ok) menuAppData = await r2.json();
 
-            // Fetch setting global dari tabel pengaturan_sistem yang baru
+            // Fetch setting global dari tabel pengaturan_sistem
             const r3 = await fetch(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
             if(r3.ok) {
                 const sett = await r3.json();
@@ -938,7 +931,7 @@
         const nm = document.getElementById('fs-nama').value.trim();
         if(nm.length > 0 && !document.getElementById('fs-id').value) {
             const kata1 = nm.split(' ')[0].toLowerCase();
-            document.getElementById('fs-no').value = 'sdm-' + Math.floor(100 + Math.random() * 900); // Generate no / password
+            document.getElementById('fs-no').value = 'sdm-' + Math.floor(100 + Math.random() * 900); 
             document.getElementById('fs-panggilan').value = kata1;
         }
     }
@@ -964,7 +957,7 @@
             ibu: document.getElementById('fs-ibu').value.trim(), agama_ibu: document.getElementById('fs-agibu').value.trim(), pend_ibu: document.getElementById('fs-pendibu').value.trim(), pekrj_ibu: document.getElementById('fs-krjibu').value.trim()
         };
         if(!pl.nama_murid) return showToast("Nama Lengkap wajib!", true);
-        if(!id) { pl.password = pl.no; pl.pendaftaran = 200000; pl.daftar_ulang = 3780000; pl.bopd = 9750000; } // Default biaya
+        if(!id) { pl.password = pl.no; pl.pendaftaran = 200000; pl.daftar_ulang = 3780000; pl.bopd = 9750000; } 
         
         const btn = document.getElementById('btn-simpan-siswa'); btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
         try { 
@@ -1005,7 +998,14 @@
         const dataFlt = flt === 'all' ? allStudentsData : allStudentsData.filter(s => s.ruang === flt);
         
         tbody.innerHTML = dataFlt.map(s => {
-            const arr = [s.mengenal_huruf, s.mengenal_bilangan, s.menggunting_dan_menempel_puzzle, s.menyanyi_lagu_nasional, s.melafalkan_surat_pendek_doa_harian, s.interview].map(n => parseInt(n) || 0);
+            const arr = [
+                s.mengenal_huruf, 
+                s.mengenal_bilangan, 
+                s.menggunting_dan_menempel_puzzel, // MUST match exact DB naming
+                s.menyanyi_lagu_nasional, 
+                s.melafalkan_surat_pendek_doa_harian, 
+                s.interview
+            ].map(n => parseInt(n) || 0);
             const r = Math.round(arr.reduce((a, b) => a + b, 0) / 6);
             return `<tr class="hover:bg-gray-50 border-b border-gray-50">
                 <td class="py-3 px-4 font-medium text-brand-navy">${s.nama_murid || '-'}</td>
@@ -1032,9 +1032,26 @@
 
     function bukaModalAnalisis(id) {
         const s = allStudentsData.find(x => x.id == id); if(!s) return;
-        document.getElementById('analisis-id').value = id; document.getElementById('analisis-nama').innerText = s.nama_murid; document.getElementById('analisis-nama').dataset.panggilan = s.nama_panggilan || s.nama_murid;
-        const mapA = [ { k: 'huruf', db: 'mengenal_huruf' }, { k: 'bilangan', db: 'mengenal_bilangan' }, { k: 'motorik', db: 'menggunting_dan_menempel_puzzle' }, { k: 'lagu', db: 'menyanyi_lagu_nasional' }, { k: 'doa', db: 'melafalkan_surat_pendek_doa_harian' }, { k: 'interview', db: 'interview' } ];
-        mapA.forEach(i => { document.getElementById(`val-${i.k}`).value = s[i.db]!==null?s[i.db]:''; document.getElementById(`ket-${i.k}`).value = s[`ket_${i.db}`]||''; });
+        document.getElementById('analisis-id').value = id; 
+        document.getElementById('analisis-nama').innerText = s.nama_murid; 
+        document.getElementById('analisis-nama').dataset.panggilan = s.nama_panggilan || s.nama_murid;
+        
+        // Exact DB column mappings
+        document.getElementById(`val-huruf`).value = s.mengenal_huruf !== null ? s.mengenal_huruf : '';
+        document.getElementById(`val-bilangan`).value = s.mengenal_bilangan !== null ? s.mengenal_bilangan : '';
+        document.getElementById(`val-motorik`).value = s.menggunting_dan_menempel_puzzel !== null ? s.menggunting_dan_menempel_puzzel : ''; // EXACT spelling 'puzzel'
+        document.getElementById(`val-lagu`).value = s.menyanyi_lagu_nasional !== null ? s.menyanyi_lagu_nasional : '';
+        document.getElementById(`val-doa`).value = s.melafalkan_surat_pendek_doa_harian !== null ? s.melafalkan_surat_pendek_doa_harian : '';
+        document.getElementById(`val-interview`).value = s.interview !== null ? s.interview : '';
+
+        // Auto generate description based on existing value
+        autoDes('huruf', 'mengenal huruf');
+        autoDes('bilangan', 'mengenal bilangan');
+        autoDes('motorik', 'menggunting dan menempel');
+        autoDes('lagu', 'menyanyi lagu nasional');
+        autoDes('doa', 'doa harian dan surat pendek');
+        autoDes('interview', 'menjawab pertanyaan interview');
+
         document.getElementById('modal-analisis').classList.replace('hidden', 'flex');
     }
 
@@ -1042,22 +1059,28 @@
         const id = document.getElementById('analisis-id').value;
         const getVal = (elId) => { const v = parseInt(document.getElementById(elId).value); return isNaN(v) ? null : v; };
 
+        // EXACT matching as requested - No 'ket_' fields to avoid Supabase errors.
         const pl = { 
             mengenal_huruf: getVal('val-huruf'), 
             mengenal_bilangan: getVal('val-bilangan'), 
-            menggunting_dan_menempel_puzzle: getVal('val-motorik'), 
+            menggunting_dan_menempel_puzzel: getVal('val-motorik'), // 'puzzel'
             menyanyi_lagu_nasional: getVal('val-lagu'), 
             melafalkan_surat_pendek_doa_harian: getVal('val-doa'), 
-            interview: getVal('val-interview'), 
-            ket_mengenal_huruf: document.getElementById('ket-huruf').value, 
-            ket_mengenal_bilangan: document.getElementById('ket-bilangan').value, 
-            ket_menggunting_dan_menempel_puzzle: document.getElementById('ket-motorik').value, 
-            ket_menyanyi_lagu_nasional: document.getElementById('ket-lagu').value, 
-            ket_melafalkan_surat_pendek_doa_harian: document.getElementById('ket-doa').value, 
-            ket_interview: document.getElementById('ket-interview').value 
+            interview: getVal('val-interview')
         };
         const btn = document.getElementById('btn-simpan-analisis'); btn.disabled = true; btn.innerHTML = 'Processing...';
-        try { const res = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(pl) }); if(res.ok) { showToast("Nilai Tersimpan"); closeModal('modal-analisis'); loadData(); } else throw Error; } catch(e) { showToast("Gagal menyimpan", true); }
+        try { 
+            const res = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, { 
+                method: 'PATCH', 
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(pl) 
+            }); 
+            if(res.ok) { 
+                showToast("Nilai Tersimpan"); closeModal('modal-analisis'); loadData(); 
+            } else throw Error; 
+        } catch(e) { 
+            showToast("Gagal menyimpan", true); 
+        }
         btn.disabled = false; btn.innerHTML = 'Simpan Nilai & Deskripsi';
     }
 
@@ -1068,7 +1091,21 @@
         if(chartInstanceAdmin) chartInstanceAdmin.destroy();
         chartInstanceAdmin = new Chart(ctx, {
             type: 'radar',
-            data: { labels: ['Huruf', 'Bilangan', 'Motorik', 'Lagu', 'Doa/Surat', 'Interview'], datasets: [{ label: 'Skor ' + (s.nama_panggilan || s.nama_murid), data: [parseInt(s.mengenal_huruf)||0, parseInt(s.mengenal_bilangan)||0, parseInt(s.menggunting_dan_menempel_puzzle)||0, parseInt(s.menyanyi_lagu_nasional)||0, parseInt(s.melafalkan_surat_pendek_doa_harian)||0, parseInt(s.interview)||0], backgroundColor: 'rgba(15, 39, 71, 0.2)', borderColor: '#0F2747', borderWidth: 2 }] },
+            data: { 
+                labels: ['Huruf', 'Bilangan', 'Motorik', 'Lagu', 'Doa/Surat', 'Interview'], 
+                datasets: [{ 
+                    label: 'Skor ' + (s.nama_panggilan || s.nama_murid), 
+                    data: [
+                        parseInt(s.mengenal_huruf)||0, 
+                        parseInt(s.mengenal_bilangan)||0, 
+                        parseInt(s.menggunting_dan_menempel_puzzel)||0, // update this!
+                        parseInt(s.menyanyi_lagu_nasional)||0, 
+                        parseInt(s.melafalkan_surat_pendek_doa_harian)||0, 
+                        parseInt(s.interview)||0
+                    ], 
+                    backgroundColor: 'rgba(15, 39, 71, 0.2)', borderColor: '#0F2747', borderWidth: 2 
+                }] 
+            },
             options: { scales: { r: { min: 0, max: 100 } } }
         });
     }
@@ -1095,16 +1132,31 @@
         document.getElementById('pewa-bopd').value = s.bopd || 9750000;
         document.getElementById('pewa-early').value = s.early_bird !== null ? s.early_bird : 1500000;
         document.getElementById('pewa-aum').value = s.kader_aum !== null ? s.kader_aum : 1000000;
-        document.getElementById('pewa-ketlain').value = s.ket_keringanan || ''; 
-        document.getElementById('pewa-vallain').value = s.bopd_lainnya || '';
         document.getElementById('modal-pewawancara').classList.replace('hidden', 'flex');
     }
 
     async function simpanPewawancara() {
         const id = document.getElementById('pewa-id').value;
-        const pl = { daftar_ulang: parseInt(document.getElementById('pewa-daftar-ulang').value)||0, bopd: parseInt(document.getElementById('pewa-bopd').value)||0, early_bird: parseInt(document.getElementById('pewa-early').value)||0, kader_aum: parseInt(document.getElementById('pewa-aum').value)||0, bopd_lainnya: parseInt(document.getElementById('pewa-vallain').value)||0, ket_keringanan: document.getElementById('pewa-ketlain').value };
+        const pl = { 
+            daftar_ulang: parseInt(document.getElementById('pewa-daftar-ulang').value)||0, 
+            bopd: parseInt(document.getElementById('pewa-bopd').value)||0, 
+            early_bird: parseInt(document.getElementById('pewa-early').value)||0, 
+            kader_aum: parseInt(document.getElementById('pewa-aum').value)||0
+            // Keterangan lainnya dihapus.
+        };
         const btn = document.getElementById('btn-simpan-pewa'); btn.disabled = true; btn.innerHTML = 'Processing...';
-        try { const res = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(pl) }); if(res.ok) { showToast("Biaya Disimpan"); closeModal('modal-pewawancara'); loadData(); } else throw Error; } catch(e) { showToast("Gagal", true); }
+        try { 
+            const res = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, { 
+                method: 'PATCH', 
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(pl) 
+            }); 
+            if(res.ok) { 
+                showToast("Biaya Disimpan"); closeModal('modal-pewawancara'); loadData(); 
+            } else throw Error; 
+        } catch(e) { 
+            showToast("Gagal", true); 
+        }
         btn.disabled = false; btn.innerHTML = 'Simpan Biaya';
     }
 
@@ -1112,7 +1164,7 @@
     function renderBendahara() {
         const tbody = document.getElementById('tbody-bendahara'); if(!tbody) return;
         tbody.innerHTML = allStudentsData.map(s => {
-            const tot = (parseInt(s.pendaftaran)||0) + (parseInt(s.daftar_ulang)||0) + (parseInt(s.bopd)||0) - (parseInt(s.early_bird)||0) - (parseInt(s.kader_aum)||0) - (parseInt(s.bopd_lainnya)||0);
+            const tot = (parseInt(s.pendaftaran)||0) + (parseInt(s.daftar_ulang)||0) + (parseInt(s.bopd)||0) - (parseInt(s.early_bird)||0) - (parseInt(s.kader_aum)||0);
             const isTF = !!s.bukti_transfer;
             return `
             <tr class="hover:bg-gray-50 border-b border-gray-50">
@@ -1130,7 +1182,14 @@
     }
 
     async function toggleValidasi(id, ok) {
-        try { const res = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ konfirmasi: ok, kasir: ok ? currentUsername : null }) }); if(res.ok) { showToast(ok ? "Tervalidasi" : "Batal"); loadData(); } else throw Error; } catch(e) { showToast("Gagal update", true); }
+        try { 
+            const res = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, { 
+                method: 'PATCH', 
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ konfirmasi: ok, kasir: ok ? currentUsername : null }) 
+            }); 
+            if(res.ok) { showToast(ok ? "Tervalidasi" : "Batal"); loadData(); } else throw Error; 
+        } catch(e) { showToast("Gagal update", true); }
     }
 
     function cetakStruk(id) {
@@ -1173,7 +1232,14 @@
         const pl = { ambil_souvenir: document.getElementById('chk-souvenir').checked };
         for(let i=1; i<=13; i++) { pl[`s${i}`] = document.getElementById(`chk-s${i}`).checked; }
         const btn = document.getElementById('btn-simpan-perkap'); btn.disabled = true; btn.innerHTML = 'Processing...';
-        try { const res = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(pl) }); if(res.ok) { showToast("Checklist Disimpan"); closeModal('modal-perlengkapan'); loadData(); } else throw Error; } catch(e) { showToast("Gagal", true); }
+        try { 
+            const res = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, { 
+                method: 'PATCH', 
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(pl) 
+            }); 
+            if(res.ok) { showToast("Checklist Disimpan"); closeModal('modal-perlengkapan'); loadData(); } else throw Error; 
+        } catch(e) { showToast("Gagal", true); }
         btn.disabled = false; btn.innerHTML = 'Simpan Checklist';
     }
 
@@ -1221,7 +1287,14 @@
 
     async function simpanMenuApp() {
         const id = document.getElementById('menu-id').value; const nama = document.getElementById('menu-nama').value; const letak = document.getElementById('menu-letak').value; const aktif = document.getElementById('menu-aktif').value === "true";
-        try { const res = await fetch(`${SUPABASE_URL}menu_aplikasi?id=eq.${id}`, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ nama_menu: nama, letak: letak, aktif: aktif }) }); if(res.ok) { showToast("Menu Diupdate"); closeModal('modal-menu-app'); loadData(); } else throw Error; } catch(e) { showToast("Gagal update menu", true); }
+        try { 
+            const res = await fetch(`${SUPABASE_URL}menu_aplikasi?id=eq.${id}`, { 
+                method: 'PATCH', 
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ nama_menu: nama, letak: letak, aktif: aktif }) 
+            }); 
+            if(res.ok) { showToast("Menu Diupdate"); closeModal('modal-menu-app'); loadData(); } else throw Error; 
+        } catch(e) { showToast("Gagal update menu", true); }
     }
 
 </script>
