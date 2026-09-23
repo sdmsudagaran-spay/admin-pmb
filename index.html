@@ -17,19 +17,9 @@
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            navy: '#0F2747',
-                            gold: '#D9A441',
-                            goldlight: '#F8E9C9',
-                            bg: '#F4F7FB',
-                            text: '#1E293B',
-                            muted: '#64748B'
-                        }
+                        brand: { navy: '#0F2747', gold: '#D9A441', goldlight: '#F8E9C9', bg: '#F4F7FB', text: '#1E293B', muted: '#64748B' }
                     },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        heading: ['Poppins', 'sans-serif']
-                    }
+                    fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Poppins', 'sans-serif'] }
                 }
             }
         }
@@ -44,10 +34,7 @@
         table { border-collapse: separate; border-spacing: 0; }
         th { top: 0; position: sticky; background: #f8fafc; z-index: 10; }
         .slide-up { animation: slideUp 0.3s ease-out forwards; }
-        @keyframes slideUp { 
-            from { transform: translateY(20px); opacity: 0; } 
-            to { transform: translateY(0); opacity: 1; } 
-        }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body class="overflow-hidden">
@@ -133,12 +120,12 @@
 
         <div id="panel-container" class="flex-1 overflow-y-auto p-4 sm:p-8 pb-24 relative z-0">
             
-            <!-- PANEL KELOLA MENU (NO 6) -->
+            <!-- PANEL KELOLA MENU APP -->
             <div id="panel-menu-app" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-6">
                         <div>
-                            <h2 class="font-heading font-semibold text-lg text-brand-navy">Manajemen Menu App (Tabel menu_app)</h2>
+                            <h2 class="font-heading font-semibold text-lg text-brand-navy">Manajemen Menu App (Tabel menu_aplikasi)</h2>
                             <p class="text-xs text-brand-muted mt-1">Atur menu aplikasi yang tersimpan di database.</p>
                         </div>
                     </div>
@@ -148,19 +135,18 @@
                                 <tr>
                                     <th class="py-3.5 px-4">Nama Menu</th>
                                     <th class="py-3.5 px-4">Role Akses</th>
+                                    <th class="py-3.5 px-4">Navigasi Letak</th>
                                     <th class="py-3.5 px-4">Status</th>
                                     <th class="py-3.5 px-4 text-center">Kelola</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-menu-app" class="divide-y divide-gray-100 bg-white">
-                                <!-- Data Tabel Menu App -->
-                            </tbody>
+                            <tbody id="tbody-menu-app" class="divide-y divide-gray-100 bg-white"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- PANEL SEKRETARIS (NO 1, 2) -->
+            <!-- PANEL SEKRETARIS -->
             <div id="panel-sekretaris" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-6">
@@ -182,15 +168,13 @@
                                     <th class="py-3.5 px-4 text-center">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-sekretaris" class="divide-y divide-gray-100 bg-white">
-                                <!-- Data Tabel Sekretaris -->
-                            </tbody>
+                            <tbody id="tbody-sekretaris" class="divide-y divide-gray-100 bg-white"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- PANEL PENGANALISIS (NO 3) -->
+            <!-- PANEL PENGANALISIS -->
             <div id="panel-penganalisis" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-4">
@@ -209,20 +193,17 @@
                                     <th class="py-3.5 px-4 text-center">Aksi (Input & Grafik)</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-penganalisis" class="divide-y divide-gray-100 bg-white">
-                                <!-- Data Tabel Penganalisis -->
-                            </tbody>
+                            <tbody id="tbody-penganalisis" class="divide-y divide-gray-100 bg-white"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- PANEL PEWAWANCARA / BIAYA (NO 4) -->
+            <!-- PANEL PEWAWANCARA -->
             <div id="panel-pewawancara" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="font-heading font-semibold text-lg text-brand-navy">Biaya & Kesepakatan Ortu</h2>
-                        <!-- Filter Pencarian (Poin 3) -->
                         <div class="relative">
                             <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                             <input type="text" id="filter-cari-biaya" onkeyup="renderPewawancara()" class="pl-9 pr-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-brand-gold" placeholder="Cari nama siswa...">
@@ -232,22 +213,20 @@
                         <table class="w-full text-left text-sm whitespace-nowrap">
                             <thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100">
                                 <tr>
-                                    <th class="py-3.5 px-4">Nama Siswa (Klik untuk Biodata)</th>
+                                    <th class="py-3.5 px-4">Nama Siswa (Klik utk Biodata)</th>
                                     <th class="py-3.5 px-4">Ortu (Ayah/Ibu)</th>
                                     <th class="py-3.5 px-4 text-center">Daftar Ulang</th>
                                     <th class="py-3.5 px-4 text-center">BOPD</th>
                                     <th class="py-3.5 px-4 text-center">Kelola Biaya</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-pewawancara" class="divide-y divide-gray-100 bg-white">
-                                <!-- Data Tabel Pewawancara -->
-                            </tbody>
+                            <tbody id="tbody-pewawancara" class="divide-y divide-gray-100 bg-white"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- PANEL BENDAHARA (NO 5) -->
+            <!-- PANEL BENDAHARA -->
             <div id="panel-bendahara" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <h2 class="font-heading font-semibold text-lg text-brand-navy mb-4">Validasi Pembayaran (Transfer/Tunai)</h2>
@@ -257,20 +236,18 @@
                                 <tr>
                                     <th class="py-3.5 px-4">Nama / No PPDB</th>
                                     <th class="py-3.5 px-4">Total Tagihan</th>
-                                    <th class="py-3.5 px-4 text-center">Tipe Transaksi (calon_murid_baru)</th>
+                                    <th class="py-3.5 px-4 text-center">Tipe Transaksi</th>
                                     <th class="py-3.5 px-4 text-center">Validasi Lunas</th>
                                     <th class="py-3.5 px-4 text-center">Cetak Struk</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-bendahara" class="divide-y divide-gray-100 bg-white">
-                                <!-- Data Tabel Bendahara -->
-                            </tbody>
+                            <tbody id="tbody-bendahara" class="divide-y divide-gray-100 bg-white"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- PANEL PERLENGKAPAN (NO 6) -->
+            <!-- PANEL PERLENGKAPAN -->
             <div id="panel-perlengkapan" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-4">
@@ -290,15 +267,13 @@
                                     <th class="py-3.5 px-4 text-center">Aksi Checklist</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-perlengkapan" class="divide-y divide-gray-100 bg-white">
-                                <!-- Data Tabel Perlengkapan -->
-                            </tbody>
+                            <tbody id="tbody-perlengkapan" class="divide-y divide-gray-100 bg-white"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- PANEL AKUN & PROGRESS (NO 1) -->
+            <!-- PANEL AKUN & PROGRESS -->
             <div id="panel-akun-progress" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-4">
@@ -322,15 +297,13 @@
                                     <th class="py-3.5 px-4 text-center">Kelola Timeline</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-akun-progress" class="divide-y divide-gray-100 bg-white">
-                                <!-- Data Tabel Akun & Progres -->
-                            </tbody>
+                            <tbody id="tbody-akun-progress" class="divide-y divide-gray-100 bg-white"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- PANEL PENGATURAN GLOBAL (NO 7) -->
+            <!-- PANEL PENGATURAN GLOBAL (Tabel pengaturan_sistem) -->
             <div id="panel-pengaturan" class="panel-view hidden space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
@@ -338,7 +311,7 @@
                             <i class="ph-fill ph-git-commit text-brand-gold text-2xl"></i>
                             <h2 class="font-heading font-semibold text-lg text-brand-navy">Kustomisasi Label Timeline</h2>
                         </div>
-                        <p class="text-xs text-brand-muted mb-4">Teks yang akan muncul di aplikasi Admin dan User.</p>
+                        <p class="text-xs text-brand-muted mb-4">Teks yang akan muncul di aplikasi Admin dan User. Tersimpan di <strong>tabel pengaturan_sistem</strong>.</p>
                         <div class="space-y-3">
                             <div><label class="text-xs font-medium text-brand-navy block">Tahap 1</label><input type="text" id="tl-1" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm"></div>
                             <div><label class="text-xs font-medium text-brand-navy block">Tahap 2</label><input type="text" id="tl-2" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm"></div>
@@ -388,8 +361,7 @@
                                     <th class="py-3.5 px-4 text-center">Kelola</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-staf" class="divide-y divide-gray-100 bg-white">
-                            </tbody>
+                            <tbody id="tbody-staf" class="divide-y divide-gray-100 bg-white"></tbody>
                         </table>
                     </div>
                 </div>
@@ -411,6 +383,7 @@
         <div class="space-y-4">
             <input type="hidden" id="menu-id">
             <div><label class="text-xs font-medium text-brand-navy block mb-1">Nama Menu</label><input type="text" id="menu-nama" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></div>
+            <div><label class="text-xs font-medium text-brand-navy block mb-1">Navigasi Letak (Path)</label><input type="text" id="menu-letak" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Contoh: /timeline atau modul_x"></div>
             <div><label class="text-xs font-medium text-brand-navy block mb-1">Status Aktif</label>
                 <select id="menu-aktif" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm">
                     <option value="true">Aktif (Ditampilkan)</option>
@@ -434,6 +407,7 @@
         
         <div class="flex-1 overflow-y-auto no-scrollbar space-y-4 px-1 pb-4">
             <input type="hidden" id="fs-id">
+            <input type="hidden" id="fs-panggilan"> <!-- Hidden, auto generated -->
             
             <h3 class="font-bold text-brand-gold text-sm border-b border-gray-100 pb-1 mt-2 uppercase tracking-wide">Data Pribadi & Akses</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -484,9 +458,7 @@
             <h2 class="font-heading font-bold text-lg text-brand-navy">Biodata Lengkap</h2>
             <button onclick="closeModal('modal-biodata')" class="text-gray-400 hover:text-red-500"><i class="ph ph-x text-2xl"></i></button>
         </div>
-        <div class="flex-1 overflow-y-auto no-scrollbar" id="content-biodata">
-            <!-- Injected via JS -->
-        </div>
+        <div class="flex-1 overflow-y-auto no-scrollbar" id="content-biodata"></div>
     </div>
 </div>
 
@@ -509,7 +481,6 @@
                 0 - 60: Perlu bimbingan | 61 - 75: Perlu pendampingan | 76 - 89: Sedikit pendampingan | 90 - 100: Mandiri
             </div>
             
-            <!-- Loop inputs -->
             <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
                 <div class="flex justify-between items-center mb-2">
                     <label class="text-sm font-semibold text-brand-navy">Mengenal Huruf</label>
@@ -655,7 +626,7 @@
     </div>
 </div>
 
-<!-- MODAL AKUN & PROGRESS (Individu / Massal) -->
+<!-- MODAL AKUN & PROGRESS -->
 <div id="modal-akun" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl flex flex-col slide-up">
         <div class="flex justify-between items-center mb-4 border-b pb-4">
@@ -722,7 +693,6 @@
     let perlengkapanFilter = 'all';
     let chartInstanceAdmin = null;
 
-    // RBAC Staf (Disimpan Local karena tdk ada tabel khusus staf di prompt, tdk masalah utk demo)
     let staffAccounts = JSON.parse(localStorage.getItem('staff_acc')) || [
         { id: 1, username: 'admin', role: ['admin','sekretaris','bendahara','penganalisis','pewawancara','perlengkapan'], password: 'berkah' },
         { id: 2, username: 'sekretaris', role: ['sekretaris'], password: 'berkah' },
@@ -823,33 +793,23 @@
     // ----- DATA FETCHING -----
     async function loadData() {
         try {
-            // Load Pendaftar
             const r1 = await fetch(`${SUPABASE_URL}pendaftar?select=*`, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
             if(r1.ok) allStudentsData = await r1.json();
             
-            // Load Menu App (Untuk Poin 6)
-            const r2 = await fetch(`${SUPABASE_URL}menu_app?select=*`, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
+            const r2 = await fetch(`${SUPABASE_URL}menu_aplikasi?select=*`, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
             if(r2.ok) menuAppData = await r2.json();
 
-            // Load Pengaturan Global (Timeline) dr tabel 'pengaturan' jika ada, fallback ke localStorage
-            const r3 = await fetch(`${SUPABASE_URL}pengaturan?id=eq.1`, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
+            // Fetch setting global dari tabel pengaturan_sistem yang baru
+            const r3 = await fetch(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
             if(r3.ok) {
                 const sett = await r3.json();
                 if(sett.length > 0) {
                     const dataSett = sett[0];
-                    if(dataSett.timeline_labels) {
-                        const tl = JSON.parse(dataSett.timeline_labels);
-                        document.getElementById('tl-1').value = tl.tl1 || 'Pendaftaran Online';
-                        document.getElementById('tl-2').value = tl.tl2 || 'Melengkapi Dokumen';
-                        document.getElementById('tl-3').value = tl.tl3 || 'Verifikasi Berkas';
-                        document.getElementById('tl-4').value = tl.tl4 || 'Tes Kesiapan & Lulus';
-                    }
+                    document.getElementById('tl-1').value = dataSett.tl_1 || 'Pendaftaran Online';
+                    document.getElementById('tl-2').value = dataSett.tl_2 || 'Melengkapi Dokumen';
+                    document.getElementById('tl-3').value = dataSett.tl_3 || 'Verifikasi Berkas';
+                    document.getElementById('tl-4').value = dataSett.tl_4 || 'Tes Kesiapan & Lulus';
                 }
-            } else {
-                document.getElementById('tl-1').value = localStorage.getItem('tl1') || 'Pendaftaran Online';
-                document.getElementById('tl-2').value = localStorage.getItem('tl2') || 'Melengkapi Dokumen';
-                document.getElementById('tl-3').value = localStorage.getItem('tl3') || 'Verifikasi Berkas';
-                document.getElementById('tl-4').value = localStorage.getItem('tl4') || 'Tes Kesiapan & Lulus';
             }
             updateTimelineLabelsUI();
 
@@ -912,44 +872,54 @@
         btn.disabled = false; btn.innerHTML = 'Simpan Perubahan';
     }
 
-    // PENGATURAN GLOBAL (TIMELINE & PENGUMUMAN) - SYNC TO SUPABASE
+    // PENGATURAN GLOBAL (TIMELINE & PENGUMUMAN) TO PENGATURAN_SISTEM
     async function simpanPengaturanDB(tipeData) {
         let payload = {};
         if(tipeData === 'timeline') {
-            const tl = {
-                tl1: document.getElementById('tl-1').value || 'Pendaftaran Online',
-                tl2: document.getElementById('tl-2').value || 'Melengkapi Dokumen',
-                tl3: document.getElementById('tl-3').value || 'Verifikasi Berkas',
-                tl4: document.getElementById('tl-4').value || 'Tes Kesiapan & Lulus'
+            payload = {
+                tl_1: document.getElementById('tl-1').value || 'Pendaftaran Online',
+                tl_2: document.getElementById('tl-2').value || 'Melengkapi Dokumen',
+                tl_3: document.getElementById('tl-3').value || 'Verifikasi Berkas',
+                tl_4: document.getElementById('tl-4').value || 'Tes Kesiapan & Lulus'
             };
-            payload = { timeline_labels: JSON.stringify(tl) };
-            // Fallback local
-            localStorage.setItem('tl1', tl.tl1); localStorage.setItem('tl2', tl.tl2); localStorage.setItem('tl3', tl.tl3); localStorage.setItem('tl4', tl.tl4);
             updateTimelineLabelsUI();
         } else if(tipeData === 'pengumuman') {
-            const tipe = document.getElementById('info-tipe').value;
-            const waktu = document.getElementById('info-waktu').value || 'Baru saja';
-            const judul = document.getElementById('info-judul').value;
-            const isi = document.getElementById('info-isi').value;
-            if(!judul || !isi) return showToast("Judul dan Isi harus diisi!", true);
-            const info = { tipe, waktu, judul, isi };
-            payload = { pengumuman: JSON.stringify(info) };
-            localStorage.setItem('global_pengumuman', JSON.stringify(info)); // fallback
+            payload = {
+                pg_tipe: document.getElementById('info-tipe').value,
+                pg_waktu: document.getElementById('info-waktu').value || 'Baru saja',
+                pg_judul: document.getElementById('info-judul').value,
+                pg_isi: document.getElementById('info-isi').value
+            };
+            if(!payload.pg_judul || !payload.pg_isi) return showToast("Judul dan Isi harus diisi!", true);
         }
 
         try {
-            const r = await fetch(`${SUPABASE_URL}pengaturan?id=eq.1`, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            if(r.ok || r.status === 404) { showToast(`${tipeData} berhasil disimpan`); if(tipeData==='pengumuman'){ document.getElementById('info-judul').value=''; document.getElementById('info-isi').value=''; } } 
-            else throw Error;
-        } catch(e) { showToast(`Gagal menyimpan ke tabel pengaturan, namun data lokal aman.`, false); } // Not showing red error if table doesn't exist yet, as local fallback works.
+            const r = await fetch(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, { 
+                method: 'PATCH', 
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(payload) 
+            });
+            if(r.ok || r.status === 404) { 
+                showToast(`${tipeData} berhasil disimpan`); 
+                if(tipeData === 'pengumuman'){ document.getElementById('info-judul').value=''; document.getElementById('info-isi').value=''; } 
+            } else throw Error;
+        } catch(e) { 
+            showToast(`Gagal. Pastikan tabel pengaturan_sistem sudah dibuat di Supabase.`, true); 
+        } 
     }
 
     function updateTimelineLabelsUI() {
-        const v1 = document.getElementById('tl-1').value; const v2 = document.getElementById('tl-2').value; const v3 = document.getElementById('tl-3').value; const v4 = document.getElementById('tl-4').value;
-        document.querySelectorAll('.lbl-tl-1').forEach(el => el.innerText = v1); document.querySelectorAll('.lbl-tl-2').forEach(el => el.innerText = v2); document.querySelectorAll('.lbl-tl-3').forEach(el => el.innerText = v3); document.querySelectorAll('.lbl-tl-4').forEach(el => el.innerText = v4);
+        const v1 = document.getElementById('tl-1').value || 'Pendaftaran Online'; 
+        const v2 = document.getElementById('tl-2').value || 'Melengkapi Dokumen'; 
+        const v3 = document.getElementById('tl-3').value || 'Verifikasi Berkas'; 
+        const v4 = document.getElementById('tl-4').value || 'Tes Kesiapan & Lulus';
+        document.querySelectorAll('.lbl-tl-1').forEach(el => el.innerText = v1); 
+        document.querySelectorAll('.lbl-tl-2').forEach(el => el.innerText = v2); 
+        document.querySelectorAll('.lbl-tl-3').forEach(el => el.innerText = v3); 
+        document.querySelectorAll('.lbl-tl-4').forEach(el => el.innerText = v4);
     }
 
-    // ----- 2. SEKRETARIS & BIODATA (PASSWORD = NO) -----
+    // ----- 2. SEKRETARIS & BIODATA -----
     function renderSekretaris() {
         const tbody = document.getElementById('tbody-sekretaris'); if(!tbody) return;
         tbody.innerHTML = allStudentsData.map(s => `
@@ -1019,7 +989,7 @@
         document.getElementById('modal-biodata').classList.replace('hidden', 'flex');
     }
 
-    // ----- 3. PENGANALISIS (FILTER RUANG & GRAFIK) -----
+    // ----- 3. PENGANALISIS (FILTER & GRAFIK) -----
     function renderPenganalisisFilter() {
         const sel = document.getElementById('filter-ruang-analisis');
         const rCache = sel.value; sel.innerHTML = '<option value="all">Semua Ruang</option>';
@@ -1070,9 +1040,21 @@
 
     async function simpanAnalisis() {
         const id = document.getElementById('analisis-id').value;
+        const getVal = (elId) => { const v = parseInt(document.getElementById(elId).value); return isNaN(v) ? null : v; };
+
         const pl = { 
-            mengenal_huruf: parseInt(document.getElementById('val-huruf').value)||0, mengenal_bilangan: parseInt(document.getElementById('val-bilangan').value)||0, menggunting_dan_menempel_puzzle: parseInt(document.getElementById('val-motorik').value)||0, menyanyi_lagu_nasional: parseInt(document.getElementById('val-lagu').value)||0, melafalkan_surat_pendek_doa_harian: parseInt(document.getElementById('val-doa').value)||0, interview: parseInt(document.getElementById('val-interview').value)||0, 
-            ket_mengenal_huruf: document.getElementById('ket-huruf').value, ket_mengenal_bilangan: document.getElementById('ket-bilangan').value, ket_menggunting_dan_menempel_puzzle: document.getElementById('ket-motorik').value, ket_menyanyi_lagu_nasional: document.getElementById('ket-lagu').value, ket_melafalkan_surat_pendek_doa_harian: document.getElementById('ket-doa').value, ket_interview: document.getElementById('ket-interview').value 
+            mengenal_huruf: getVal('val-huruf'), 
+            mengenal_bilangan: getVal('val-bilangan'), 
+            menggunting_dan_menempel_puzzle: getVal('val-motorik'), 
+            menyanyi_lagu_nasional: getVal('val-lagu'), 
+            melafalkan_surat_pendek_doa_harian: getVal('val-doa'), 
+            interview: getVal('val-interview'), 
+            ket_mengenal_huruf: document.getElementById('ket-huruf').value, 
+            ket_mengenal_bilangan: document.getElementById('ket-bilangan').value, 
+            ket_menggunting_dan_menempel_puzzle: document.getElementById('ket-motorik').value, 
+            ket_menyanyi_lagu_nasional: document.getElementById('ket-lagu').value, 
+            ket_melafalkan_surat_pendek_doa_harian: document.getElementById('ket-doa').value, 
+            ket_interview: document.getElementById('ket-interview').value 
         };
         const btn = document.getElementById('btn-simpan-analisis'); btn.disabled = true; btn.innerHTML = 'Processing...';
         try { const res = await fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(pl) }); if(res.ok) { showToast("Nilai Tersimpan"); closeModal('modal-analisis'); loadData(); } else throw Error; } catch(e) { showToast("Gagal menyimpan", true); }
@@ -1086,12 +1068,12 @@
         if(chartInstanceAdmin) chartInstanceAdmin.destroy();
         chartInstanceAdmin = new Chart(ctx, {
             type: 'radar',
-            data: { labels: ['Huruf', 'Bilangan', 'Motorik', 'Lagu', 'Doa/Surat', 'Interview'], datasets: [{ label: 'Skor ' + s.nama_panggilan, data: [parseInt(s.mengenal_huruf)||0, parseInt(s.mengenal_bilangan)||0, parseInt(s.menggunting_dan_menempel_puzzle)||0, parseInt(s.menyanyi_lagu_nasional)||0, parseInt(s.melafalkan_surat_pendek_doa_harian)||0, parseInt(s.interview)||0], backgroundColor: 'rgba(15, 39, 71, 0.2)', borderColor: '#0F2747', borderWidth: 2 }] },
+            data: { labels: ['Huruf', 'Bilangan', 'Motorik', 'Lagu', 'Doa/Surat', 'Interview'], datasets: [{ label: 'Skor ' + (s.nama_panggilan || s.nama_murid), data: [parseInt(s.mengenal_huruf)||0, parseInt(s.mengenal_bilangan)||0, parseInt(s.menggunting_dan_menempel_puzzle)||0, parseInt(s.menyanyi_lagu_nasional)||0, parseInt(s.melafalkan_surat_pendek_doa_harian)||0, parseInt(s.interview)||0], backgroundColor: 'rgba(15, 39, 71, 0.2)', borderColor: '#0F2747', borderWidth: 2 }] },
             options: { scales: { r: { min: 0, max: 100 } } }
         });
     }
 
-    // ----- 4. PEWAWANCARA (BIAYA & FILTER) -----
+    // ----- 4. PEWAWANCARA -----
     function renderPewawancara() {
         const tbody = document.getElementById('tbody-pewawancara'); if(!tbody) return;
         const q = document.getElementById('filter-cari-biaya')?.value.toLowerCase() || '';
@@ -1126,7 +1108,7 @@
         btn.disabled = false; btn.innerHTML = 'Simpan Biaya';
     }
 
-    // ----- 5. BENDAHARA (BUKTI TF & TUNAI) -----
+    // ----- 5. BENDAHARA -----
     function renderBendahara() {
         const tbody = document.getElementById('tbody-bendahara'); if(!tbody) return;
         tbody.innerHTML = allStudentsData.map(s => {
@@ -1157,7 +1139,7 @@
         w.document.write(`<html><body style="font-family:monospace; padding:20px; max-width:350px; margin:auto;"><h3 style="text-align:center; border-bottom:2px dashed #000; padding-bottom:10px;">SDM SUDAGARAN<br>BUKTI LUNAS</h3><p>No PPDB: ${s.no_ppdb||'-'}</p><p>Nama   : ${s.nama_murid||'-'}</p><p>Kasir  : ${s.kasir||'Admin'}</p><h2 style="text-align:center; border:2px dashed #000; padding:10px;">LUNAS</h2><p style="text-align:center; font-size:10px; margin-top:20px;">Simpan struk sebagai bukti.</p><script>window.onload=()=>window.print();</`+`script></body></html>`); w.document.close();
     }
 
-    // ----- 6. PERLENGKAPAN (14 ITEM CHECKBOX) -----
+    // ----- 6. PERLENGKAPAN -----
     function renderPerlengkapan() {
         const tbody = document.getElementById('tbody-perlengkapan'); if(!tbody) return;
         const f = document.getElementById('filter-perlengkapan').value;
@@ -1225,6 +1207,7 @@
             <tr class="hover:bg-gray-50 border-b border-gray-50">
                 <td class="py-3 px-4 font-medium"><i class="ph ${m.icon} mr-1"></i> ${m.nama_menu}</td>
                 <td class="py-3 px-4 text-xs">${m.role_akses}</td>
+                <td class="py-3 px-4 text-xs">${m.letak || '-'}</td>
                 <td class="py-3 px-4"><span class="${m.aktif ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'} px-2 py-1 rounded text-[10px] font-bold">${m.aktif ? 'AKTIF' : 'SEMBUNYI'}</span></td>
                 <td class="py-3 px-4 text-center"><button onclick="bukaModalMenu(${m.id})" class="text-blue-500 bg-blue-50 p-1.5 rounded hover:bg-blue-100"><i class="ph ph-pencil-simple text-lg"></i></button></td>
             </tr>`).join('');
@@ -1232,13 +1215,13 @@
 
     function bukaModalMenu(id) {
         const m = menuAppData.find(x => x.id == id); if(!m) return;
-        document.getElementById('menu-id').value = m.id; document.getElementById('menu-nama').value = m.nama_menu; document.getElementById('menu-aktif').value = m.aktif ? "true" : "false";
+        document.getElementById('menu-id').value = m.id; document.getElementById('menu-nama').value = m.nama_menu; document.getElementById('menu-letak').value = m.letak || ''; document.getElementById('menu-aktif').value = m.aktif ? "true" : "false";
         document.getElementById('modal-menu-app').classList.replace('hidden', 'flex');
     }
 
     async function simpanMenuApp() {
-        const id = document.getElementById('menu-id').value; const nama = document.getElementById('menu-nama').value; const aktif = document.getElementById('menu-aktif').value === "true";
-        try { const res = await fetch(`${SUPABASE_URL}menu_app?id=eq.${id}`, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ nama_menu: nama, aktif: aktif }) }); if(res.ok) { showToast("Menu Diupdate"); closeModal('modal-menu-app'); loadData(); } else throw Error; } catch(e) { showToast("Gagal update menu", true); }
+        const id = document.getElementById('menu-id').value; const nama = document.getElementById('menu-nama').value; const letak = document.getElementById('menu-letak').value; const aktif = document.getElementById('menu-aktif').value === "true";
+        try { const res = await fetch(`${SUPABASE_URL}menu_aplikasi?id=eq.${id}`, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ nama_menu: nama, letak: letak, aktif: aktif }) }); if(res.ok) { showToast("Menu Diupdate"); closeModal('modal-menu-app'); loadData(); } else throw Error; } catch(e) { showToast("Gagal update menu", true); }
     }
 
 </script>
