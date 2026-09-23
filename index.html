@@ -191,30 +191,8 @@
                         <div>
                             <h2 class="font-heading font-semibold text-lg text-brand-navy">Manajemen Menu App</h2>
                         </div>
-                    </div>
-                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
-                        <table class="w-full text-left text-sm whitespace-nowrap">
-                            <thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100">
-                                <tr>
-                                    <th class="py-3.5 px-4">Nama Menu</th>
-                                    <th class="py-3.5 px-4">Role Akses</th>
-                                    <th class="py-3.5 px-4">Navigasi Letak</th>
-                                    <th class="py-3.5 px-4">Status</th>
-                                    <th class="py-3.5 px-4 text-center">Kelola</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-menu-app" class="divide-y divide-gray-100 bg-white"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="panel-kelola-akses" class="panel-view hidden space-y-6">
-                <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="font-heading font-semibold text-lg text-brand-navy">Manajemen Akun Staf</h2>
-                        <button onclick="bukaModalStaf()" class="btn-press bg-brand-navy text-white px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-md">
-                            <i class="ph-bold ph-user-plus"></i> Tambah Akun
+                        <button onclick="bukaModalMenu()" class="btn-press bg-brand-navy text-white px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-md hover:bg-opacity-90">
+                            <i class="ph ph-plus font-bold"></i> Tambah Menu
                         </button>
                     </div>
                     <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
@@ -361,22 +339,56 @@
 <div id="modal-menu-app" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl slide-up flex flex-col">
         <div class="flex justify-between items-center mb-4 border-b pb-4">
-            <h2 class="font-heading font-bold text-lg text-brand-navy">Edit Menu</h2>
+            <h2 id="modal-menu-title" class="font-heading font-bold text-lg text-brand-navy">Kelola Menu</h2>
             <button onclick="closeModal('modal-menu-app')" class="text-gray-400 hover:text-red-500"><i class="ph ph-x text-2xl"></i></button>
         </div>
-        <div class="space-y-4">
+        <div class="space-y-4 max-h-[60vh] overflow-y-auto no-scrollbar px-1">
             <input type="hidden" id="menu-id">
             <div><label class="text-xs font-medium text-brand-navy block mb-1">Nama Menu</label><input type="text" id="menu-nama" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></div>
-            <div><label class="text-xs font-medium text-brand-navy block mb-1">Navigasi Letak (Path)</label><input type="text" id="menu-letak" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Contoh: /timeline"></div>
-            <div><label class="text-xs font-medium text-brand-navy block mb-1">Status Aktif</label>
-                <select id="menu-aktif" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm">
-                    <option value="true">Aktif (Ditampilkan)</option>
-                    <option value="false">Tidak Aktif (Disembunyikan)</option>
+            <div>
+                <label class="text-xs font-medium text-brand-navy block mb-1">Role Akses</label>
+                <select id="menu-role" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm">
+                    <option value="Semua Role">Semua Role</option>
+                    <option value="Siswa">Siswa</option>
+                    <option value="Admin">Admin</option>
                 </select>
+            </div>
+            <div><label class="text-xs font-medium text-brand-navy block mb-1">Link (Navigasi Letak)</label><input type="text" id="menu-letak" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Contoh: /timeline"></div>
+            <div>
+                <label class="text-xs font-medium text-brand-navy block mb-1">Ikon Menu</label>
+                <select id="menu-icon" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm font-mono">
+                    <option value="ph-squares-four">Dashboard (ph-squares-four)</option>
+                    <option value="ph-student">Siswa (ph-student)</option>
+                    <option value="ph-books">Buku (ph-books)</option>
+                    <option value="ph-backpack">Tas (ph-backpack)</option>
+                    <option value="ph-chalkboard-teacher">Guru (ph-chalkboard-teacher)</option>
+                    <option value="ph-chalkboard">Papan Tulis (ph-chalkboard)</option>
+                    <option value="ph-graduation-cap">Lulus (ph-graduation-cap)</option>
+                    <option value="ph-exam">Ujian (ph-exam)</option>
+                    <option value="ph-certificate">Sertifikat (ph-certificate)</option>
+                    <option value="ph-medal">Medali (ph-medal)</option>
+                    <option value="ph-book-open">Buku Terbuka (ph-book-open)</option>
+                    <option value="ph-pencil">Pensil (ph-pencil)</option>
+                    <option value="ph-folder">Folder (ph-folder)</option>
+                    <option value="ph-files">File (ph-files)</option>
+                    <option value="ph-chart-bar">Grafik (ph-chart-bar)</option>
+                    <option value="ph-calendar">Kalender (ph-calendar)</option>
+                    <option value="ph-users">Users (ph-users)</option>
+                    <option value="ph-gear">Pengaturan (ph-gear)</option>
+                    <option value="ph-bell">Notifikasi (ph-bell)</option>
+                    <option value="ph-info">Info (ph-info)</option>
+                </select>
+            </div>
+            <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-200">
+                <label class="text-sm font-medium text-brand-navy block">Status Aktif (Geser)</label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="menu-aktif" class="sr-only peer">
+                  <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                </label>
             </div>
         </div>
         <div class="pt-4 mt-5 border-t shrink-0">
-            <button onclick="simpanMenuApp()" class="btn-press w-full bg-brand-navy text-white py-3.5 rounded-xl font-medium shadow-md">Simpan Perubahan</button>
+            <button onclick="simpanMenuApp()" class="btn-press w-full bg-brand-navy text-white py-3.5 rounded-xl font-medium shadow-md">Simpan Menu</button>
         </div>
     </div>
 </div>
@@ -1130,8 +1142,19 @@
         const no_ppdb = document.getElementById('analisis-id').value;
         const getVal = (elId) => { const v = parseInt(document.getElementById(elId).value); return isNaN(v) ? null : v; };
 
-        // Pastikan nama properti SAMA PERSIS dengan kolom di tabel analisis Supabase
+        // 1. Ambil data asli siswa dari tabel pendaftar untuk disinkronkan ke tabel analisis
+        const sMaster = masterData.find(x => x.no_ppdb === no_ppdb) || {};
+
+        // 2. Gabungkan data siswa dengan nilai dan deskripsi
         const pl = { 
+            password: sMaster.password || null,
+            tgl_pendaftaran: sMaster.tgl_pendaftaran || null,
+            nama_murid: sMaster.nama_murid || null,
+            jk: sMaster.jk || null,
+            tempat_lahir: sMaster.tempat_lahir || null,
+            tgl_lahir: sMaster.tgl_lahir || null,
+            alamat: sMaster.alamat || null,
+            tk: sMaster.tk || null,
             mengenal_huruf: getVal('val-huruf'), 
             mengenal_bilangan: getVal('val-bilangan'), 
             menggunting_dan_menempel_puzzel: getVal('val-motorik'),
@@ -1147,8 +1170,16 @@
         };
         const btn = document.getElementById('btn-simpan-analisis'); btn.disabled = true; btn.innerHTML = 'Processing...';
         try { 
-            // Patch KUSUS ke tabel analisis
-            await apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
+            // Cek apakah data analisis anak ini sudah ada di database?
+            const sAna = analisisData.find(x => x.no_ppdb === no_ppdb);
+            if (sAna && sAna.id) {
+                // Jika sudah ada, Update (PATCH)
+                await apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
+            } else {
+                // Jika belum ada, Insert Baru (POST)
+                pl.no_ppdb = no_ppdb;
+                await apiRequest(`${SUPABASE_URL}analisis`, 'POST', pl);
+            }
             showToast("Nilai Tersimpan"); closeModal('modal-analisis'); loadData(); 
         } catch(e) { }
         btn.disabled = false; btn.innerHTML = 'Simpan Nilai & Deskripsi';
@@ -1340,22 +1371,60 @@
                 <td class="py-3 px-4 text-xs">${m.role_akses}</td>
                 <td class="py-3 px-4 text-xs">${m.letak || '-'}</td>
                 <td class="py-3 px-4"><span class="${m.aktif ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'} px-2 py-1 rounded text-[10px] font-bold">${m.aktif ? 'AKTIF' : 'SEMBUNYI'}</span></td>
-                <td class="py-3 px-4 text-center"><button onclick="bukaModalMenu(${m.id})" class="text-blue-500 bg-blue-50 p-1.5 rounded hover:bg-blue-100"><i class="ph ph-pencil-simple text-lg"></i></button></td>
+                <td class="py-3 px-4 text-center">
+                    <button onclick="bukaModalMenu(${m.id})" class="text-blue-500 bg-blue-50 p-1.5 rounded hover:bg-blue-100 mr-1"><i class="ph ph-pencil-simple text-lg"></i></button>
+                    <button onclick="hapusMenu(${m.id})" class="text-red-500 bg-red-50 p-1.5 rounded hover:bg-red-100"><i class="ph ph-trash text-lg"></i></button>
+                </td>
             </tr>`).join('');
     }
 
-    function bukaModalMenu(id) {
-        const m = menuAppData.find(x => x.id == id); if(!m) return;
-        document.getElementById('menu-id').value = m.id; document.getElementById('menu-nama').value = m.nama_menu; document.getElementById('menu-letak').value = m.letak || ''; document.getElementById('menu-aktif').value = m.aktif ? "true" : "false";
+    function bukaModalMenu(id = null) {
+        document.getElementById('modal-menu-title').innerText = id ? "Edit Menu" : "Tambah Menu";
+        document.getElementById('menu-id').value = id || '';
+        if (id) {
+            const m = menuAppData.find(x => x.id == id);
+            document.getElementById('menu-nama').value = m?.nama_menu || '';
+            document.getElementById('menu-role').value = m?.role_akses || 'Semua Role';
+            document.getElementById('menu-letak').value = m?.letak || '';
+            document.getElementById('menu-icon').value = m?.icon || 'ph-squares-four';
+            document.getElementById('menu-aktif').checked = m?.aktif !== false;
+        } else {
+            document.getElementById('menu-nama').value = '';
+            document.getElementById('menu-role').value = 'Semua Role';
+            document.getElementById('menu-letak').value = '';
+            document.getElementById('menu-icon').value = 'ph-squares-four';
+            document.getElementById('menu-aktif').checked = true;
+        }
         document.getElementById('modal-menu-app').classList.replace('hidden', 'flex');
     }
 
     async function simpanMenuApp() {
-        const id = document.getElementById('menu-id').value; const nama = document.getElementById('menu-nama').value; const letak = document.getElementById('menu-letak').value; const aktif = document.getElementById('menu-aktif').value === "true";
+        const id = document.getElementById('menu-id').value; 
+        const nama = document.getElementById('menu-nama').value; 
+        const letak = document.getElementById('menu-letak').value; 
+        const role = document.getElementById('menu-role').value;
+        const icon = document.getElementById('menu-icon').value;
+        const aktif = document.getElementById('menu-aktif').checked;
+
+        if (!nama) return showToast("Nama Menu Wajib Diisi", true);
+
+        const pl = { nama_menu: nama, role_akses: role, letak: letak, icon: icon, aktif: aktif };
         try { 
-            await apiRequest(`${SUPABASE_URL}menu_aplikasi?id=eq.${id}`, 'PATCH', { nama_menu: nama, letak: letak, aktif: aktif });
-            showToast("Menu Diupdate"); closeModal('modal-menu-app'); loadData(); 
+            if (id) {
+                await apiRequest(`${SUPABASE_URL}menu_aplikasi?id=eq.${id}`, 'PATCH', pl);
+            } else {
+                await apiRequest(`${SUPABASE_URL}menu_aplikasi`, 'POST', pl);
+            }
+            showToast("Menu Tersimpan"); closeModal('modal-menu-app'); loadData(); 
         } catch(e) { }
+    }
+    
+    async function hapusMenu(id) {
+        if(!confirm("Hapus menu ini secara permanen?")) return;
+        try {
+            await apiRequest(`${SUPABASE_URL}menu_aplikasi?id=eq.${id}`, 'DELETE');
+            showToast("Menu Dihapus"); loadData();
+        } catch(e) {}
     }
 </script>
 </body>
