@@ -237,7 +237,7 @@
                     <div class="flex justify-between items-center mb-6">
                         <div>
                             <h2 class="font-heading font-semibold text-lg text-brand-navy">Master Siswa (Sekretaris)</h2>
-                            <p class="text-xs text-brand-muted mt-1">Data master tersimpan pada tabel pendaftar, otomatis integrasi ke panel lain.</p>
+                            <p class="text-xs text-brand-muted mt-1">Data pendaftar akan sinkron ke 4 tabel: pendaftar, keuangan, analisis, perlengkapan.</p>
                         </div>
                         <button onclick="bukaModalFormSiswa()" class="btn-press bg-brand-navy text-white px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-md hover:bg-opacity-90">
                             <i class="ph ph-plus font-bold"></i> Tambah Siswa
@@ -448,7 +448,7 @@
             <h3 class="font-bold text-brand-gold text-sm border-b border-gray-100 pb-1 mt-2 uppercase tracking-wide">Data Pribadi & Akses</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="md:col-span-2"><label class="text-xs font-medium text-brand-navy block mb-1">Nama Lengkap (Wajib)</label><input type="text" id="fs-nama" oninput="autoGenerateAkses()" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:border-brand-gold focus:outline-none"></div>
-                <div><label class="text-xs font-medium text-brand-navy block mb-1">No PPDB</label><input type="text" id="fs-noppdb" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></div>
+                <div><label class="text-xs font-medium text-brand-navy block mb-1">No PPDB (Wajib)</label><input type="text" id="fs-noppdb" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></div>
                 <div><label class="text-xs font-bold text-blue-600 block mb-1">Password (Kolom No)</label><input type="text" id="fs-no" class="w-full border border-blue-300 bg-blue-50 rounded-lg p-2.5 text-sm font-bold" placeholder="Auto-generate: sdm-..."></div>
                 
                 <div>
@@ -725,6 +725,9 @@
                 const errData = await res.json(); 
                 errMsg = errData.message || errData.details || errData.hint || errMsg; 
             } catch(ex) {}
+            
+            // Tampilkan error asli Supabase jika gagal agar mudah dilacak
+            showToast(`ERROR SUPABASE: ${errMsg}`, true);
             throw new Error(errMsg);
         }
         return res;
@@ -739,8 +742,8 @@
     function switchPanel(id, title) {
         document.querySelectorAll('.panel-view').forEach(p => p.classList.add('hidden'));
         document.getElementById(id)?.classList.remove('hidden');
-        document.getElementById('mobile-title').innerText = title;
-        document.getElementById('desktop-title').innerText = title;
+        if(document.getElementById('mobile-title')) document.getElementById('mobile-title').innerText = title;
+        if(document.getElementById('desktop-title')) document.getElementById('desktop-title').innerText = title;
         document.querySelectorAll('#nav-menu button').forEach(b => {
             b.classList.remove('bg-white/10', 'border-l-4', 'border-brand-gold', 'opacity-70');
             b.dataset.target === id ? b.classList.add('bg-white/10', 'border-l-4', 'border-brand-gold') : b.classList.add('opacity-70');
@@ -791,7 +794,7 @@
 
     async function loadData() {
         try {
-            // Karena dipisah, fetch dari ke-4 tabel
+            // Karena tabel dipecah, kita fetch dari ke-4 tabel
             const [resMaster, resUang, resAnalisis, resPerkap] = await Promise.all([
                 apiRequest(`${SUPABASE_URL}pendaftar?select=*`, 'GET'),
                 apiRequest(`${SUPABASE_URL}keuangan?select=*`, 'GET'),
@@ -825,9 +828,10 @@
 
             updateTimelineLabelsUI();
             renderAll(); 
-            showToast("Sinkronisasi Berhasil");
+            showToast("Sinkronisasi 4 Tabel Berhasil");
         } catch(e) { 
-            showToast("Gagal tarik data: " + e.message, true); 
+            // Jangan munculkan pesan error double jika sudah ditangkap apiRequest
+            console.error("LoadData failed");
         }
     }
 
@@ -883,7 +887,7 @@
                 await Promise.all(selectedIdsForMassAction.map(selId => apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${selId}`, 'PATCH', pl))); 
             }
             showToast("Timeline Berhasil Diupdate"); closeModal('modal-akun'); loadData();
-        } catch(e) { showToast(e.message, true); }
+        } catch(e) { }
         btn.disabled = false; btn.innerHTML = 'Simpan Perubahan';
     }
 
@@ -911,9 +915,7 @@
             await apiRequest(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, 'PATCH', payload);
             showToast(`${tipeData} berhasil disimpan`); 
             if(tipeData === 'pengumuman'){ document.getElementById('info-judul').value=''; document.getElementById('info-isi').value=''; } 
-        } catch(e) { 
-            showToast(`Gagal. Pastikan tabel pengaturan_sistem sudah dibuat. Error: ${e.message}`, true); 
-        } 
+        } catch(e) { } 
     }
 
     function updateTimelineLabelsUI() {
@@ -932,7 +934,7 @@
         tbody.innerHTML = masterData.map(s => `
             <tr class="hover:bg-gray-50 border-b border-gray-50">
                 <td class="py-3 px-4 font-mono text-xs">${s.no_ppdb||'-'}</td>
-                <td class="py-3 px-4 font-bold text-blue-600">${s.no||'-'}</td>
+                <td class="py-3 px-4 font-bold text-blue-600">${s.password||'-'}</td>
                 <td class="py-3 px-4">${s.nama_murid||'-'}</td>
                 <td class="py-3 px-4 text-center">
                     <button onclick="bukaModalFormSiswa('${s.id}')" class="text-blue-500 bg-blue-50 hover:bg-blue-100 p-1.5 rounded mr-1"><i class="ph ph-pencil-simple text-lg"></i></button>
@@ -954,7 +956,7 @@
         document.getElementById('modal-siswa-title').innerText = id ? "Edit Data Siswa" : "Tambah Siswa Baru";
         document.getElementById('fs-id').value = id || '';
         const s = id ? masterData.find(x => x.id == id) : {};
-        const mapping = { 'noppdb': 'no_ppdb', 'no': 'no', 'panggilan': 'nama_panggilan', 'nama': 'nama_murid', 'tk': 'tk', 'tmplahir': 'tempat_lahir', 'tgllahir': 'tgl_lahir', 'alamat': 'alamat', 'ayah': 'ayah', 'agayah': 'agama_ayah', 'pendayah': 'pend_ayah', 'krjayah': 'pekrj_ayah', 'ibu': 'ibu', 'agibu': 'agama_ibu', 'pendibu': 'pend_ibu', 'krjibu': 'pekrj_ibu' };
+        const mapping = { 'noppdb': 'no_ppdb', 'no': 'password', 'panggilan': 'nama_panggilan', 'nama': 'nama_murid', 'tk': 'tk', 'tmplahir': 'tempat_lahir', 'tgllahir': 'tgl_lahir', 'alamat': 'alamat', 'ayah': 'ayah', 'agayah': 'agama_ayah', 'pendayah': 'pend_ayah', 'krjayah': 'pekrj_ayah', 'ibu': 'ibu', 'agibu': 'agama_ibu', 'pendibu': 'pend_ibu', 'krjibu': 'pekrj_ibu' };
         for (const [keyHtml, keyDb] of Object.entries(mapping)) { document.getElementById(`fs-${keyHtml}`).value = s[keyDb] || ''; }
         document.getElementById('fs-jk').value = s.jk || 'L';
         if(!id) { document.getElementById('fs-agayah').value = 'Islam'; document.getElementById('fs-agibu').value = 'Islam'; }
@@ -966,40 +968,59 @@
         const no_ppdb = document.getElementById('fs-noppdb').value.trim();
         const nama_murid = document.getElementById('fs-nama').value.trim().toUpperCase();
 
+        if(!nama_murid || !no_ppdb) return showToast("Nama Lengkap dan No PPDB wajib!", true);
+
         const pl = {
-            no_ppdb: no_ppdb, no: document.getElementById('fs-no').value.trim(),
+            no_ppdb: no_ppdb, password: document.getElementById('fs-no').value.trim(),
             nama_panggilan: document.getElementById('fs-panggilan').value.trim(), nama_murid: nama_murid,
             jk: document.getElementById('fs-jk').value, tk: document.getElementById('fs-tk').value.trim(), tempat_lahir: document.getElementById('fs-tmplahir').value.trim(), tgl_lahir: document.getElementById('fs-tgllahir').value, alamat: document.getElementById('fs-alamat').value.trim(),
             ayah: document.getElementById('fs-ayah').value.trim(), agama_ayah: document.getElementById('fs-agayah').value.trim(), pend_ayah: document.getElementById('fs-pendayah').value.trim(), pekrj_ayah: document.getElementById('fs-krjayah').value.trim(),
             ibu: document.getElementById('fs-ibu').value.trim(), agama_ibu: document.getElementById('fs-agibu').value.trim(), pend_ibu: document.getElementById('fs-pendibu').value.trim(), pekrj_ibu: document.getElementById('fs-krjibu').value.trim()
         };
-        if(!nama_murid || !no_ppdb) return showToast("Nama Lengkap dan No PPDB wajib!", true);
         
         const btn = document.getElementById('btn-simpan-siswa'); btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
         
         try { 
             if(id) {
-                // Edit, cukup ke master (atau semuanya jika mau data ortu sinkron, kita anggap identitas nempel di 4 tabel)
+                // Edit: Patch ke master. Opsional sync nama ke tabel lain
                 await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl);
-                // Sinkronkan nama ke tabel lain jika mau (opsional)
+                // Synchronize nama_murid ke tabel lain berdasarkan no_ppdb
+                const syncPl = { nama_murid: nama_murid };
                 await Promise.all([
-                    apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', { nama_murid: nama_murid }),
-                    apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'PATCH', { nama_murid: nama_murid }),
-                    apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'PATCH', { nama_murid: nama_murid })
+                    apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', syncPl),
+                    apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'PATCH', syncPl),
+                    apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'PATCH', syncPl)
                 ]);
             } else {
-                pl.password = pl.no; 
-                // INSERT KE 4 TABEL SEKALIGUS
+                // INSERT: Masukkan data ke 4 TABEL SEKALIGUS agar relasi no_ppdb terbentuk
+                const baseData = { 
+                    no_ppdb: no_ppdb, 
+                    nama_murid: nama_murid,
+                    password: pl.password,
+                    jk: pl.jk,
+                    tempat_lahir: pl.tempat_lahir,
+                    tgl_lahir: pl.tgl_lahir,
+                    alamat: pl.alamat,
+                    tk: pl.tk,
+                    ayah: pl.ayah,
+                    agama_ayah: pl.agama_ayah,
+                    pend_ayah: pl.pend_ayah,
+                    pekrj_ayah: pl.pekrj_ayah,
+                    ibu: pl.ibu,
+                    agama_ibu: pl.agama_ibu,
+                    pend_ibu: pl.pend_ibu,
+                    pekrj_ibu: pl.pekrj_ibu
+                };
+
                 await Promise.all([
                     apiRequest(`${SUPABASE_URL}pendaftar`, 'POST', pl),
-                    // Untuk tabel pecahannya, masukkan identitas dasarnya
-                    apiRequest(`${SUPABASE_URL}keuangan`, 'POST', { no_ppdb: no_ppdb, nama_murid: nama_murid }),
-                    apiRequest(`${SUPABASE_URL}analisis`, 'POST', { no_ppdb: no_ppdb, nama_murid: nama_murid }),
-                    apiRequest(`${SUPABASE_URL}perlengkapan`, 'POST', { no_ppdb: no_ppdb, nama_murid: nama_murid })
+                    apiRequest(`${SUPABASE_URL}keuangan`, 'POST', baseData),
+                    apiRequest(`${SUPABASE_URL}analisis`, 'POST', baseData),
+                    apiRequest(`${SUPABASE_URL}perlengkapan`, 'POST', baseData)
                 ]);
             }
             showToast("Data Siswa Disimpan"); closeModal('modal-form-siswa'); loadData();
-        } catch(e) { showToast(e.message, true); }
+        } catch(e) { }
         btn.disabled = false; btn.innerHTML = 'Simpan Data Siswa';
     }
 
@@ -1013,7 +1034,7 @@
                 apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'DELETE')
             ]);
             showToast("Dihapus"); loadData(); 
-        } catch(e) { showToast(e.message, true); }
+        } catch(e) { }
     }
 
     function bukaModalBiodata(id) {
@@ -1021,7 +1042,7 @@
         let jkStr = s.jk === 'L' ? 'Laki-laki' : s.jk === 'P' ? 'Perempuan' : '-';
         document.getElementById('content-biodata').innerHTML = `
             <div class="space-y-4"><div class="bg-gray-50 p-4 border rounded-xl"><p class="text-[10px] uppercase font-bold text-gray-500">Data Pribadi</p><p class="text-base font-bold text-brand-navy mt-1">${s.nama_murid || '-'}</p>
-            <div class="grid grid-cols-2 gap-2 mt-2 text-xs"><div><span class="text-brand-muted block">No PPDB:</span><span class="font-medium">${s.no_ppdb||'-'}</span></div><div><span class="text-brand-muted block">Password (No):</span><span class="font-bold text-blue-600">${s.no||'-'}</span></div><div><span class="text-brand-muted block">Gender:</span><span class="font-medium">${jkStr}</span></div><div><span class="text-brand-muted block">Asal TK:</span><span class="font-medium">${s.tk||'-'}</span></div><div class="col-span-2"><span class="text-brand-muted block">TTL:</span><span class="font-medium">${s.tempat_lahir||'-'}, ${s.tgl_lahir||'-'}</span></div><div class="col-span-2"><span class="text-brand-muted block">Alamat:</span><span class="font-medium">${s.alamat||'-'}</span></div></div></div>
+            <div class="grid grid-cols-2 gap-2 mt-2 text-xs"><div><span class="text-brand-muted block">No PPDB:</span><span class="font-medium">${s.no_ppdb||'-'}</span></div><div><span class="text-brand-muted block">Password (No):</span><span class="font-bold text-blue-600">${s.password||'-'}</span></div><div><span class="text-brand-muted block">Gender:</span><span class="font-medium">${jkStr}</span></div><div><span class="text-brand-muted block">Asal TK:</span><span class="font-medium">${s.tk||'-'}</span></div><div class="col-span-2"><span class="text-brand-muted block">TTL:</span><span class="font-medium">${s.tempat_lahir||'-'}, ${s.tgl_lahir||'-'}</span></div><div class="col-span-2"><span class="text-brand-muted block">Alamat:</span><span class="font-medium">${s.alamat||'-'}</span></div></div></div>
             <div class="grid grid-cols-2 gap-3"><div class="bg-blue-50 p-3 border border-blue-100 rounded-xl"><p class="text-[10px] uppercase font-bold text-blue-500">Ayah</p><p class="text-sm font-semibold text-brand-navy mt-1">${s.ayah||'-'}</p><p class="text-xs text-brand-muted mt-1">Pend: ${s.pend_ayah||'-'}</p><p class="text-xs text-brand-muted">Kerja: ${s.pekrj_ayah||'-'}</p></div><div class="bg-pink-50 p-3 border border-pink-100 rounded-xl"><p class="text-[10px] uppercase font-bold text-pink-500">Ibu</p><p class="text-sm font-semibold text-brand-navy mt-1">${s.ibu||'-'}</p><p class="text-xs text-brand-muted mt-1">Pend: ${s.pend_ibu||'-'}</p><p class="text-xs text-brand-muted">Kerja: ${s.pekrj_ibu||'-'}</p></div></div></div>`;
         document.getElementById('modal-biodata').classList.replace('hidden', 'flex');
     }
@@ -1041,7 +1062,7 @@
         const dataFlt = flt === 'all' ? masterData : masterData.filter(s => s.ruang === flt);
         
         tbody.innerHTML = dataFlt.map(sMaster => {
-            // Gabungkan dengan data dari tabel analisis berdasarkan no_ppdb
+            // Ambil nilai dari tabel analisis
             const sAna = analisisData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
             const arr = [
                 sAna.mengenal_huruf, 
@@ -1077,7 +1098,7 @@
 
     function bukaModalAnalisis(no_ppdb, nama_murid, panggilan) {
         const sAna = analisisData.find(x => x.no_ppdb === no_ppdb) || {};
-        document.getElementById('analisis-id').value = no_ppdb; // Gunakan no_ppdb untuk update
+        document.getElementById('analisis-id').value = no_ppdb; 
         document.getElementById('analisis-nama').innerText = nama_murid; 
         document.getElementById('analisis-nama').dataset.panggilan = panggilan || nama_murid;
         
@@ -1109,6 +1130,7 @@
         const no_ppdb = document.getElementById('analisis-id').value;
         const getVal = (elId) => { const v = parseInt(document.getElementById(elId).value); return isNaN(v) ? null : v; };
 
+        // Pastikan nama properti SAMA PERSIS dengan kolom di tabel analisis Supabase
         const pl = { 
             mengenal_huruf: getVal('val-huruf'), 
             mengenal_bilangan: getVal('val-bilangan'), 
@@ -1125,12 +1147,10 @@
         };
         const btn = document.getElementById('btn-simpan-analisis'); btn.disabled = true; btn.innerHTML = 'Processing...';
         try { 
-            // Patch ke tabel analisis
+            // Patch KUSUS ke tabel analisis
             await apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
             showToast("Nilai Tersimpan"); closeModal('modal-analisis'); loadData(); 
-        } catch(e) { 
-            showToast("Gagal (Nilai): " + e.message, true); 
-        }
+        } catch(e) { }
         btn.disabled = false; btn.innerHTML = 'Simpan Nilai & Deskripsi';
     }
 
@@ -1167,6 +1187,7 @@
         const q = document.getElementById('filter-cari-biaya')?.value.toLowerCase() || '';
         const dataF = masterData.filter(s => (s.nama_murid||'').toLowerCase().includes(q));
         tbody.innerHTML = dataF.map(sMaster => {
+            // Ambil data dari tabel keuangan
             const sUang = keuanganData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
             return `<tr class="hover:bg-gray-50 border-b border-gray-50">
                 <td class="py-3 px-4"><a href="javascript:void(0)" onclick="bukaModalBiodata('${sMaster.id}')" class="font-semibold text-brand-navy hover:text-brand-gold hover:underline block">${sMaster.nama_murid||'-'}</a></td>
@@ -1205,11 +1226,10 @@
         };
         const btn = document.getElementById('btn-simpan-pewa'); btn.disabled = true; btn.innerHTML = 'Processing...';
         try { 
+            // Patch KHUSUS ke tabel keuangan
             await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
             showToast("Biaya Disimpan"); closeModal('modal-pewawancara'); loadData(); 
-        } catch(e) { 
-            showToast("Gagal (Biaya): " + e.message, true); 
-        }
+        } catch(e) { }
         btn.disabled = false; btn.innerHTML = 'Simpan Biaya';
     }
 
@@ -1228,7 +1248,7 @@
                     ${sUang.konfirmasi ? `<button onclick="toggleValidasi('${sMaster.no_ppdb}', false)" class="text-red-500 bg-red-50 hover:bg-red-100 p-2 rounded-lg border border-red-100" title="Batal"><i class="ph-bold ph-x text-lg"></i></button>` : `<button onclick="toggleValidasi('${sMaster.no_ppdb}', true)" class="text-green-600 bg-green-50 hover:bg-green-100 p-2 rounded-lg border border-green-100" title="Validasi"><i class="ph-bold ph-check text-lg"></i></button>`}
                 </td>
                 <td class="py-3 px-4 text-center">
-                    ${sUang.konfirmasi ? `<button onclick="cetakStruk('${sMaster.no_ppdb}', '${sMaster.nama_murid}')" class="bg-brand-navy text-white px-3 py-1.5 rounded-lg text-xs font-medium"><i class="ph-fill ph-printer"></i> Struk</button>` : '-'}
+                    ${sUang.konfirmasi ? `<button onclick="cetakStruk('${sMaster.no_ppdb}', '${sMaster.nama_murid}', '${sUang.kasir}')" class="bg-brand-navy text-white px-3 py-1.5 rounded-lg text-xs font-medium"><i class="ph-fill ph-printer"></i> Struk</button>` : '-'}
                 </td>
             </tr>`;
         }).join('');
@@ -1238,13 +1258,12 @@
         try { 
             await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', { konfirmasi: ok, kasir: ok ? currentUsername : null });
             showToast(ok ? "Tervalidasi Lunas" : "Validasi Dibatalkan"); loadData(); 
-        } catch(e) { showToast(e.message, true); }
+        } catch(e) { }
     }
 
-    function cetakStruk(no_ppdb, nama_murid) {
-        const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {};
+    function cetakStruk(no_ppdb, nama_murid, kasir) {
         const w = window.open('','_blank'); if(!w) return showToast("Izinkan pop-up!", true);
-        w.document.write(`<html><body style="font-family:monospace; padding:20px; max-width:350px; margin:auto;"><h3 style="text-align:center; border-bottom:2px dashed #000; padding-bottom:10px;">SDM SUDAGARAN<br>BUKTI LUNAS</h3><p>No PPDB: ${no_ppdb}</p><p>Nama   : ${nama_murid}</p><p>Kasir  : ${sUang.kasir||'Admin'}</p><h2 style="text-align:center; border:2px dashed #000; padding:10px;">LUNAS</h2><p style="text-align:center; font-size:10px; margin-top:20px;">Simpan struk sebagai bukti.</p><script>window.onload=()=>window.print();</`+`script></body></html>`); w.document.close();
+        w.document.write(`<html><body style="font-family:monospace; padding:20px; max-width:350px; margin:auto;"><h3 style="text-align:center; border-bottom:2px dashed #000; padding-bottom:10px;">SDM SUDAGARAN<br>BUKTI LUNAS</h3><p>No PPDB: ${no_ppdb}</p><p>Nama   : ${nama_murid}</p><p>Kasir  : ${kasir||'Admin'}</p><h2 style="text-align:center; border:2px dashed #000; padding:10px;">LUNAS</h2><p style="text-align:center; font-size:10px; margin-top:20px;">Simpan struk sebagai bukti.</p><script>window.onload=()=>window.print();</`+`script></body></html>`); w.document.close();
     }
 
     function renderPerlengkapan() {
@@ -1286,7 +1305,7 @@
         try { 
             await apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
             showToast("Checklist Disimpan"); closeModal('modal-perlengkapan'); loadData(); 
-        } catch(e) { showToast(e.message, true); }
+        } catch(e) { }
         btn.disabled = false; btn.innerHTML = 'Simpan Checklist';
     }
 
@@ -1336,9 +1355,8 @@
         try { 
             await apiRequest(`${SUPABASE_URL}menu_aplikasi?id=eq.${id}`, 'PATCH', { nama_menu: nama, letak: letak, aktif: aktif });
             showToast("Menu Diupdate"); closeModal('modal-menu-app'); loadData(); 
-        } catch(e) { showToast(e.message, true); }
+        } catch(e) { }
     }
-
 </script>
 </body>
 </html>
