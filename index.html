@@ -102,11 +102,12 @@
             </div>
 
             <div class="space-y-4">
-                <div class="bg-blue-50 border border-blue-100 p-3 rounded-lg text-xs text-blue-700 mb-4 text-center">
-                    Gunakan kredensial default untuk demo:<br><strong>Username:</strong> admin | <strong>Password:</strong> admin123
+                <div class="bg-blue-50 border border-blue-100 p-3 rounded-lg text-xs text-blue-700 mb-4 text-center leading-relaxed">
+                    Gunakan <strong>Username Role</strong> (admin, sekretaris, bendahara, penganalisis, pewawancara, perlengkapan)<br>
+                    <strong>Password:</strong> berkah
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-brand-navy mb-1">Username Admin</label>
+                    <label class="block text-sm font-medium text-brand-navy mb-1">Username Admin / Staf</label>
                     <div class="relative">
                         <i class="ph ph-user absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted"></i>
                         <input type="text" id="admin-username" onkeydown="if(event.key === 'Enter') handleLogin()" class="w-full bg-brand-bg border border-gray-200 rounded-app py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-brand-gold transition-colors" placeholder="Ketik username">
@@ -150,48 +151,52 @@
             </div>
             
             <nav class="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto custom-scrollbar" id="sidebar-nav">
-                <a href="#" onclick="switchPanel('dashboard', this)" class="nav-item flex items-center gap-3 bg-brand-gold/20 text-brand-gold px-3 py-3 rounded-xl font-medium transition-colors" title="Dashboard">
+                <a href="#" onclick="switchPanel('dashboard', this)" data-role="dashboard" class="nav-item flex items-center gap-3 bg-brand-gold/20 text-brand-gold px-3 py-3 rounded-xl font-medium transition-colors" title="Dashboard">
                     <i class="ph-fill ph-squares-four text-xl shrink-0"></i>
                     <span class="nav-text overflow-hidden text-sm">Dashboard Utama</span>
                 </a>
                 
-                <div class="pt-4 pb-1">
+                <div class="pt-4 pb-1 menu-header" data-group="peran">
                     <p class="nav-text text-[10px] uppercase tracking-wider text-brand-muted px-3 font-semibold overflow-hidden">Manajemen Peran</p>
                     <hr class="nav-icon-only hidden border-white/10 my-2">
                 </div>
 
-                <a href="#" onclick="switchPanel('sekretaris', this)" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Panel Sekretaris">
+                <a href="#" onclick="switchPanel('sekretaris', this)" data-role="sekretaris" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Panel Sekretaris">
                     <i class="ph ph-files text-xl shrink-0"></i>
                     <span class="nav-text overflow-hidden text-sm">Sekretaris</span>
                 </a>
-                <a href="#" onclick="switchPanel('bendahara', this)" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Panel Bendahara">
+                <a href="#" onclick="switchPanel('bendahara', this)" data-role="bendahara" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Panel Bendahara">
                     <i class="ph ph-wallet text-xl shrink-0"></i>
                     <span class="nav-text overflow-hidden text-sm">Bendahara</span>
                 </a>
-                <a href="#" onclick="switchPanel('pewawancara', this)" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Panel Pewawancara">
+                <a href="#" onclick="switchPanel('pewawancara', this)" data-role="pewawancara" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Panel Pewawancara">
                     <i class="ph ph-microphone-stage text-xl shrink-0"></i>
                     <span class="nav-text overflow-hidden text-sm">Pewawancara</span>
                 </a>
-                <a href="#" onclick="switchPanel('penganalisis', this)" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Panel Penganalisis">
+                <a href="#" onclick="switchPanel('penganalisis', this)" data-role="penganalisis" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Panel Penganalisis">
                     <i class="ph ph-chart-polar text-xl shrink-0"></i>
                     <span class="nav-text overflow-hidden text-sm">Penganalisis</span>
                 </a>
-                <a href="#" onclick="switchPanel('perlengkapan', this)" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Panel Perlengkapan">
+                <a href="#" onclick="switchPanel('perlengkapan', this)" data-role="perlengkapan" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Panel Perlengkapan">
                     <i class="ph ph-t-shirt text-xl shrink-0"></i>
                     <span class="nav-text overflow-hidden text-sm">Perlengkapan</span>
                 </a>
                 
-                <div class="pt-4 pb-1">
+                <div class="pt-4 pb-1 menu-header" data-group="master">
                     <p class="nav-text text-[10px] uppercase tracking-wider text-brand-muted px-3 font-semibold overflow-hidden">Master Admin</p>
                     <hr class="nav-icon-only hidden border-white/10 my-2">
                 </div>
-                <a href="#" onclick="switchPanel('progress', this)" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Akun & Progress">
+                <a href="#" onclick="switchPanel('progress', this)" data-role="admin" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Akun & Progress">
                     <i class="ph ph-user-gear text-xl shrink-0"></i>
                     <span class="nav-text overflow-hidden text-sm">Akun & Progress</span>
                 </a>
-                <a href="#" onclick="switchPanel('pengumuman', this)" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Pengumuman & Jadwal">
+                <a href="#" onclick="switchPanel('pengumuman', this)" data-role="admin" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Pengumuman & Jadwal">
                     <i class="ph ph-megaphone text-xl shrink-0"></i>
                     <span class="nav-text overflow-hidden text-sm">Info & Jadwal</span>
+                </a>
+                <a href="#" onclick="switchPanel('akses', this)" data-role="admin" class="nav-item flex items-center gap-3 text-white/70 hover:bg-white/5 hover:text-white px-3 py-3 rounded-xl font-medium transition-colors" title="Kelola Akses">
+                    <i class="ph ph-shield-check text-xl shrink-0"></i>
+                    <span class="nav-text overflow-hidden text-sm">Kelola Akses</span>
                 </a>
             </nav>
             
@@ -225,8 +230,8 @@
                     </button>
                     <div class="flex items-center gap-3 pl-3 md:pl-4 border-l border-gray-200">
                         <div class="text-right hidden sm:block">
-                            <p class="text-sm font-semibold text-brand-navy leading-tight">Admin Master</p>
-                            <p class="text-[10px] text-brand-muted">Administrator</p>
+                            <p class="text-sm font-semibold text-brand-navy leading-tight" id="user-role-display">Admin Master</p>
+                            <p class="text-[10px] text-brand-muted uppercase font-bold tracking-wider" id="user-role-sub">ADMIN</p>
                         </div>
                         <div class="w-10 h-10 bg-brand-navy rounded-full flex items-center justify-center text-brand-gold border-2 border-brand-gold">
                             <i class="ph-fill ph-user-gear text-xl"></i>
@@ -477,15 +482,21 @@
                                 <h3 class="font-heading font-semibold text-brand-navy">Kelola Akun & Progress Siswa</h3>
                                 <p class="text-xs text-brand-muted">Atur username, password, timeline, dan progress SPMB tiap siswa.</p>
                             </div>
-                            <div class="relative w-full md:w-auto">
-                                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted"></i>
-                                <input type="text" id="search-progress" onkeyup="filterTable('progress')" placeholder="Cari siswa..." class="bg-white border border-gray-200 rounded-lg py-2 pl-9 pr-3 text-sm focus:outline-none focus:border-brand-gold w-full md:w-64">
+                            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                                <button id="btn-aksi-massal" onclick="bukaModalMassal()" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 btn-press flex-1 md:flex-none">
+                                    <i class="ph-bold ph-list-checks"></i> Aksi Massal (<span id="count-massal">0</span>)
+                                </button>
+                                <div class="relative flex-1 md:flex-none">
+                                    <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted"></i>
+                                    <input type="text" id="search-progress" onkeyup="filterTable('progress')" placeholder="Cari siswa..." class="bg-white border border-gray-200 rounded-lg py-2 pl-9 pr-3 text-sm focus:outline-none focus:border-brand-gold w-full md:w-64">
+                                </div>
                             </div>
                         </div>
                         <div class="overflow-x-auto custom-scrollbar">
                             <table class="w-full text-left border-collapse min-w-[800px]">
                                 <thead>
                                     <tr class="bg-brand-bg text-brand-muted text-xs uppercase tracking-wider">
+                                        <th class="p-4 font-semibold w-12 text-center"><input type="checkbox" id="check-all-progress" onchange="pilihSemuaMassal(this)" class="w-4 h-4 accent-brand-gold cursor-pointer"></th>
                                         <th class="p-4 font-semibold w-16">No</th>
                                         <th class="p-4 font-semibold">Nama Siswa</th>
                                         <th class="p-4 font-semibold">Username Login</th>
@@ -568,6 +579,35 @@
                                     <i class="ph-bold ph-floppy-disk"></i> Simpan Pengumuman
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel Manajemen Akses (Admin) -->
+                <div id="panel-akses" class="panel-view hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+                        <div class="p-5 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50/50">
+                            <div>
+                                <h3 class="font-heading font-semibold text-brand-navy">Kelola Akses Sistem</h3>
+                                <p class="text-xs text-brand-muted">Manajemen hak akses dan password akun staf panel.</p>
+                            </div>
+                            <button onclick="bukaModalUser()" class="bg-brand-navy hover:bg-opacity-90 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 btn-press">
+                                <i class="ph-bold ph-plus"></i> Tambah Akun
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left border-collapse min-w-[700px]">
+                                <thead>
+                                    <tr class="bg-brand-bg text-brand-muted text-xs uppercase tracking-wider">
+                                        <th class="p-4 font-semibold w-16">No</th>
+                                        <th class="p-4 font-semibold">Nama Pengguna</th>
+                                        <th class="p-4 font-semibold">Username</th>
+                                        <th class="p-4 font-semibold text-center">Role / Hak Akses</th>
+                                        <th class="p-4 font-semibold text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tb-akses" class="text-sm divide-y divide-gray-100"></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -858,6 +898,87 @@
         </div>
     </div>
 
+    <!-- Modal Aksi Massal -->
+    <div id="modal-aksi-massal" class="fixed inset-0 z-[60] flex items-center justify-center modal-overlay p-4">
+        <div class="absolute inset-0 bg-brand-navy/60 backdrop-blur-sm" onclick="closeModal('modal-aksi-massal')"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm relative z-10 modal-content flex flex-col">
+            <div class="flex justify-between items-center p-5 border-b border-gray-100">
+                <h3 class="font-heading font-bold text-brand-navy text-lg">Update Massal</h3>
+                <button onclick="closeModal('modal-aksi-massal')" class="text-gray-400 hover:text-gray-700 btn-press"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-3 text-center mb-2">
+                    <p class="text-xs text-indigo-700 font-medium">Menerapkan pembaruan untuk <strong class="text-lg" id="massal-count-display">0</strong> siswa terpilih.</p>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-brand-navy uppercase mb-1">Update Progress (%)</label>
+                    <input type="number" id="massal-persen" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold" placeholder="Biarkan kosong jika tidak diubah">
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-brand-navy uppercase mb-1">Update Tahap Berikutnya</label>
+                    <input type="text" id="massal-tahap" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold" placeholder="Contoh: Menunggu Verifikasi">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-brand-navy uppercase mb-1">Update Checklist Timeline</label>
+                    <select id="massal-timeline" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold">
+                        <option value="">-- Jangan Ubah --</option>
+                        <option value="1">1. Pendaftaran Online</option>
+                        <option value="2">2. Melengkapi Dokumen</option>
+                        <option value="3">3. Verifikasi Berkas (Proses)</option>
+                        <option value="4">4. Tes Kesiapan & Lulus</option>
+                    </select>
+                </div>
+            </div>
+            <div class="p-5 border-t border-gray-100 flex gap-3">
+                <button onclick="closeModal('modal-aksi-massal')" class="flex-1 bg-gray-100 text-gray-700 rounded-lg py-3 font-medium hover:bg-gray-200 btn-press">Batal</button>
+                <button id="btn-simpan-massal" onclick="simpanMassal()" class="flex-1 bg-indigo-600 text-white rounded-lg py-3 font-medium hover:bg-indigo-700 btn-press">Terapkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Form User Admin -->
+    <div id="modal-form-user" class="fixed inset-0 z-[60] flex items-center justify-center modal-overlay p-4">
+        <div class="absolute inset-0 bg-brand-navy/60 backdrop-blur-sm" onclick="closeModal('modal-form-user')"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm relative z-10 modal-content flex flex-col">
+            <div class="flex justify-between items-center p-5 border-b border-gray-100">
+                <h3 class="font-heading font-bold text-brand-navy text-lg">Kelola Staf</h3>
+                <button onclick="closeModal('modal-form-user')" class="text-gray-400 hover:text-gray-700 btn-press"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-brand-navy uppercase mb-1">Nama Lengkap Pengguna</label>
+                    <input type="text" id="user-nama" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold" placeholder="Contoh: Budi Santoso">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-brand-navy uppercase mb-1">Username Login</label>
+                    <input type="text" id="user-uname" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold" placeholder="Contoh: penganalisis2">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-brand-navy uppercase mb-1">Password</label>
+                    <input type="text" id="user-pass" value="berkah" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold" placeholder="Password akun">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-brand-navy uppercase mb-1">Hak Akses (Role)</label>
+                    <select id="user-role" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2.5 px-3 text-sm focus:outline-none focus:border-brand-gold font-bold">
+                        <option value="sekretaris">Sekretaris</option>
+                        <option value="bendahara">Bendahara</option>
+                        <option value="pewawancara">Pewawancara</option>
+                        <option value="penganalisis">Penganalisis</option>
+                        <option value="perlengkapan">Perlengkapan</option>
+                        <option value="admin">Administrator (Akses Penuh)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="p-5 border-t border-gray-100 flex gap-3">
+                <button onclick="closeModal('modal-form-user')" class="flex-1 bg-gray-100 text-gray-700 rounded-lg py-3 font-medium hover:bg-gray-200 btn-press">Batal</button>
+                <button onclick="simpanUser()" class="flex-1 bg-brand-navy text-white rounded-lg py-3 font-medium hover:bg-opacity-90 btn-press">Simpan Akun</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Konfigurasi Database Supabase
         const SUPABASE_URL = 'https://ckbarwrfpktcdoydbjzy.supabase.co/rest/v1/';
@@ -867,6 +988,18 @@
         let allStudentsData = [];
         let radarChartInstance = null;
         let isSidebarCollapsed = false;
+        
+        // RBAC Management
+        const defaultUsers = {
+            'admin': { role: 'admin', pass: 'berkah', nama: 'Administrator Pusat' },
+            'sekretaris': { role: 'sekretaris', pass: 'berkah', nama: 'Staf Sekretaris' },
+            'bendahara': { role: 'bendahara', pass: 'berkah', nama: 'Staf Bendahara' },
+            'penganalisis': { role: 'penganalisis', pass: 'berkah', nama: 'Staf Penganalisis' },
+            'pewawancara': { role: 'pewawancara', pass: 'berkah', nama: 'Staf Pewawancara' },
+            'perlengkapan': { role: 'perlengkapan', pass: 'berkah', nama: 'Staf Perlengkapan' }
+        };
+        let systemUsers = JSON.parse(localStorage.getItem('smartPmbUsers')) || defaultUsers;
+        let currentUserRole = '';
 
         // Fitur Custom Toast
         function showToast(msg, type = 'info') {
@@ -898,7 +1031,7 @@
         }
 
         function handleLogin() {
-            const user = document.getElementById('admin-username').value.trim();
+            const user = document.getElementById('admin-username').value.trim().toLowerCase();
             const pass = document.getElementById('admin-password').value.trim();
             const btn = document.getElementById('login-btn');
 
@@ -911,21 +1044,56 @@
             btn.disabled = true;
 
             setTimeout(() => {
-                if (user === 'admin' && pass === 'admin123') {
-                    showToast("Login berhasil, memuat dashboard...", "success");
+                if (systemUsers[user] && systemUsers[user].pass === pass) {
+                    currentUserRole = systemUsers[user].role;
+                    
+                    document.getElementById('user-role-display').innerText = systemUsers[user].nama;
+                    document.getElementById('user-role-sub').innerText = currentUserRole.toUpperCase();
+                    
+                    terapkanRBAC(currentUserRole);
+
+                    showToast(`Login berhasil sebagai ${systemUsers[user].nama}...`, "success");
                     document.getElementById('view-login').classList.add('fade-exit-active');
                     
                     setTimeout(() => {
                         document.getElementById('view-login').classList.add('hidden');
                         document.getElementById('view-dashboard').classList.remove('hidden');
                         fetchData();
+                        renderTableAkses();
                     }, 300);
                 } else {
-                    showToast("Kredensial salah! Gunakan admin / admin123", "error");
+                    showToast("Kredensial salah! Periksa username & password", "error");
                     btn.innerHTML = 'Masuk Dashboard <i class="ph ph-sign-in font-bold"></i>';
                     btn.disabled = false;
                 }
             }, 800);
+        }
+        
+        function terapkanRBAC(role) {
+            // Sembunyikan semua item navigasi dan header grup
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.menu-header').forEach(el => el.classList.add('hidden'));
+            
+            // Selalu tampilkan dashboard
+            document.querySelector('[data-role="dashboard"]').classList.remove('hidden');
+            
+            if (role === 'admin') {
+                // Tampilkan semua untuk admin
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('hidden'));
+                document.querySelectorAll('.menu-header').forEach(el => el.classList.remove('hidden'));
+                switchPanel('dashboard', document.querySelector('[data-role="dashboard"]'));
+            } else {
+                // Tampilkan menu khusus role
+                const roleNav = document.querySelector(`[data-role="${role}"]`);
+                if(roleNav) roleNav.classList.remove('hidden');
+                
+                // Menampilkan header grup yang relevan
+                const headerPeran = document.querySelector('[data-group="peran"]');
+                if(headerPeran) headerPeran.classList.remove('hidden');
+                
+                // Redirect otomatis ke panel rolenya
+                switchPanel(role, roleNav);
+            }
         }
 
         function logout() {
@@ -1186,6 +1354,7 @@
                     let usernameStr = (student.nama_murid || '').trim().split(/\s+/)[0].toLowerCase();
                     
                     tr.innerHTML = `
+                        <td class="p-4 text-center"><input type="checkbox" value="${student.id}" class="cb-massal w-4 h-4 accent-brand-gold cursor-pointer" onchange="cekPilihMassal()"></td>
                         <td class="p-4 text-brand-muted">${index + 1}</td>
                         <td class="p-4 font-medium text-brand-navy text-sm">${student.nama_murid || '-'}</td>
                         <td class="p-4 text-sm font-mono text-indigo-600">${usernameStr}</td>
@@ -1207,6 +1376,162 @@
 
                 tbody.appendChild(tr);
             });
+        }
+        
+        // --- Manajemen Aksi Massal (Panel Progress) ---
+        function pilihSemuaMassal(source) {
+            const checkboxes = document.querySelectorAll('.cb-massal');
+            checkboxes.forEach(cb => cb.checked = source.checked);
+            cekPilihMassal();
+        }
+
+        function cekPilihMassal() {
+            const checkboxes = document.querySelectorAll('.cb-massal:checked');
+            const btn = document.getElementById('btn-aksi-massal');
+            const countSpan = document.getElementById('count-massal');
+            if(checkboxes.length > 0) {
+                btn.classList.remove('hidden');
+                countSpan.innerText = checkboxes.length;
+            } else {
+                btn.classList.add('hidden');
+                document.getElementById('check-all-progress').checked = false;
+            }
+        }
+
+        function bukaModalMassal() {
+            const checkboxes = document.querySelectorAll('.cb-massal:checked');
+            if(checkboxes.length === 0) return;
+            document.getElementById('massal-count-display').innerText = checkboxes.length;
+            
+            // Reset Form Massal
+            document.getElementById('massal-tahap').value = '';
+            document.getElementById('massal-persen').value = '';
+            document.getElementById('massal-timeline').value = '';
+            
+            document.getElementById('modal-aksi-massal').classList.add('active');
+        }
+
+        async function simpanMassal() {
+            const checkboxes = document.querySelectorAll('.cb-massal:checked');
+            const ids = Array.from(checkboxes).map(cb => cb.value);
+            if(ids.length === 0) return;
+
+            const tahap = document.getElementById('massal-tahap').value.trim();
+            const persenStr = document.getElementById('massal-persen').value;
+            const timelineStr = document.getElementById('massal-timeline').value;
+
+            const payload = {};
+            if(tahap) payload.tahap_berikutnya = tahap;
+            if(persenStr !== '') payload.progress_spmb = parseInt(persenStr);
+            if(timelineStr !== '') payload.timeline_status = parseInt(timelineStr);
+
+            if(Object.keys(payload).length === 0) {
+                showToast("Isi minimal satu kolom untuk update massal", "error");
+                return;
+            }
+
+            const btn = document.getElementById('btn-simpan-massal');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Menyimpan...';
+            btn.disabled = true;
+
+            let successCount = 0;
+            try {
+                // Eksekusi API secara paralel menggunakan Promise.all untuk kecepatan ekstra
+                const promises = ids.map(id => 
+                    fetch(`${SUPABASE_URL}pendaftar?id=eq.${id}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify(payload)
+                    }).then(res => { if(res.ok) successCount++; })
+                );
+
+                await Promise.all(promises);
+                
+                showToast(`Berhasil update ${successCount} siswa secara massal!`, "success");
+                
+                // Update State UI Lokal
+                ids.forEach(id => {
+                    const student = allStudentsData.find(x => String(x.id) === String(id));
+                    if(student) Object.assign(student, payload);
+                });
+
+                closeModal('modal-aksi-massal');
+                document.getElementById('check-all-progress').checked = false;
+                renderTable('progress', allStudentsData);
+                cekPilihMassal(); // Sembunyikan tombol aksi
+            } catch (e) {
+                showToast("Terjadi kesalahan koneksi saat update massal", "error");
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+        
+        // --- Kelola Akses Admin (Sistem RBAC) ---
+        function renderTableAkses() {
+            const tbody = document.getElementById('tb-akses');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            let i = 1;
+            for(let uname in systemUsers) {
+                const user = systemUsers[uname];
+                const badge = user.role === 'admin' 
+                    ? '<span class="bg-red-100 text-red-700 px-2 py-1 rounded-md text-[10px] font-bold border border-red-200">ADMIN</span>' 
+                    : `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-[10px] font-bold border border-blue-200 uppercase">${user.role}</span>`;
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0">
+                        <td class="p-4 text-brand-muted">${i++}</td>
+                        <td class="p-4 font-bold text-brand-navy">${user.nama}</td>
+                        <td class="p-4 font-mono text-sm">${uname}</td>
+                        <td class="p-4 text-center">${badge}</td>
+                        <td class="p-4 text-center">
+                            ${uname !== 'admin' ? `<button onclick="hapusUser('${uname}')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg btn-press"><i class="ph-bold ph-trash text-lg"></i></button>` : '<span class="text-[10px] text-gray-400">Default System</span>'}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        function bukaModalUser() {
+            document.getElementById('user-nama').value = '';
+            document.getElementById('user-uname').value = '';
+            document.getElementById('user-pass').value = 'berkah';
+            document.getElementById('user-role').value = 'sekretaris';
+            document.getElementById('modal-form-user').classList.add('active');
+        }
+
+        function simpanUser() {
+            const nama = document.getElementById('user-nama').value.trim();
+            const uname = document.getElementById('user-uname').value.trim().toLowerCase();
+            const pass = document.getElementById('user-pass').value.trim();
+            const role = document.getElementById('user-role').value;
+            
+            if(!nama || !uname || !pass) {
+                showToast("Semua form harus diisi!", "error"); return;
+            }
+            if(systemUsers[uname]) {
+                showToast("Username sudah digunakan. Gunakan username lain.", "error"); return;
+            }
+            
+            systemUsers[uname] = { role: role, pass: pass, nama: nama };
+            localStorage.setItem('smartPmbUsers', JSON.stringify(systemUsers));
+            
+            showToast("Akun staf berhasil ditambahkan!", "success");
+            closeModal('modal-form-user');
+            renderTableAkses();
+        }
+        
+        function hapusUser(uname) {
+            if(uname === 'admin') return;
+            delete systemUsers[uname];
+            localStorage.setItem('smartPmbUsers', JSON.stringify(systemUsers));
+            showToast("Akun staf berhasil dihapus.", "success");
+            renderTableAkses();
         }
 
         // --- Modal Handlers ---
