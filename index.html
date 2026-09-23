@@ -199,6 +199,33 @@
                         <table class="w-full text-left text-sm whitespace-nowrap">
                             <thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100">
                                 <tr>
+                                    <th class="py-3.5 px-4">Nama Menu</th>
+                                    <th class="py-3.5 px-4">Role Akses</th>
+                                    <th class="py-3.5 px-4">Navigasi Letak</th>
+                                    <th class="py-3.5 px-4">Status</th>
+                                    <th class="py-3.5 px-4 text-center">Kelola</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-menu-app" class="divide-y divide-gray-100 bg-white"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-kelola-akses" class="panel-view hidden space-y-6">
+                <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="font-heading font-semibold text-lg text-brand-navy">Kelola Akses (Staf)</h2>
+                        </div>
+                        <button onclick="bukaModalStaf()" class="btn-press bg-brand-navy text-white px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-md hover:bg-opacity-90">
+                            <i class="ph ph-plus font-bold"></i> Tambah Akun
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100">
+                                <tr>
                                     <th class="py-3.5 px-4">Username</th>
                                     <th class="py-3.5 px-4">Role Akses</th>
                                     <th class="py-3.5 px-4 text-center">Kelola</th>
@@ -699,7 +726,7 @@
         { id: 'panel-akun-progress', role: 'admin', icon: 'ph-users-three', text: 'Akun & Progres' },
         { id: 'panel-pengaturan', role: 'admin', icon: 'ph-gear', text: 'Pengaturan Global' },
         { id: 'panel-menu-app', role: 'admin', icon: 'ph-list-dashes', text: 'Kelola Menu App' },
-        { id: 'panel-kelola-akses', role: 'admin', icon: 'ph-shield-check', text: 'Manajemen Staf' },
+        { id: 'panel-kelola-akses', role: 'admin', icon: 'ph-shield-check', text: 'Kelola Akses' },
         { id: 'panel-sekretaris', role: 'sekretaris', icon: 'ph-folders', text: 'Master Siswa' },
         { id: 'panel-penganalisis', role: 'penganalisis', icon: 'ph-chart-polar', text: 'Input Nilai' },
         { id: 'panel-pewawancara', role: 'pewawancara', icon: 'ph-users', text: 'Biaya Ortu' },
@@ -1099,7 +1126,10 @@
 
     function autoDes(id, label) {
         const v = parseInt(document.getElementById(`val-${id}`).value) || 0;
-        const n = (document.getElementById('analisis-nama').dataset.panggilan || 'Siswa').split(' ')[0];
+        const rawPanggilan = document.getElementById('analisis-nama').dataset.panggilan;
+        const nm = (rawPanggilan && rawPanggilan !== 'undefined' && rawPanggilan.trim() !== '') ? rawPanggilan : (document.getElementById('analisis-nama').innerText || 'Siswa');
+        const n = nm.split(' ')[0]; // Ambil nama depan
+        
         let t = "";
         if (v <= 60) t = `Ananda ${n} masih perlu bimbingan penuh dalam ${label}.`;
         else if (v <= 75) t = `Ananda ${n} sudah dapat ${label} namun masih perlu pendampingan.`;
@@ -1142,10 +1172,10 @@
         const no_ppdb = document.getElementById('analisis-id').value;
         const getVal = (elId) => { const v = parseInt(document.getElementById(elId).value); return isNaN(v) ? null : v; };
 
-        // 1. Ambil data asli siswa dari tabel pendaftar untuk disinkronkan ke tabel analisis
+        // 1. Ambil data asli siswa dari tabel pendaftar (master) untuk disinkronkan ke tabel analisis
         const sMaster = masterData.find(x => x.no_ppdb === no_ppdb) || {};
 
-        // 2. Gabungkan data siswa dengan nilai dan deskripsi
+        // 2. Gabungkan data siswa (password s.d tk) dengan nilai dan deskripsi
         const pl = { 
             password: sMaster.password || null,
             tgl_pendaftaran: sMaster.tgl_pendaftaran || null,
@@ -1155,12 +1185,16 @@
             tgl_lahir: sMaster.tgl_lahir || null,
             alamat: sMaster.alamat || null,
             tk: sMaster.tk || null,
+            
+            // Kolom Nilai Kesiapan Belajar
             mengenal_huruf: getVal('val-huruf'), 
             mengenal_bilangan: getVal('val-bilangan'), 
             menggunting_dan_menempel_puzzel: getVal('val-motorik'),
             menyanyi_lagu_nasional: getVal('val-lagu'), 
             melafalkan_surat_pendek_doa_harian: getVal('val-doa'), 
             interview: getVal('val-interview'),
+            
+            // Kolom Deskripsi Kesiapan Belajar
             ket_mengenal_huruf: document.getElementById('ket-huruf').value,
             ket_mengenal_bilangan: document.getElementById('ket-bilangan').value,
             ket_menggunting_dan_menempel_puzzel: document.getElementById('ket-motorik').value,
@@ -1170,7 +1204,7 @@
         };
         const btn = document.getElementById('btn-simpan-analisis'); btn.disabled = true; btn.innerHTML = 'Processing...';
         try { 
-            // Cek apakah data analisis anak ini sudah ada di database?
+            // Cek apakah data anak di tabel analisis sudah ada?
             const sAna = analisisData.find(x => x.no_ppdb === no_ppdb);
             if (sAna && sAna.id) {
                 // Jika sudah ada, Update (PATCH)
@@ -1180,7 +1214,7 @@
                 pl.no_ppdb = no_ppdb;
                 await apiRequest(`${SUPABASE_URL}analisis`, 'POST', pl);
             }
-            showToast("Nilai Tersimpan"); closeModal('modal-analisis'); loadData(); 
+            showToast("Data Analisis Tersimpan Sinkron"); closeModal('modal-analisis'); loadData(); 
         } catch(e) { }
         btn.disabled = false; btn.innerHTML = 'Simpan Nilai & Deskripsi';
     }
@@ -1372,8 +1406,8 @@
                 <td class="py-3 px-4 text-xs">${m.letak || '-'}</td>
                 <td class="py-3 px-4"><span class="${m.aktif ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'} px-2 py-1 rounded text-[10px] font-bold">${m.aktif ? 'AKTIF' : 'SEMBUNYI'}</span></td>
                 <td class="py-3 px-4 text-center">
-                    <button onclick="bukaModalMenu(${m.id})" class="text-blue-500 bg-blue-50 p-1.5 rounded hover:bg-blue-100 mr-1"><i class="ph ph-pencil-simple text-lg"></i></button>
-                    <button onclick="hapusMenu(${m.id})" class="text-red-500 bg-red-50 p-1.5 rounded hover:bg-red-100"><i class="ph ph-trash text-lg"></i></button>
+                    <button onclick="bukaModalMenu('${m.id}')" class="text-blue-500 bg-blue-50 p-1.5 rounded hover:bg-blue-100 mr-1"><i class="ph ph-pencil-simple text-lg"></i></button>
+                    <button onclick="hapusMenu('${m.id}')" class="text-red-500 bg-red-50 p-1.5 rounded hover:bg-red-100"><i class="ph ph-trash text-lg"></i></button>
                 </td>
             </tr>`).join('');
     }
@@ -1382,7 +1416,7 @@
         document.getElementById('modal-menu-title').innerText = id ? "Edit Menu" : "Tambah Menu";
         document.getElementById('menu-id').value = id || '';
         if (id) {
-            const m = menuAppData.find(x => x.id == id);
+            const m = menuAppData.find(x => String(x.id) === String(id));
             document.getElementById('menu-nama').value = m?.nama_menu || '';
             document.getElementById('menu-role').value = m?.role_akses || 'Semua Role';
             document.getElementById('menu-letak').value = m?.letak || '';
