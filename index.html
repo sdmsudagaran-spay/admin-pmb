@@ -1056,13 +1056,21 @@
         document.getElementById(`val-doa`).value = s.melafalkan_surat_pendek_doa_harian !== null ? s.melafalkan_surat_pendek_doa_harian : '';
         document.getElementById(`val-interview`).value = s.interview !== null ? s.interview : '';
 
-        // Auto generate description based on existing value
-        autoDes('huruf', 'mengenal huruf');
-        autoDes('bilangan', 'mengenal bilangan');
-        autoDes('motorik', 'menggunting dan menempel');
-        autoDes('lagu', 'menyanyi lagu nasional');
-        autoDes('doa', 'doa harian dan surat pendek');
-        autoDes('interview', 'menjawab pertanyaan interview');
+        // Tampilkan deskripsi jika sudah ada di database
+        document.getElementById(`ket-huruf`).value = s.ket_mengenal_huruf || '';
+        document.getElementById(`ket-bilangan`).value = s.ket_mengenal_bilangan || '';
+        document.getElementById(`ket-motorik`).value = s.ket_menggunting_dan_menempel_puzzel || '';
+        document.getElementById(`ket-lagu`).value = s.ket_menyanyi_lagu_nasional || '';
+        document.getElementById(`ket-doa`).value = s.ket_melafalkan_surat_pendek_doa_harian || '';
+        document.getElementById(`ket-interview`).value = s.ket_interview || '';
+
+        // Auto generate description based on existing value HANYA JIKA deskripsi kosong
+        if(!s.ket_mengenal_huruf) autoDes('huruf', 'mengenal huruf');
+        if(!s.ket_mengenal_bilangan) autoDes('bilangan', 'mengenal bilangan');
+        if(!s.ket_menggunting_dan_menempel_puzzel) autoDes('motorik', 'menggunting dan menempel');
+        if(!s.ket_menyanyi_lagu_nasional) autoDes('lagu', 'menyanyi lagu nasional');
+        if(!s.ket_melafalkan_surat_pendek_doa_harian) autoDes('doa', 'doa harian dan surat pendek');
+        if(!s.ket_interview) autoDes('interview', 'menjawab pertanyaan interview');
 
         document.getElementById('modal-analisis').classList.replace('hidden', 'flex');
     }
@@ -1071,14 +1079,20 @@
         const id = document.getElementById('analisis-id').value;
         const getVal = (elId) => { const v = parseInt(document.getElementById(elId).value); return isNaN(v) ? null : v; };
 
-        // EXACT matching as requested - No 'ket_' fields to avoid Supabase errors.
+        // EXACT matching as requested - Sekarang termasuk ket_ karena kolom di Supabase sudah dibuat
         const pl = { 
             mengenal_huruf: getVal('val-huruf'), 
             mengenal_bilangan: getVal('val-bilangan'), 
             menggunting_dan_menempel_puzzel: getVal('val-motorik'), // 'puzzel'
             menyanyi_lagu_nasional: getVal('val-lagu'), 
             melafalkan_surat_pendek_doa_harian: getVal('val-doa'), 
-            interview: getVal('val-interview')
+            interview: getVal('val-interview'),
+            ket_mengenal_huruf: document.getElementById('ket-huruf').value,
+            ket_mengenal_bilangan: document.getElementById('ket-bilangan').value,
+            ket_menggunting_dan_menempel_puzzel: document.getElementById('ket-motorik').value,
+            ket_menyanyi_lagu_nasional: document.getElementById('ket-lagu').value,
+            ket_melafalkan_surat_pendek_doa_harian: document.getElementById('ket-doa').value,
+            ket_interview: document.getElementById('ket-interview').value
         };
         const btn = document.getElementById('btn-simpan-analisis'); btn.disabled = true; btn.innerHTML = 'Processing...';
         try { 
