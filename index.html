@@ -566,8 +566,20 @@
                 </select>
             </div>
             <div class="grid grid-cols-2 gap-4">
-                <div><label class="text-xs font-medium text-brand-navy block mb-1">Diskon Early Bird</label><input type="number" id="pewa-early" class="w-full border rounded-lg p-2.5 text-sm" value="1500000"></div>
-                <div><label class="text-xs font-medium text-brand-navy block mb-1">Kader AUM</label><input type="number" id="pewa-aum" class="w-full border rounded-lg p-2.5 text-sm" value="1000000"></div>
+                <div>
+                    <label class="text-xs font-medium text-brand-navy block mb-1">Diskon Early Bird</label>
+                    <select id="pewa-early" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white focus:outline-none focus:border-brand-gold">
+                        <option value="1500000">Rp 1.500.000</option>
+                        <option value="1000000">Rp 1.000.000</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-medium text-brand-navy block mb-1">Kader AUM</label>
+                    <select id="pewa-aum" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white focus:outline-none focus:border-brand-gold">
+                        <option value="1000000">Rp 1.000.000</option>
+                        <option value="0">Rp 0 (Tidak Ada)</option>
+                    </select>
+                </div>
             </div>
             <!-- Potongan Keringanan Lainnya Dihapus Sesuai Permintaan -->
         </div>
@@ -1130,8 +1142,16 @@
         document.getElementById('pewa-id').value = id;
         document.getElementById('pewa-daftar-ulang').value = s.daftar_ulang || (s.jk === 'P' ? 3805000 : 3780000);
         document.getElementById('pewa-bopd').value = s.bopd || 9750000;
-        document.getElementById('pewa-early').value = s.early_bird !== null ? s.early_bird : 1500000;
-        document.getElementById('pewa-aum').value = s.kader_aum !== null ? s.kader_aum : 1000000;
+        
+        // Sesuaikan dengan opsi dropdown
+        const valEarly = s.early_bird !== null ? s.early_bird : 1500000;
+        const selEarly = document.getElementById('pewa-early');
+        if([...selEarly.options].some(o => o.value == valEarly)) { selEarly.value = valEarly; } else { selEarly.value = "1500000"; }
+        
+        const valAum = s.kader_aum !== null ? s.kader_aum : 1000000;
+        const selAum = document.getElementById('pewa-aum');
+        if([...selAum.options].some(o => o.value == valAum)) { selAum.value = valAum; } else { selAum.value = "0"; }
+
         document.getElementById('modal-pewawancara').classList.replace('hidden', 'flex');
     }
 
