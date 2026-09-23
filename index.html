@@ -316,20 +316,51 @@
 
             <div id="panel-bendahara" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
-                    <h2 class="font-heading font-semibold text-lg text-brand-navy mb-4">Validasi Pembayaran (Transfer/Tunai)</h2>
-                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
-                        <table class="w-full text-left text-sm whitespace-nowrap">
-                            <thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100">
-                                <tr>
-                                    <th class="py-3.5 px-4">Nama / No PPDB</th>
-                                    <th class="py-3.5 px-4">Total Tagihan</th>
-                                    <th class="py-3.5 px-4 text-center">Tipe Transaksi</th>
-                                    <th class="py-3.5 px-4 text-center">Validasi Lunas</th>
-                                    <th class="py-3.5 px-4 text-center">Cetak Struk</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-bendahara" class="divide-y divide-gray-100 bg-white"></tbody>
-                        </table>
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="font-heading font-semibold text-lg text-brand-navy">Validasi Pembayaran</h2>
+                        <div class="flex gap-2 bg-gray-100 p-1 rounded-lg">
+                            <button onclick="switchTabBendahara('tunai')" id="tab-tunai" class="px-4 py-2 rounded-md text-sm font-medium bg-white shadow-sm text-brand-navy">Tunai</button>
+                            <button onclick="switchTabBendahara('transfer')" id="tab-transfer" class="px-4 py-2 rounded-md text-sm font-medium text-brand-muted hover:text-brand-navy">Transfer</button>
+                        </div>
+                    </div>
+
+                    <!-- TAB TUNAI -->
+                    <div id="view-tunai" class="space-y-4">
+                        <div class="relative w-full max-w-md mb-4">
+                            <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="filter-cari-tunai" onkeyup="renderBendaharaTunai()" class="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-brand-gold shadow-sm" placeholder="Ketik filter nama siswa (Tunai)...">
+                        </div>
+                        <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100">
+                                    <tr>
+                                        <th class="py-3.5 px-4">Nama / No PPDB</th>
+                                        <th class="py-3.5 px-4">Total Tagihan</th>
+                                        <th class="py-3.5 px-4 text-center">Status</th>
+                                        <th class="py-3.5 px-4 text-center">Aksi Kasir</th>
+                                        <th class="py-3.5 px-4 text-center">Struk</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-bendahara-tunai" class="divide-y divide-gray-100 bg-white"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- TAB TRANSFER -->
+                    <div id="view-transfer" class="hidden space-y-4">
+                        <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100">
+                                    <tr>
+                                        <th class="py-3.5 px-4">Nama / No PPDB</th>
+                                        <th class="py-3.5 px-4">Total Tagihan</th>
+                                        <th class="py-3.5 px-4 text-center">Status Validasi</th>
+                                        <th class="py-3.5 px-4 text-center">Cek Bukti</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-bendahara-transfer" class="divide-y divide-gray-100 bg-white"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -659,6 +690,26 @@
         </div>
         <div class="pt-4 mt-4 border-t shrink-0">
             <button onclick="simpanPewawancara()" id="btn-simpan-pewa" class="btn-press w-full bg-brand-navy text-white py-3.5 rounded-xl font-medium shadow-md">Simpan Biaya</button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-cek-transfer" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl flex flex-col slide-up">
+        <div class="flex justify-between items-center mb-4 border-b pb-4">
+            <h2 class="font-heading font-bold text-lg text-brand-navy">Cek Bukti Transfer</h2>
+            <button onclick="closeModal('modal-cek-transfer')" class="text-gray-400 hover:text-red-500"><i class="ph ph-x text-2xl"></i></button>
+        </div>
+        <div class="space-y-4 text-center">
+            <p id="tf-nama" class="font-bold text-brand-navy text-lg">Nama Siswa</p>
+            <p id="tf-tagihan" class="text-green-600 font-bold text-2xl">Rp 0</p>
+            <div class="border border-gray-200 rounded-xl p-2 bg-gray-50 h-64 flex items-center justify-center overflow-hidden shadow-inner">
+                <img id="tf-bukti" src="" alt="Bukti Transfer" class="max-h-full max-w-full object-contain">
+            </div>
+            <div class="flex gap-4 justify-center mt-4 pt-4 border-t">
+                <button onclick="prosesTransfer(false)" class="flex-1 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 rounded-xl border border-red-200 flex items-center justify-center gap-2 transition-colors"><i class="ph-bold ph-x text-lg"></i> Tolak / Batal</button>
+                <button onclick="prosesTransfer(true)" class="flex-1 bg-green-50 hover:bg-green-100 text-green-700 font-bold py-3 rounded-xl border border-green-200 flex items-center justify-center gap-2 transition-colors"><i class="ph-bold ph-check text-lg"></i> Validasi Lunas</button>
+            </div>
         </div>
     </div>
 </div>
@@ -1239,9 +1290,11 @@
                         parseInt(sAna.menyanyi_lagu_nasional)||0, 
                         parseInt(sAna.melafalkan_surat_pendek_doa_harian)||0, 
                         parseInt(sAna.interview)||0
-                    ], 
-                    backgroundColor: 'rgba(15, 39, 71, 0.2)', borderColor: '#0F2747', borderWidth: 2 
-                }] 
+                    ],
+                    backgroundColor: 'rgba(217, 164, 65, 0.2)',
+                    borderColor: 'rgba(217, 164, 65, 1)',
+                    pointBackgroundColor: 'rgba(217, 164, 65, 1)'
+                }]
             },
             options: { scales: { r: { min: 0, max: 100 } } }
         });
@@ -1249,80 +1302,198 @@
 
     function renderPewawancara() {
         const tbody = document.getElementById('tbody-pewawancara'); if(!tbody) return;
-        const q = document.getElementById('filter-cari-biaya')?.value.toLowerCase() || '';
-        const dataF = masterData.filter(s => (s.nama_murid||'').toLowerCase().includes(q));
-        tbody.innerHTML = dataF.map(sMaster => {
-            // Ambil data dari tabel keuangan
+        const q = (document.getElementById('filter-cari-biaya')?.value || '').toLowerCase();
+
+        const d = masterData.filter(s => !q || s.nama_murid?.toLowerCase().includes(q));
+
+        tbody.innerHTML = d.map(sMaster => {
             const sUang = keuanganData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
             return `<tr class="hover:bg-gray-50 border-b border-gray-50">
-                <td class="py-3 px-4"><a href="javascript:void(0)" onclick="bukaModalBiodata('${sMaster.id}')" class="font-semibold text-brand-navy hover:text-brand-gold hover:underline block">${sMaster.nama_murid||'-'}</a></td>
-                <td class="py-3 px-4 text-xs">A: ${sMaster.ayah||'-'}<br>I: ${sMaster.ibu||'-'}</td>
-                <td class="py-3 px-4 text-center text-xs font-bold text-green-700">${formatRp(sUang.daftar_ulang)}</td>
-                <td class="py-3 px-4 text-center text-xs font-bold text-blue-700">${formatRp(sUang.bopd)}</td>
-                <td class="py-3 px-4 text-center"><button onclick="bukaModalPewawancara('${sMaster.no_ppdb}', '${sMaster.jk}')" class="bg-brand-bg text-brand-navy border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-brand-gold hover:text-white transition-colors shadow-sm"><i class="ph-bold ph-wallet"></i> Set Biaya</button></td>
+                <td class="py-3 px-4"><a href="javascript:void(0)" onclick="bukaModalBiodata('${sMaster.id}')" class="font-medium text-brand-navy hover:text-brand-gold underline block">${sMaster.nama_murid || '-'}</a></td>
+                <td class="py-3 px-4 text-xs text-brand-muted">Ayah: ${sMaster.ayah || '-'}<br>Ibu: ${sMaster.ibu || '-'}</td>
+                <td class="py-3 px-4 font-mono text-sm">${formatRp(sUang.daftar_ulang || 0)}</td>
+                <td class="py-3 px-4 font-mono text-sm">${formatRp(sUang.bopd || 0)}</td>
+                <td class="py-3 px-4 text-center">
+                    <button onclick="bukaModalPewawancara('${sMaster.no_ppdb}')" class="bg-blue-50 text-blue-600 border border-blue-100 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-100 transition-colors"><i class="ph-bold ph-pencil-simple text-sm"></i> Kelola Biaya</button>
+                </td>
             </tr>`;
         }).join('');
     }
 
-    function bukaModalPewawancara(no_ppdb, jk) {
-        const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {};
+    function bukaModalPewawancara(no_ppdb) {
         document.getElementById('pewa-id').value = no_ppdb;
-        document.getElementById('pewa-daftar-ulang').value = sUang.daftar_ulang || (jk === 'P' ? 3805000 : 3780000);
-        document.getElementById('pewa-bopd').value = sUang.bopd || 9750000;
-        
-        const selEarly = document.getElementById('pewa-early');
-        selEarly.value = sUang.early_bird !== null && sUang.early_bird !== undefined ? sUang.early_bird : 1500000;
-        if(selEarly.selectedIndex === -1) selEarly.value = "1500000"; 
-        
-        const selAum = document.getElementById('pewa-aum');
-        selAum.value = sUang.kader_aum !== null && sUang.kader_aum !== undefined ? sUang.kader_aum : 1000000;
-        if(selAum.selectedIndex === -1) selAum.value = "1000000"; 
+        const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {};
+
+        document.getElementById('pewa-daftar-ulang').value = sUang.daftar_ulang || '3780000';
+        document.getElementById('pewa-bopd').value = sUang.bopd || '9750000';
+        document.getElementById('pewa-early').value = sUang.early_bird !== undefined ? sUang.early_bird : '1500000';
+        document.getElementById('pewa-aum').value = sUang.kader_aum !== undefined ? sUang.kader_aum : '1000000';
 
         document.getElementById('modal-pewawancara').classList.replace('hidden', 'flex');
     }
 
     async function simpanPewawancara() {
         const no_ppdb = document.getElementById('pewa-id').value;
-        const pl = { 
-            daftar_ulang: parseInt(document.getElementById('pewa-daftar-ulang').value)||0, 
-            bopd: parseInt(document.getElementById('pewa-bopd').value)||0, 
-            early_bird: parseInt(document.getElementById('pewa-early').value)||0, 
-            kader_aum: parseInt(document.getElementById('pewa-aum').value)||0
+        const btn = document.getElementById('btn-simpan-pewa');
+        const sMaster = masterData.find(x => x.no_ppdb === no_ppdb) || {};
+
+        const pl = {
+            password: sMaster.password || null,
+            tgl_pendaftaran: sMaster.tgl_pendaftaran || null,
+            nama_murid: sMaster.nama_murid || null,
+            jk: sMaster.jk || null,
+            tempat_lahir: sMaster.tempat_lahir || null,
+            tgl_lahir: sMaster.tgl_lahir || null,
+            alamat: sMaster.alamat || null,
+            tk: sMaster.tk || null,
+            ayah: sMaster.ayah || null,
+            agama_ayah: sMaster.agama_ayah || null,
+            pend_ayah: sMaster.pend_ayah || null,
+            pekrj_ayah: sMaster.pekrj_ayah || null,
+            ibu: sMaster.ibu || null,
+            agama_ibu: sMaster.agama_ibu || null,
+            pend_ibu: sMaster.pend_ibu || null,
+            pekrj_ibu: sMaster.pekrj_ibu || null,
+            daftar_ulang: parseInt(document.getElementById('pewa-daftar-ulang').value) || 0,
+            bopd: parseInt(document.getElementById('pewa-bopd').value) || 0,
+            early_bird: parseInt(document.getElementById('pewa-early').value) || 0,
+            kader_aum: parseInt(document.getElementById('pewa-aum').value) || 0
         };
-        const btn = document.getElementById('btn-simpan-pewa'); btn.disabled = true; btn.innerHTML = 'Processing...';
-        try { 
-            // Patch KHUSUS ke tabel keuangan
-            await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
-            showToast("Biaya Disimpan"); closeModal('modal-pewawancara'); loadData(); 
-        } catch(e) { }
+
+        btn.disabled = true; btn.innerHTML = 'Processing...';
+        try {
+            const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb);
+            if (sUang && sUang.id) {
+                await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
+            } else {
+                pl.no_ppdb = no_ppdb;
+                await apiRequest(`${SUPABASE_URL}keuangan`, 'POST', pl);
+            }
+            showToast("Biaya & Biodata Tersimpan (Upsert)!");
+            closeModal('modal-pewawancara');
+            loadData();
+        } catch (e) {}
         btn.disabled = false; btn.innerHTML = 'Simpan Biaya';
     }
 
+    let currentTfNoPpdb = '';
+
+    function switchTabBendahara(tab) {
+        if(tab === 'tunai') {
+            document.getElementById('tab-tunai').className = 'px-4 py-2 rounded-md text-sm font-medium bg-white shadow-sm text-brand-navy';
+            document.getElementById('tab-transfer').className = 'px-4 py-2 rounded-md text-sm font-medium text-brand-muted hover:text-brand-navy';
+            document.getElementById('view-tunai').classList.remove('hidden');
+            document.getElementById('view-transfer').classList.add('hidden');
+            renderBendaharaTunai();
+        } else {
+            document.getElementById('tab-transfer').className = 'px-4 py-2 rounded-md text-sm font-medium bg-white shadow-sm text-brand-navy';
+            document.getElementById('tab-tunai').className = 'px-4 py-2 rounded-md text-sm font-medium text-brand-muted hover:text-brand-navy';
+            document.getElementById('view-transfer').classList.remove('hidden');
+            document.getElementById('view-tunai').classList.add('hidden');
+            renderBendaharaTransfer();
+        }
+    }
+
+    function calculateTagihan(sUang) {
+        // Biaya Pendaftaran Default 300.000 jika kosong
+        const pendaftaran = (sUang.pendaftaran === null || sUang.pendaftaran === undefined) ? 300000 : parseInt(sUang.pendaftaran);
+        const daftarUlang = parseInt(sUang.daftar_ulang) || 0;
+        const bopd = parseInt(sUang.bopd) || 0;
+        const earlyBird = parseInt(sUang.early_bird) || 0;
+        const kaderAum = parseInt(sUang.kader_aum) || 0;
+        return pendaftaran + daftarUlang + bopd - earlyBird - kaderAum;
+    }
+
     function renderBendahara() {
-        const tbody = document.getElementById('tbody-bendahara'); if(!tbody) return;
-        tbody.innerHTML = masterData.map(sMaster => {
+        if(document.getElementById('view-transfer').classList.contains('hidden')) {
+            renderBendaharaTunai();
+        } else {
+            renderBendaharaTransfer();
+        }
+    }
+
+    function renderBendaharaTunai() {
+        const tbody = document.getElementById('tbody-bendahara-tunai'); if(!tbody) return;
+        const q = (document.getElementById('filter-cari-tunai')?.value || '').toLowerCase();
+        
+        const d = masterData.filter(s => {
+            if(q && !s.nama_murid?.toLowerCase().includes(q)) return false;
+            const sUang = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
+            return !sUang.bukti_transfer; 
+        });
+
+        tbody.innerHTML = d.map(sMaster => {
             const sUang = keuanganData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
-            const tot = (parseInt(sUang.pendaftaran)||0) + (parseInt(sUang.daftar_ulang)||0) + (parseInt(sUang.bopd)||0) - (parseInt(sUang.early_bird)||0) - (parseInt(sUang.kader_aum)||0);
-            const isTF = !!sUang.bukti_transfer;
+            const tot = calculateTagihan(sUang);
             return `
             <tr class="hover:bg-gray-50 border-b border-gray-50">
                 <td class="py-3 px-4"><p class="text-xs text-brand-muted font-mono">${sMaster.no_ppdb||'-'}</p><p class="font-medium text-brand-navy">${sMaster.nama_murid||'-'}</p></td>
-                <td class="py-3 px-4 font-bold">${formatRp(tot)}</td>
-                <td class="py-3 px-4 text-center">${isTF ? `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-bold border border-blue-200">Transfer</span><br><a href="${sUang.bukti_transfer}" target="_blank" class="text-[10px] text-blue-600 underline mt-1 block">Lihat Bukti</a>` : `<span class="bg-orange-100 text-orange-700 px-2 py-1 rounded text-[10px] font-bold border border-orange-200">Tunai</span>`}</td>
+                <td class="py-3 px-4 font-bold text-brand-navy">${formatRp(tot)}</td>
+                <td class="py-3 px-4 text-center">${sUang.konfirmasi ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold border border-green-200">Lunas</span>' : '<span class="bg-orange-100 text-orange-700 px-2 py-1 rounded text-[10px] font-bold border border-orange-200">Belum Lunas</span>'}</td>
                 <td class="py-3 px-4 text-center">
-                    ${sUang.konfirmasi ? `<button onclick="toggleValidasi('${sMaster.no_ppdb}', false)" class="text-red-500 bg-red-50 hover:bg-red-100 p-2 rounded-lg border border-red-100" title="Batal"><i class="ph-bold ph-x text-lg"></i></button>` : `<button onclick="toggleValidasi('${sMaster.no_ppdb}', true)" class="text-green-600 bg-green-50 hover:bg-green-100 p-2 rounded-lg border border-green-100" title="Validasi"><i class="ph-bold ph-check text-lg"></i></button>`}
+                    ${sUang.konfirmasi ? `<button onclick="toggleValidasi('${sMaster.no_ppdb}', false)" class="text-red-500 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg border border-red-100 text-xs font-bold transition-colors" title="Batal Lunas"><i class="ph-bold ph-x text-sm"></i> Batal</button>` : `<button onclick="toggleValidasi('${sMaster.no_ppdb}', true)" class="text-green-600 bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-lg border border-green-100 text-xs font-bold transition-colors" title="Validasi Lunas"><i class="ph-bold ph-check text-sm"></i> Validasi Tunai</button>`}
                 </td>
                 <td class="py-3 px-4 text-center">
-                    ${sUang.konfirmasi ? `<button onclick="cetakStruk('${sMaster.no_ppdb}', '${sMaster.nama_murid}', '${sUang.kasir}')" class="bg-brand-navy text-white px-3 py-1.5 rounded-lg text-xs font-medium"><i class="ph-fill ph-printer"></i> Struk</button>` : '-'}
+                    ${sUang.konfirmasi ? `<button onclick="cetakStruk('${sMaster.no_ppdb}', '${sMaster.nama_murid}', '${sUang.kasir}')" class="bg-brand-navy text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-brand-gold transition-colors"><i class="ph-fill ph-printer"></i> Struk</button>` : '-'}
                 </td>
             </tr>`;
         }).join('');
     }
 
+    function renderBendaharaTransfer() {
+        const tbody = document.getElementById('tbody-bendahara-transfer'); if(!tbody) return;
+        const d = masterData.filter(s => {
+            const sUang = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
+            return !!sUang.bukti_transfer; 
+        });
+
+        tbody.innerHTML = d.map(sMaster => {
+            const sUang = keuanganData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
+            const tot = calculateTagihan(sUang);
+            return `
+            <tr class="hover:bg-gray-50 border-b border-gray-50">
+                <td class="py-3 px-4"><p class="text-xs text-brand-muted font-mono">${sMaster.no_ppdb||'-'}</p><p class="font-medium text-brand-navy">${sMaster.nama_murid||'-'}</p></td>
+                <td class="py-3 px-4 font-bold text-brand-navy">${formatRp(tot)}</td>
+                <td class="py-3 px-4 text-center">${sUang.konfirmasi ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold border border-green-200">Valid & Lunas</span>' : '<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-[10px] font-bold border border-yellow-200">Menunggu Cek</span>'}</td>
+                <td class="py-3 px-4 text-center">
+                    <button onclick="bukaModalTransfer('${sMaster.no_ppdb}', '${sMaster.nama_murid}', ${tot}, '${sUang.bukti_transfer}')" class="bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors"><i class="ph-bold ph-eye text-sm"></i> Cek Transfer</button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    function bukaModalTransfer(no_ppdb, nama, tot, buktiUrl) {
+        currentTfNoPpdb = no_ppdb;
+        document.getElementById('tf-nama').innerText = nama;
+        document.getElementById('tf-tagihan').innerText = formatRp(tot);
+        document.getElementById('tf-bukti').src = buktiUrl || 'https://placehold.co/400x300/f8fafc/94a3b8?text=Tidak+Ada+Gambar';
+        document.getElementById('modal-cek-transfer').classList.replace('hidden', 'flex');
+    }
+
+    async function prosesTransfer(isValid) {
+        if(!currentTfNoPpdb) return;
+        await toggleValidasi(currentTfNoPpdb, isValid);
+        closeModal('modal-cek-transfer');
+    }
+
     async function toggleValidasi(no_ppdb, ok) {
+        const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {};
+        // Memastikan Pendaftaran 300.000 tersimpan ke DB jika sebelumnya kosong
+        const pendaftaran = (sUang.pendaftaran === null || sUang.pendaftaran === undefined) ? 300000 : parseInt(sUang.pendaftaran);
+        
         try { 
-            await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', { konfirmasi: ok, kasir: ok ? currentUsername : null });
-            showToast(ok ? "Tervalidasi Lunas" : "Validasi Dibatalkan"); loadData(); 
+            const res = await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', { 
+                konfirmasi: ok, 
+                kasir: ok ? currentUsername : null,
+                pendaftaran: pendaftaran
+            });
+            const dbErr = await cekSupabaseError(res);
+            if(dbErr) {
+                showToast(`Gagal Validasi: ${dbErr}`, true);
+                return;
+            }
+            showToast(ok ? "Tervalidasi Lunas" : "Validasi Dibatalkan"); 
+            loadData(); 
         } catch(e) { }
     }
 
