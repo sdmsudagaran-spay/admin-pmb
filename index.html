@@ -887,8 +887,6 @@
                     `;
                 } 
                 else if (panelType === 'sekretaris') {
-                    // Escape single quotes untuk fungsi JS onclick
-                    const safeNameForHapus = (student.nama_murid || '').replace(/'/g, "\\'");
                     tr.innerHTML = `
                         <td class="p-4 text-brand-muted">${index + 1}</td>
                         <td class="p-4 font-mono text-sm">${student.no_ppdb || '-'}</td>
@@ -897,9 +895,80 @@
                         <td class="p-4 text-xs text-brand-muted">${student.tgl_daftar || '-'}</td>
                         <td class="p-4 text-center">
                             <div class="flex justify-center gap-1">
-                                <button onclick="bukaModalForm(${student.id})" class="text-blue-600 hover:bg-blue-50 p-2 rounded-lg btn-press" title="Edit Siswa"><i class="ph-bold ph-pencil-simple text-lg"></i></button>
-                                <button onclick="konfirmasiHapus(${student.id}, '${safeNameForHapus}')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg btn-press" title="Hapus Siswa"><i class="ph-bold ph-trash text-lg"></i></button>
+                                <button onclick="bukaModalForm('${student.id}')" class="text-blue-600 hover:bg-blue-50 p-2 rounded-lg btn-press" title="Edit Siswa"><i class="ph-bold ph-pencil-simple text-lg"></i></button>
+                                <button onclick="konfirmasiHapus('${student.id}')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg btn-press" title="Hapus Siswa"><i class="ph-bold ph-trash text-lg"></i></button>
                             </div>
+                        </td>
+                    `;
+                }
+                else if (panelType === 'bendahara') {
+                    const btnKonfirmasi = student.konfirmasi
+                        ? `<button class="text-green-600 p-1.5 opacity-50 cursor-not-allowed" title="Sudah Lunas"><i class="ph-fill ph-check-circle text-xl"></i></button>`
+                        : `<button onclick="bukaModalKonfirmasi('${student.id}')" class="bg-brand-gold text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-yellow-600 btn-press">Validasi</button>`;
+                    
+                    const teksBukti = student.bukti_transfer ? `<span class="text-xs text-blue-600 underline cursor-pointer">Lihat</span>` : `<span class="text-[10px] text-gray-400">Belum ada</span>`;
+
+                    tr.innerHTML = `
+                        <td class="p-4 text-brand-muted">${index + 1}</td>
+                        <td class="p-4 font-mono text-xs">${student.no_ppdb || '-'}</td>
+                        <td class="p-4 font-medium text-brand-navy text-sm">${student.nama_murid || '-'}</td>
+                        <td class="p-4 text-center">${teksBukti}</td>
+                        <td class="p-4 text-center">${badgeLunas}</td>
+                        <td class="p-4 text-center">${btnKonfirmasi}</td>
+                    `;
+                }
+                else if (panelType === 'pewawancara') {
+                    const btnNilai = scoreWawancara > 0
+                        ? `<button onclick="bukaModalNilai('${student.id}')" class="text-brand-gold p-2 rounded-lg hover:bg-orange-50 btn-press"><i class="ph-bold ph-pencil-simple text-lg"></i></button>`
+                        : `<button onclick="bukaModalNilai('${student.id}')" class="bg-brand-navy text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-opacity-90 btn-press">Beri Nilai</button>`;
+
+                    tr.innerHTML = `
+                        <td class="p-4 text-brand-muted">${index + 1}</td>
+                        <td class="p-4 font-medium text-brand-navy text-sm">${student.nama_murid || '-'}</td>
+                        <td class="p-4 text-center">${badgeWawancara}</td>
+                        <td class="p-4 text-center text-[10px] uppercase font-bold ${scoreWawancara > 0 ? 'text-green-600' : 'text-brand-muted'}">${scoreWawancara > 0 ? 'Selesai' : 'Belum'}</td>
+                        <td class="p-4 text-center">${btnNilai}</td>
+                    `;
+                }
+                else if (panelType === 'penganalisis') {
+                    // Hitung rata-rata skor kesiapan dengan parsing Number yang aman
+                    let v1 = Number(student.mengenal_huruf) || 0;
+                    let v2 = Number(student.mengenal_bilangan) || 0;
+                    let v3 = Number(student.menggunting_dan_menempel_puzzle) || 0;
+                    let v4 = Number(student.melafalkan_surat_pendek_doa_harian) || 0;
+                    let v5 = Number(student.menyanyi_lagu_nasional) || 0;
+                    let totalSkor = v1 + v2 + v3 + v4 + v5;
+                    let avg = totalSkor / 5;
+                    let avgDisplay = isNaN(avg) || avg === 0 ? '-' : avg.toFixed(1);
+
+                    tr.innerHTML = `
+                        <td class="p-4 font-medium text-brand-navy text-sm">${student.nama_murid || '-'}</td>
+                        <td class="p-4 text-center text-sm font-bold text-brand-gold">${avgDisplay}</td>
+                        <td class="p-4 text-center">
+                            <div class="flex justify-center gap-2">
+                                <button onclick="tampilkanGrafik('${student.id}')" class="bg-purple-100 text-purple-700 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-purple-200 btn-press flex items-center gap-1">
+                                    <i class="ph-bold ph-chart-polar"></i> Grafik
+                                </button>
+                                <button onclick="bukaModalAnalisis('${student.id}')" class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-200 btn-press flex items-center gap-1">
+                                    <i class="ph-bold ph-pencil-simple"></i> Input
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                }
+                else if (panelType === 'perlengkapan') {
+                    const chkBuku = student.perlengkapan_buku ? 'checked' : '';
+                    const chkSeragam = student.perlengkapan_seragam ? 'checked' : '';
+                    
+                    tr.innerHTML = `
+                        <td class="p-4 text-brand-muted">${index + 1}</td>
+                        <td class="p-4 font-medium text-brand-navy text-sm">${student.nama_murid || '-'}</td>
+                        <td class="p-4 text-center text-sm font-bold">${student.ukuran_seragam || '-'}</td>
+                        <td class="p-4 text-center">
+                            <input type="checkbox" ${chkBuku} onchange="updatePerlengkapan('${student.id}', 'buku', this.checked)" class="w-5 h-5 text-brand-navy rounded focus:ring-brand-gold cursor-pointer">
+                        </td>
+                        <td class="p-4 text-center">
+                            <input type="checkbox" ${chkSeragam} onchange="updatePerlengkapan('${student.id}', 'seragam', this.checked)" class="w-5 h-5 text-brand-navy rounded focus:ring-brand-gold cursor-pointer">
                         </td>
                     `;
                 }
@@ -976,7 +1045,7 @@
 
         // --- Modal Handlers ---
         function bukaModalNilai(id) {
-            const student = allStudentsData.find(s => s.id === id);
+            const student = allStudentsData.find(s => String(s.id) === String(id));
             if (!student) return;
             document.getElementById('modal-nilai-id').value = id;
             document.getElementById('modal-nilai-nama').innerText = student.nama_murid || '-';
@@ -985,7 +1054,7 @@
         }
 
         function bukaModalKonfirmasi(id) {
-            const student = allStudentsData.find(s => s.id === id);
+            const student = allStudentsData.find(s => String(s.id) === String(id));
             if (!student) return;
             document.getElementById('modal-konf-id').value = id;
             document.getElementById('modal-konf-nama').innerText = student.nama_murid || '-';
@@ -1006,7 +1075,7 @@
             if (id) {
                 // Mode Edit
                 titleEl.innerText = "Edit Data Siswa";
-                const student = allStudentsData.find(s => s.id === id);
+                const student = allStudentsData.find(s => String(s.id) === String(id));
                 if (student) {
                     document.getElementById('form-nama').value = student.nama_murid || '';
                     document.getElementById('form-no').value = student.no_ppdb || '';
@@ -1077,7 +1146,7 @@
                     
                     // Update UI seketika tanpa harus fetch ulang semua data (Lebih Cepat)
                     if (currentEditId) {
-                        const student = allStudentsData.find(s => s.id === currentEditId);
+                        const student = allStudentsData.find(s => String(s.id) === String(currentEditId));
                         if (student) {
                             student.nama_murid = payload.nama_murid;
                             student.no_ppdb = payload.no_ppdb;
@@ -1102,9 +1171,12 @@
         }
 
         // --- Hapus Data Siswa ---
-        function konfirmasiHapus(id, nama) {
+        function konfirmasiHapus(id) {
+            const student = allStudentsData.find(s => String(s.id) === String(id));
+            if (!student) return;
+            
             document.getElementById('confirm-id').value = id;
-            document.getElementById('confirm-nama').innerText = nama || 'Siswa Ini';
+            document.getElementById('confirm-nama').innerText = student.nama_murid || 'Siswa Ini';
             document.getElementById('modal-confirm').classList.add('active');
         }
 
@@ -1145,7 +1217,7 @@
         let currentAnalisisNama = "";
         
         function bukaModalAnalisis(id) {
-            const student = allStudentsData.find(s => s.id === id);
+            const student = allStudentsData.find(s => String(s.id) === String(id));
             if (!student) return;
             
             currentAnalisisNama = student.nama_murid || '';
@@ -1199,7 +1271,7 @@
         }
 
         async function simpanAnalisis() {
-            const id = parseInt(document.getElementById('modal-analisis-id').value);
+            const id = document.getElementById('modal-analisis-id').value;
             
             const getVal = (elId) => {
                 const v = document.getElementById(elId).value;
@@ -1243,7 +1315,7 @@
                     showToast("Nilai analisis berhasil disimpan ke database!", "success");
                     
                     // Update Local UI seketika agar grafik dan tabel langsung berubah
-                    const student = allStudentsData.find(s => s.id === id);
+                    const student = allStudentsData.find(s => String(s.id) === String(id));
                     if(student) {
                         student.mengenal_huruf = payload.mengenal_huruf;
                         student.mengenal_bilangan = payload.mengenal_bilangan;
@@ -1273,7 +1345,7 @@
 
         // --- Action Handlers ---
         async function simpanNilai() {
-            const id = parseInt(document.getElementById('modal-nilai-id').value);
+            const id = document.getElementById('modal-nilai-id').value;
             const val = parseInt(document.getElementById('modal-nilai-input').value);
             
             if(isNaN(val) || val < 0 || val > 100) {
@@ -1281,7 +1353,7 @@
             }
 
             // Update UI secara langsung
-            const student = allStudentsData.find(s => s.id === id);
+            const student = allStudentsData.find(s => String(s.id) === String(id));
             if(student) student.interview = val;
 
             closeModal('modal-nilai');
@@ -1310,10 +1382,10 @@
         }
 
         async function prosesKonfirmasi() {
-            const id = parseInt(document.getElementById('modal-konf-id').value);
+            const id = document.getElementById('modal-konf-id').value;
             
             // Update UI secara langsung
-            const student = allStudentsData.find(s => s.id === id);
+            const student = allStudentsData.find(s => String(s.id) === String(id));
             if(student) student.konfirmasi = true;
 
             closeModal('modal-konfirmasi');
@@ -1342,7 +1414,7 @@
         }
 
         async function updatePerlengkapan(id, tipe, isChecked) {
-            const student = allStudentsData.find(s => s.id === id);
+            const student = allStudentsData.find(s => String(s.id) === String(id));
             let updatePayload = {};
             
             if(student) {
@@ -1379,7 +1451,7 @@
 
         // --- Penganalisis Chart Logic ---
         function tampilkanGrafik(id) {
-            const student = allStudentsData.find(s => s.id === id);
+            const student = allStudentsData.find(s => String(s.id) === String(id));
             if(!student) return;
 
             document.getElementById('chart-placeholder').classList.add('hidden');
@@ -1388,12 +1460,12 @@
             document.getElementById('chart-student-name').innerText = `Data: ${student.nama_murid}`;
 
             const dataPoints = [
-                student.mengenal_huruf || 0,
-                student.mengenal_bilangan || 0,
-                student.menggunting_dan_menempel_puzzle || 0,
-                student.melafalkan_surat_pendek_doa_harian || 0,
-                student.menyanyi_lagu_nasional || 0,
-                student.interview || 0
+                Number(student.mengenal_huruf) || 0,
+                Number(student.mengenal_bilangan) || 0,
+                Number(student.menggunting_dan_menempel_puzzle) || 0,
+                Number(student.melafalkan_surat_pendek_doa_harian) || 0,
+                Number(student.menyanyi_lagu_nasional) || 0,
+                Number(student.interview) || 0
             ];
 
             if (radarChartInstance) {
