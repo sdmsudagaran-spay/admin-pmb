@@ -53,7 +53,7 @@
         <div class="space-y-4">
             <div>
                 <label class="block text-sm font-medium text-brand-navy mb-1">Username Staf</label>
-                <input type="text" id="login-username" onkeydown="if(event.key === 'Enter') handleLogin()" class="w-full bg-brand-bg border border-gray-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-brand-gold transition-colors" placeholder="admin / sekretaris / bendahara...">
+                <input type="text" id="login-username" onkeydown="if(event.key === 'Enter') handleLogin()" class="w-full bg-brand-bg border border-gray-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-brand-gold transition-colors" placeholder="Ketik username...">
             </div>
             <div>
                 <label class="block text-sm font-medium text-brand-navy mb-1">Password</label>
@@ -117,12 +117,79 @@
 
         <div id="panel-container" class="flex-1 overflow-y-auto p-4 sm:p-8 pb-24 relative z-0">
             
+            <div id="panel-akun-progress" class="panel-view hidden space-y-6">
+                <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h2 class="font-heading font-semibold text-lg text-brand-navy">Akun & Progres Siswa</h2>
+                            <p class="text-xs text-brand-muted mt-1">Klik nama untuk melihat biodata.</p>
+                        </div>
+                        <button onclick="bukaModalMassal()" class="btn-press bg-brand-gold text-white px-4 py-2.5 rounded-xl text-sm font-medium shadow-md hover:bg-opacity-90 flex items-center gap-2">
+                            <i class="ph-bold ph-check-square-offset"></i> Update Terpilih
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100">
+                                <tr>
+                                    <th class="py-3.5 px-4 text-center w-10">
+                                        <input type="checkbox" id="check-all" onchange="toggleCheckAll(this)" class="rounded text-brand-gold w-4 h-4 cursor-pointer focus:ring-brand-gold">
+                                    </th>
+                                    <th class="py-3.5 px-4">Nama Lengkap</th>
+                                    <th class="py-3.5 px-4">Ruang Ujian</th>
+                                    <th class="py-3.5 px-4 text-center">Kelola Timeline</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-akun-progress" class="divide-y divide-gray-100 bg-white"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-pengaturan" class="panel-view hidden space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
+                        <div class="flex items-center gap-2 mb-4">
+                            <i class="ph-fill ph-git-commit text-brand-gold text-2xl"></i>
+                            <h2 class="font-heading font-semibold text-lg text-brand-navy">Kustomisasi Label Timeline</h2>
+                        </div>
+                        <p class="text-xs text-brand-muted mb-4">Teks yang akan muncul di aplikasi Admin dan User. Tersimpan di database.</p>
+                        <div class="space-y-3">
+                            <div><label class="text-xs font-medium text-brand-navy block">Tahap 1</label><input type="text" id="tl-1" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm"></div>
+                            <div><label class="text-xs font-medium text-brand-navy block">Tahap 2</label><input type="text" id="tl-2" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm"></div>
+                            <div><label class="text-xs font-medium text-brand-navy block">Tahap 3</label><input type="text" id="tl-3" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm"></div>
+                            <div><label class="text-xs font-medium text-brand-navy block">Tahap 4</label><input type="text" id="tl-4" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm"></div>
+                            <button onclick="simpanPengaturanDB('timeline')" class="btn-press w-full bg-brand-navy text-white rounded-lg py-2.5 text-sm mt-2 font-medium">Update Timeline</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
+                        <div class="flex items-center gap-2 mb-4">
+                            <i class="ph-fill ph-megaphone text-blue-500 text-2xl"></i>
+                            <h2 class="font-heading font-semibold text-lg text-brand-navy">Pengumuman Dashboard</h2>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="text-xs font-medium text-brand-navy block mb-1">Tipe</label>
+                                    <select id="info-tipe" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm"><option value="INFO">INFO (Biru)</option><option value="PENTING">PENTING (Merah)</option></select>
+                                </div>
+                                <div><label class="text-xs font-medium text-brand-navy block mb-1">Waktu</label>
+                                    <input type="text" id="info-waktu" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm" placeholder="Misal: Baru saja">
+                                </div>
+                            </div>
+                            <div><label class="text-xs font-medium text-brand-navy block">Judul Pengumuman</label><input type="text" id="info-judul" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm"></div>
+                            <div><label class="text-xs font-medium text-brand-navy block">Isi Pesan</label><textarea id="info-isi" rows="3" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm resize-none"></textarea></div>
+                            <button onclick="simpanPengaturanDB('pengumuman')" class="btn-press w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2.5 text-sm mt-2 font-medium">Broadcast Pengumuman</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="panel-menu-app" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-6">
                         <div>
-                            <h2 class="font-heading font-semibold text-lg text-brand-navy">Manajemen Menu App (Tabel menu_aplikasi)</h2>
-                            <p class="text-xs text-brand-muted mt-1">Atur menu aplikasi yang tersimpan di database.</p>
+                            <h2 class="font-heading font-semibold text-lg text-brand-navy">Manajemen Menu App</h2>
                         </div>
                     </div>
                     <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
@@ -142,12 +209,35 @@
                 </div>
             </div>
 
+            <div id="panel-kelola-akses" class="panel-view hidden space-y-6">
+                <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="font-heading font-semibold text-lg text-brand-navy">Manajemen Akun Staf</h2>
+                        <button onclick="bukaModalStaf()" class="btn-press bg-brand-navy text-white px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-md">
+                            <i class="ph-bold ph-user-plus"></i> Tambah Akun
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100">
+                                <tr>
+                                    <th class="py-3.5 px-4">Username</th>
+                                    <th class="py-3.5 px-4">Role Akses</th>
+                                    <th class="py-3.5 px-4 text-center">Kelola</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-staf" class="divide-y divide-gray-100 bg-white"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <div id="panel-sekretaris" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-6">
                         <div>
                             <h2 class="font-heading font-semibold text-lg text-brand-navy">Master Siswa (Sekretaris)</h2>
-                            <p class="text-xs text-brand-muted mt-1">Tambah data dan otomatis generate Password.</p>
+                            <p class="text-xs text-brand-muted mt-1">Data master tersimpan pada tabel pendaftar, otomatis integrasi ke panel lain.</p>
                         </div>
                         <button onclick="bukaModalFormSiswa()" class="btn-press bg-brand-navy text-white px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-md hover:bg-opacity-90">
                             <i class="ph ph-plus font-bold"></i> Tambah Siswa
@@ -158,7 +248,7 @@
                             <thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100">
                                 <tr>
                                     <th class="py-3.5 px-4">No PPDB</th>
-                                    <th class="py-3.5 px-4">Password (Kolom: No)</th>
+                                    <th class="py-3.5 px-4">Password (No)</th>
                                     <th class="py-3.5 px-4">Nama Lengkap</th>
                                     <th class="py-3.5 px-4 text-center">Aksi</th>
                                 </tr>
@@ -264,102 +354,9 @@
                 </div>
             </div>
 
-            <div id="panel-akun-progress" class="panel-view hidden space-y-6">
-                <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
-                    <div class="flex justify-between items-center mb-4">
-                        <div>
-                            <h2 class="font-heading font-semibold text-lg text-brand-navy">Akun & Progres Siswa</h2>
-                            <p class="text-xs text-brand-muted mt-1">Klik nama untuk melihat biodata.</p>
-                        </div>
-                        <button onclick="bukaModalMassal()" class="btn-press bg-brand-gold text-white px-4 py-2.5 rounded-xl text-sm font-medium shadow-md hover:bg-opacity-90 flex items-center gap-2">
-                            <i class="ph-bold ph-check-square-offset"></i> Update Terpilih
-                        </button>
-                    </div>
-                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
-                        <table class="w-full text-left text-sm whitespace-nowrap">
-                            <thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100">
-                                <tr>
-                                    <th class="py-3.5 px-4 text-center w-10">
-                                        <input type="checkbox" id="check-all" onchange="toggleCheckAll(this)" class="rounded text-brand-gold w-4 h-4 cursor-pointer focus:ring-brand-gold">
-                                    </th>
-                                    <th class="py-3.5 px-4">Nama Lengkap</th>
-                                    <th class="py-3.5 px-4">Ruang Ujian</th>
-                                    <th class="py-3.5 px-4 text-center">Kelola Timeline</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-akun-progress" class="divide-y divide-gray-100 bg-white"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="panel-pengaturan" class="panel-view hidden space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
-                        <div class="flex items-center gap-2 mb-4">
-                            <i class="ph-fill ph-git-commit text-brand-gold text-2xl"></i>
-                            <h2 class="font-heading font-semibold text-lg text-brand-navy">Kustomisasi Label Timeline</h2>
-                        </div>
-                        <p class="text-xs text-brand-muted mb-4">Teks yang akan muncul di aplikasi Admin dan User. Tersimpan di <strong>tabel pengaturan_sistem</strong>.</p>
-                        <div class="space-y-3">
-                            <div><label class="text-xs font-medium text-brand-navy block">Tahap 1</label><input type="text" id="tl-1" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm"></div>
-                            <div><label class="text-xs font-medium text-brand-navy block">Tahap 2</label><input type="text" id="tl-2" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm"></div>
-                            <div><label class="text-xs font-medium text-brand-navy block">Tahap 3</label><input type="text" id="tl-3" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm"></div>
-                            <div><label class="text-xs font-medium text-brand-navy block">Tahap 4</label><input type="text" id="tl-4" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm"></div>
-                            <button onclick="simpanPengaturanDB('timeline')" class="btn-press w-full bg-brand-navy text-white rounded-lg py-2.5 text-sm mt-2 font-medium">Update Timeline ke Database</button>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
-                        <div class="flex items-center gap-2 mb-4">
-                            <i class="ph-fill ph-megaphone text-blue-500 text-2xl"></i>
-                            <h2 class="font-heading font-semibold text-lg text-brand-navy">Pengumuman Dashboard Manual</h2>
-                        </div>
-                        <div class="space-y-3">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div><label class="text-xs font-medium text-brand-navy block mb-1">Tipe</label>
-                                    <select id="info-tipe" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm"><option value="INFO">INFO (Biru)</option><option value="PENTING">PENTING (Merah)</option></select>
-                                </div>
-                                <div><label class="text-xs font-medium text-brand-navy block mb-1">Waktu</label>
-                                    <input type="text" id="info-waktu" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm" placeholder="Misal: Baru saja">
-                                </div>
-                            </div>
-                            <div><label class="text-xs font-medium text-brand-navy block">Judul Pengumuman</label><input type="text" id="info-judul" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm"></div>
-                            <div><label class="text-xs font-medium text-brand-navy block">Isi Pesan</label><textarea id="info-isi" rows="3" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm resize-none"></textarea></div>
-                            <button onclick="simpanPengaturanDB('pengumuman')" class="btn-press w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2.5 text-sm mt-2 font-medium">Simpan & Broadcast ke Database</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="panel-kelola-akses" class="panel-view hidden space-y-6">
-                <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="font-heading font-semibold text-lg text-brand-navy">Manajemen Akun Staf</h2>
-                        <button onclick="bukaModalStaf()" class="btn-press bg-brand-navy text-white px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-md">
-                            <i class="ph-bold ph-user-plus"></i> Tambah Akun
-                        </button>
-                    </div>
-                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
-                        <table class="w-full text-left text-sm whitespace-nowrap">
-                            <thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100">
-                                <tr>
-                                    <th class="py-3.5 px-4">Username</th>
-                                    <th class="py-3.5 px-4">Role Akses</th>
-                                    <th class="py-3.5 px-4 text-center">Kelola</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-staf" class="divide-y divide-gray-100 bg-white"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </main>
 </div>
-
-<!-- ================= MODALS ================= -->
 
 <div id="modal-menu-app" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl slide-up flex flex-col">
@@ -370,7 +367,7 @@
         <div class="space-y-4">
             <input type="hidden" id="menu-id">
             <div><label class="text-xs font-medium text-brand-navy block mb-1">Nama Menu</label><input type="text" id="menu-nama" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></div>
-            <div><label class="text-xs font-medium text-brand-navy block mb-1">Navigasi Letak (Path)</label><input type="text" id="menu-letak" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Contoh: /timeline atau modul_x"></div>
+            <div><label class="text-xs font-medium text-brand-navy block mb-1">Navigasi Letak (Path)</label><input type="text" id="menu-letak" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Contoh: /timeline"></div>
             <div><label class="text-xs font-medium text-brand-navy block mb-1">Status Aktif</label>
                 <select id="menu-aktif" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm">
                     <option value="true">Aktif (Ditampilkan)</option>
@@ -384,6 +381,59 @@
     </div>
 </div>
 
+<div id="modal-akun" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl flex flex-col slide-up">
+        <div class="flex justify-between items-center mb-4 border-b pb-4">
+            <h2 id="modal-akun-title" class="font-heading font-bold text-lg text-brand-navy">Kelola Ruang & Progress</h2>
+            <button onclick="closeModal('modal-akun')" class="text-gray-400 hover:text-red-500"><i class="ph ph-x text-2xl"></i></button>
+        </div>
+        <div class="space-y-4">
+            <input type="hidden" id="akun-id-target">
+            <div><label class="text-xs font-medium text-brand-navy block mb-1">Ruang Ujian / Lokasi</label><input type="text" id="akun-ruang" class="w-full border rounded-lg p-2.5 text-sm focus:border-brand-gold" placeholder="Contoh: Ruang Utama"></div>
+            <div>
+                <label class="text-xs font-medium text-brand-navy block mb-2">Checklist Timeline (Terselesaikan)</label>
+                <div class="space-y-2 text-sm bg-gray-50 p-3 rounded-lg border border-gray-200">
+                    <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" id="chk-tl1" class="w-4 h-4 rounded text-brand-gold accent-brand-gold"> <span class="lbl-tl-1">Pendaftaran Online</span></label>
+                    <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" id="chk-tl2" class="w-4 h-4 rounded text-brand-gold accent-brand-gold"> <span class="lbl-tl-2">Melengkapi Dokumen</span></label>
+                    <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" id="chk-tl3" class="w-4 h-4 rounded text-brand-gold accent-brand-gold"> <span class="lbl-tl-3">Verifikasi Berkas</span></label>
+                    <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" id="chk-tl4" class="w-4 h-4 rounded text-brand-gold accent-brand-gold"> <span class="lbl-tl-4">Tes Kesiapan & Lulus</span></label>
+                </div>
+            </div>
+        </div>
+        <div class="pt-4 mt-4 border-t shrink-0">
+            <button onclick="simpanAkunProgress()" id="btn-simpan-akun" class="btn-press w-full bg-brand-navy text-white py-3.5 rounded-xl font-medium shadow-md">Simpan Perubahan</button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-staf" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl flex flex-col slide-up">
+        <div class="flex justify-between items-center mb-4 border-b pb-4">
+            <h2 class="font-heading font-bold text-lg text-brand-navy">Kelola Akun Staf</h2>
+            <button onclick="closeModal('modal-staf')" class="text-gray-400 hover:text-red-500"><i class="ph ph-x text-2xl"></i></button>
+        </div>
+        <div class="space-y-4">
+            <input type="hidden" id="staf-id">
+            <div><label class="text-xs font-medium text-brand-navy block mb-1">Username</label><input type="text" id="staf-username" class="w-full border rounded-lg p-2.5 text-sm" placeholder="Ketik nama staf"></div>
+            <div><label class="text-xs font-medium text-brand-navy block mb-1">Password</label><input type="text" id="staf-password" class="w-full border rounded-lg p-2.5 text-sm" value="berkah"></div>
+            <div>
+                <label class="text-xs font-medium text-brand-navy block mb-2">Role Akses (Bisa > 1)</label>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <label class="flex items-center gap-2 border p-2 rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100"><input type="checkbox" value="admin" class="chk-role accent-brand-gold"> Admin / Pengaturan</label>
+                    <label class="flex items-center gap-2 border p-2 rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100"><input type="checkbox" value="sekretaris" class="chk-role accent-brand-gold"> Master Siswa</label>
+                    <label class="flex items-center gap-2 border p-2 rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100"><input type="checkbox" value="penganalisis" class="chk-role accent-brand-gold"> Input Nilai</label>
+                    <label class="flex items-center gap-2 border p-2 rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100"><input type="checkbox" value="pewawancara" class="chk-role accent-brand-gold"> Biaya Ortu</label>
+                    <label class="flex items-center gap-2 border p-2 rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100"><input type="checkbox" value="bendahara" class="chk-role accent-brand-gold"> Pembayaran</label>
+                    <label class="flex items-center gap-2 border p-2 rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100"><input type="checkbox" value="perlengkapan" class="chk-role accent-brand-gold"> Perlengkapan</label>
+                </div>
+            </div>
+        </div>
+        <div class="pt-4 mt-5 border-t shrink-0">
+            <button onclick="simpanStaf()" class="btn-press w-full bg-brand-navy text-white py-3.5 rounded-xl font-medium shadow-md">Simpan Akun Staf</button>
+        </div>
+    </div>
+</div>
+
 <div id="modal-form-siswa" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl slide-up">
         <div class="flex justify-between items-center mb-4 border-b pb-4 shrink-0">
@@ -393,7 +443,7 @@
         
         <div class="flex-1 overflow-y-auto no-scrollbar space-y-4 px-1 pb-4">
             <input type="hidden" id="fs-id">
-            <input type="hidden" id="fs-panggilan"> <!-- Hidden, auto generated -->
+            <input type="hidden" id="fs-panggilan">
             
             <h3 class="font-bold text-brand-gold text-sm border-b border-gray-100 pb-1 mt-2 uppercase tracking-wide">Data Pribadi & Akses</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -527,7 +577,6 @@
     </div>
 </div>
 
-<!-- MODAL PEWAWANCARA BIAYA -->
 <div id="modal-pewawancara" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl slide-up flex flex-col">
         <div class="flex justify-between items-center mb-4 border-b pb-4">
@@ -575,7 +624,6 @@
     </div>
 </div>
 
-<!-- MODAL PERLENGKAPAN CHECKLIST -->
 <div id="modal-perlengkapan" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-lg max-h-[90vh] flex flex-col shadow-2xl slide-up">
         <div class="flex justify-between items-center mb-4 border-b pb-4 shrink-0">
@@ -617,66 +665,14 @@
     </div>
 </div>
 
-<!-- MODAL AKUN & PROGRESS -->
-<div id="modal-akun" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
-    <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl flex flex-col slide-up">
-        <div class="flex justify-between items-center mb-4 border-b pb-4">
-            <h2 id="modal-akun-title" class="font-heading font-bold text-lg text-brand-navy">Kelola Ruang & Progress</h2>
-            <button onclick="closeModal('modal-akun')" class="text-gray-400 hover:text-red-500"><i class="ph ph-x text-2xl"></i></button>
-        </div>
-        <div class="space-y-4">
-            <input type="hidden" id="akun-id-target">
-            <div><label class="text-xs font-medium text-brand-navy block mb-1">Ruang Ujian / Lokasi</label><input type="text" id="akun-ruang" class="w-full border rounded-lg p-2.5 text-sm focus:border-brand-gold" placeholder="Contoh: Ruang Utama"></div>
-            <div>
-                <label class="text-xs font-medium text-brand-navy block mb-2">Checklist Timeline (Terselesaikan)</label>
-                <div class="space-y-2 text-sm bg-gray-50 p-3 rounded-lg border border-gray-200">
-                    <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" id="chk-tl1" class="w-4 h-4 rounded text-brand-gold accent-brand-gold"> <span class="lbl-tl-1">Pendaftaran Online</span></label>
-                    <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" id="chk-tl2" class="w-4 h-4 rounded text-brand-gold accent-brand-gold"> <span class="lbl-tl-2">Melengkapi Dokumen</span></label>
-                    <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" id="chk-tl3" class="w-4 h-4 rounded text-brand-gold accent-brand-gold"> <span class="lbl-tl-3">Verifikasi Berkas</span></label>
-                    <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" id="chk-tl4" class="w-4 h-4 rounded text-brand-gold accent-brand-gold"> <span class="lbl-tl-4">Tes Kesiapan & Lulus</span></label>
-                </div>
-            </div>
-        </div>
-        <div class="pt-4 mt-4 border-t shrink-0">
-            <button onclick="simpanAkunProgress()" id="btn-simpan-akun" class="btn-press w-full bg-brand-navy text-white py-3.5 rounded-xl font-medium shadow-md">Simpan Perubahan</button>
-        </div>
-    </div>
-</div>
-
-<!-- MODAL KELOLA STAF -->
-<div id="modal-staf" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
-    <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl flex flex-col slide-up">
-        <div class="flex justify-between items-center mb-4 border-b pb-4">
-            <h2 class="font-heading font-bold text-lg text-brand-navy">Kelola Akun Staf</h2>
-            <button onclick="closeModal('modal-staf')" class="text-gray-400 hover:text-red-500"><i class="ph ph-x text-2xl"></i></button>
-        </div>
-        <div class="space-y-4">
-            <input type="hidden" id="staf-id">
-            <div><label class="text-xs font-medium text-brand-navy block mb-1">Username</label><input type="text" id="staf-username" class="w-full border rounded-lg p-2.5 text-sm" placeholder="Ketik nama staf"></div>
-            <div><label class="text-xs font-medium text-brand-navy block mb-1">Password</label><input type="text" id="staf-password" class="w-full border rounded-lg p-2.5 text-sm" value="berkah"></div>
-            <div>
-                <label class="text-xs font-medium text-brand-navy block mb-2">Role Akses (Bisa > 1)</label>
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                    <label class="flex items-center gap-2 border p-2 rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100"><input type="checkbox" value="admin" class="chk-role accent-brand-gold"> Admin / Pengaturan</label>
-                    <label class="flex items-center gap-2 border p-2 rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100"><input type="checkbox" value="sekretaris" class="chk-role accent-brand-gold"> Master Siswa</label>
-                    <label class="flex items-center gap-2 border p-2 rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100"><input type="checkbox" value="penganalisis" class="chk-role accent-brand-gold"> Input Nilai</label>
-                    <label class="flex items-center gap-2 border p-2 rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100"><input type="checkbox" value="pewawancara" class="chk-role accent-brand-gold"> Biaya Ortu</label>
-                    <label class="flex items-center gap-2 border p-2 rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100"><input type="checkbox" value="bendahara" class="chk-role accent-brand-gold"> Pembayaran</label>
-                    <label class="flex items-center gap-2 border p-2 rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100"><input type="checkbox" value="perlengkapan" class="chk-role accent-brand-gold"> Perlengkapan</label>
-                </div>
-            </div>
-        </div>
-        <div class="pt-4 mt-5 border-t shrink-0">
-            <button onclick="simpanStaf()" class="btn-press w-full bg-brand-navy text-white py-3.5 rounded-xl font-medium shadow-md">Simpan Akun Staf</button>
-        </div>
-    </div>
-</div>
-
 <script>
     const SUPABASE_URL = 'https://ckbarwrfpktcdoydbjzy.supabase.co/rest/v1/';
     const SUPABASE_KEY = 'sb_publishable_jBXJV3WzlzbTlRkpEqGebA_BOlcBWoO';
 
-    let allStudentsData = [];
+    let masterData = [];
+    let keuanganData = [];
+    let analisisData = [];
+    let perkapData = [];
     let menuAppData = [];
     let currentUserRoleArr = [];
     let currentUsername = '';
@@ -684,14 +680,8 @@
     let chartInstanceAdmin = null;
 
     let staffAccounts = JSON.parse(localStorage.getItem('staff_acc')) || [
-        { id: 1, username: 'admin', role: ['admin','sekretaris','bendahara','penganalisis','pewawancara','perlengkapan'], password: 'berkah' },
-        { id: 2, username: 'sekretaris', role: ['sekretaris'], password: 'berkah' },
-        { id: 3, username: 'bendahara', role: ['bendahara'], password: 'berkah' },
-        { id: 4, username: 'penganalisis', role: ['penganalisis'], password: 'berkah' },
-        { id: 5, username: 'pewawancara', role: ['pewawancara'], password: 'berkah' },
-        { id: 6, username: 'perlengkapan', role: ['perlengkapan'], password: 'berkah' }
+        { id: 1, username: 'admin', role: ['admin','sekretaris','bendahara','penganalisis','pewawancara','perlengkapan'], password: 'berkah' }
     ];
-    localStorage.setItem('staff_acc', JSON.stringify(staffAccounts));
 
     const allPanelsDef = [
         { id: 'panel-akun-progress', role: 'admin', icon: 'ph-users-three', text: 'Akun & Progres' },
@@ -705,7 +695,6 @@
         { id: 'panel-perlengkapan', role: 'perlengkapan', icon: 'ph-t-shirt', text: 'Perlengkapan' }
     ];
 
-    // ----- UI HELPERS & CORE API -----
     function formatRp(angka) { 
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka || 0); 
     }
@@ -717,10 +706,9 @@
         t.innerHTML = `<i class="ph-bold ${isError ? 'ph-warning' : 'ph-check-circle'} text-lg shrink-0"></i> <span class="break-words max-w-[280px]">${msg}</span>`;
         c.appendChild(t);
         requestAnimationFrame(() => t.classList.remove('translate-x-full'));
-        setTimeout(() => { t.classList.add('translate-x-full'); setTimeout(() => t.remove(), 300); }, 5000); // 5 detik agar bisa dibaca jika ada error database
+        setTimeout(() => { t.classList.add('translate-x-full'); setTimeout(() => t.remove(), 300); }, 5000);
     }
 
-    // Fungsi canggih untuk menangkap dan menampilkan Error dari Supabase secara detail
     async function apiRequest(url, method, body = null) {
         const options = {
             method: method,
@@ -803,14 +791,20 @@
 
     async function loadData() {
         try {
-            const r1 = await apiRequest(`${SUPABASE_URL}pendaftar?select=*`, 'GET');
-            allStudentsData = await r1.json();
+            // Karena dipisah, fetch dari ke-4 tabel
+            const [resMaster, resUang, resAnalisis, resPerkap] = await Promise.all([
+                apiRequest(`${SUPABASE_URL}pendaftar?select=*`, 'GET'),
+                apiRequest(`${SUPABASE_URL}keuangan?select=*`, 'GET'),
+                apiRequest(`${SUPABASE_URL}analisis?select=*`, 'GET'),
+                apiRequest(`${SUPABASE_URL}perlengkapan?select=*`, 'GET')
+            ]);
             
-            try {
-                const r2 = await apiRequest(`${SUPABASE_URL}menu_aplikasi?select=*`, 'GET');
-                menuAppData = await r2.json();
-            } catch(e) { console.log("Tabel menu_aplikasi belum ada/kosong"); }
+            masterData = await resMaster.json();
+            keuanganData = await resUang.json();
+            analisisData = await resAnalisis.json();
+            perkapData = await resPerkap.json();
 
+            // Load Pengaturan
             try {
                 const r3 = await apiRequest(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, 'GET');
                 const sett = await r3.json();
@@ -821,8 +815,14 @@
                     document.getElementById('tl-3').value = dataSett.tl_3 || 'Verifikasi Berkas';
                     document.getElementById('tl-4').value = dataSett.tl_4 || 'Tes Kesiapan & Lulus';
                 }
-            } catch(e) { console.log("Tabel pengaturan_sistem belum ada/kosong"); }
+            } catch(e) {}
             
+            // Load Menu App
+            try {
+                const r2 = await apiRequest(`${SUPABASE_URL}menu_aplikasi?select=*`, 'GET');
+                menuAppData = await r2.json();
+            } catch(e) {}
+
             updateTimelineLabelsUI();
             renderAll(); 
             showToast("Sinkronisasi Berhasil");
@@ -844,7 +844,7 @@
     function renderAkunProgress() {
         const tbody = document.getElementById('tbody-akun-progress'); if(!tbody) return;
         document.getElementById('check-all').checked = false; selectedIdsForMassAction = [];
-        tbody.innerHTML = allStudentsData.map(s => `
+        tbody.innerHTML = masterData.map(s => `
             <tr class="hover:bg-gray-50 border-b border-gray-50">
                 <td class="py-3 px-4 text-center"><input type="checkbox" value="${s.id}" class="chk-massal w-4 h-4 rounded text-brand-gold cursor-pointer" onchange="updateMassalIds()"></td>
                 <td class="py-3 px-4"><a href="javascript:void(0)" onclick="bukaModalBiodata('${s.id}')" class="font-semibold text-brand-navy hover:text-brand-gold hover:underline block">${s.nama_murid||'-'}</a></td>
@@ -854,13 +854,13 @@
     }
 
     function toggleCheckAll(cb) { const chks = document.querySelectorAll('.chk-massal'); selectedIdsForMassAction = []; chks.forEach(c => { c.checked = cb.checked; if(cb.checked) selectedIdsForMassAction.push(c.value); }); }
-    function updateMassalIds() { selectedIdsForMassAction = Array.from(document.querySelectorAll('.chk-massal:checked')).map(c => c.value); document.getElementById('check-all').checked = (selectedIdsForMassAction.length === allStudentsData.length && allStudentsData.length > 0); }
+    function updateMassalIds() { selectedIdsForMassAction = Array.from(document.querySelectorAll('.chk-massal:checked')).map(c => c.value); document.getElementById('check-all').checked = (selectedIdsForMassAction.length === masterData.length && masterData.length > 0); }
     function bukaModalMassal() { if(selectedIdsForMassAction.length === 0) return showToast("Centang minimal 1 siswa!", true); bukaModalAkun(null, true); }
 
     function bukaModalAkun(id = null, isMassal = false) {
         document.getElementById('akun-id-target').value = id || '';
         if(id && !isMassal) {
-            const s = allStudentsData.find(x => x.id == id);
+            const s = masterData.find(x => x.id == id);
             document.getElementById('modal-akun-title').innerText = "Kelola Individu";
             document.getElementById('akun-ruang').value = s.ruang || '';
             for(let i=1; i<=4; i++) document.getElementById(`chk-tl${i}`).checked = s[`t${i}`] || false;
@@ -929,14 +929,14 @@
 
     function renderSekretaris() {
         const tbody = document.getElementById('tbody-sekretaris'); if(!tbody) return;
-        tbody.innerHTML = allStudentsData.map(s => `
+        tbody.innerHTML = masterData.map(s => `
             <tr class="hover:bg-gray-50 border-b border-gray-50">
                 <td class="py-3 px-4 font-mono text-xs">${s.no_ppdb||'-'}</td>
                 <td class="py-3 px-4 font-bold text-blue-600">${s.no||'-'}</td>
                 <td class="py-3 px-4">${s.nama_murid||'-'}</td>
                 <td class="py-3 px-4 text-center">
                     <button onclick="bukaModalFormSiswa('${s.id}')" class="text-blue-500 bg-blue-50 hover:bg-blue-100 p-1.5 rounded mr-1"><i class="ph ph-pencil-simple text-lg"></i></button>
-                    <button onclick="hapusSiswa('${s.id}')" class="text-red-500 bg-red-50 hover:bg-red-100 p-1.5 rounded"><i class="ph ph-trash text-lg"></i></button>
+                    <button onclick="hapusSiswa('${s.id}', '${s.no_ppdb}')" class="text-red-500 bg-red-50 hover:bg-red-100 p-1.5 rounded"><i class="ph ph-trash text-lg"></i></button>
                 </td>
             </tr>`).join('');
     }
@@ -953,7 +953,7 @@
     function bukaModalFormSiswa(id = null) {
         document.getElementById('modal-siswa-title').innerText = id ? "Edit Data Siswa" : "Tambah Siswa Baru";
         document.getElementById('fs-id').value = id || '';
-        const s = id ? allStudentsData.find(x => x.id == id) : {};
+        const s = id ? masterData.find(x => x.id == id) : {};
         const mapping = { 'noppdb': 'no_ppdb', 'no': 'no', 'panggilan': 'nama_panggilan', 'nama': 'nama_murid', 'tk': 'tk', 'tmplahir': 'tempat_lahir', 'tgllahir': 'tgl_lahir', 'alamat': 'alamat', 'ayah': 'ayah', 'agayah': 'agama_ayah', 'pendayah': 'pend_ayah', 'krjayah': 'pekrj_ayah', 'ibu': 'ibu', 'agibu': 'agama_ibu', 'pendibu': 'pend_ibu', 'krjibu': 'pekrj_ibu' };
         for (const [keyHtml, keyDb] of Object.entries(mapping)) { document.getElementById(`fs-${keyHtml}`).value = s[keyDb] || ''; }
         document.getElementById('fs-jk').value = s.jk || 'L';
@@ -963,34 +963,61 @@
 
     async function simpanDataSiswa() {
         const id = document.getElementById('fs-id').value;
+        const no_ppdb = document.getElementById('fs-noppdb').value.trim();
+        const nama_murid = document.getElementById('fs-nama').value.trim().toUpperCase();
+
         const pl = {
-            no_ppdb: document.getElementById('fs-noppdb').value.trim(), no: document.getElementById('fs-no').value.trim(),
-            nama_panggilan: document.getElementById('fs-panggilan').value.trim(), nama_murid: document.getElementById('fs-nama').value.trim().toUpperCase(),
+            no_ppdb: no_ppdb, no: document.getElementById('fs-no').value.trim(),
+            nama_panggilan: document.getElementById('fs-panggilan').value.trim(), nama_murid: nama_murid,
             jk: document.getElementById('fs-jk').value, tk: document.getElementById('fs-tk').value.trim(), tempat_lahir: document.getElementById('fs-tmplahir').value.trim(), tgl_lahir: document.getElementById('fs-tgllahir').value, alamat: document.getElementById('fs-alamat').value.trim(),
             ayah: document.getElementById('fs-ayah').value.trim(), agama_ayah: document.getElementById('fs-agayah').value.trim(), pend_ayah: document.getElementById('fs-pendayah').value.trim(), pekrj_ayah: document.getElementById('fs-krjayah').value.trim(),
             ibu: document.getElementById('fs-ibu').value.trim(), agama_ibu: document.getElementById('fs-agibu').value.trim(), pend_ibu: document.getElementById('fs-pendibu').value.trim(), pekrj_ibu: document.getElementById('fs-krjibu').value.trim()
         };
-        if(!pl.nama_murid) return showToast("Nama Lengkap wajib!", true);
-        if(!id) { pl.password = pl.no; pl.pendaftaran = 200000; pl.daftar_ulang = 3780000; pl.bopd = 9750000; } 
+        if(!nama_murid || !no_ppdb) return showToast("Nama Lengkap dan No PPDB wajib!", true);
         
         const btn = document.getElementById('btn-simpan-siswa'); btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
+        
         try { 
-            await apiRequest(`${SUPABASE_URL}pendaftar${id ? `?id=eq.${id}` : ''}`, id ? 'PATCH' : 'POST', pl);
+            if(id) {
+                // Edit, cukup ke master (atau semuanya jika mau data ortu sinkron, kita anggap identitas nempel di 4 tabel)
+                await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl);
+                // Sinkronkan nama ke tabel lain jika mau (opsional)
+                await Promise.all([
+                    apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', { nama_murid: nama_murid }),
+                    apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'PATCH', { nama_murid: nama_murid }),
+                    apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'PATCH', { nama_murid: nama_murid })
+                ]);
+            } else {
+                pl.password = pl.no; 
+                // INSERT KE 4 TABEL SEKALIGUS
+                await Promise.all([
+                    apiRequest(`${SUPABASE_URL}pendaftar`, 'POST', pl),
+                    // Untuk tabel pecahannya, masukkan identitas dasarnya
+                    apiRequest(`${SUPABASE_URL}keuangan`, 'POST', { no_ppdb: no_ppdb, nama_murid: nama_murid }),
+                    apiRequest(`${SUPABASE_URL}analisis`, 'POST', { no_ppdb: no_ppdb, nama_murid: nama_murid }),
+                    apiRequest(`${SUPABASE_URL}perlengkapan`, 'POST', { no_ppdb: no_ppdb, nama_murid: nama_murid })
+                ]);
+            }
             showToast("Data Siswa Disimpan"); closeModal('modal-form-siswa'); loadData();
         } catch(e) { showToast(e.message, true); }
         btn.disabled = false; btn.innerHTML = 'Simpan Data Siswa';
     }
 
-    async function hapusSiswa(id) {
-        if(!confirm(`Hapus permanen data siswa ini?`)) return;
+    async function hapusSiswa(id, no_ppdb) {
+        if(!confirm(`Hapus permanen data siswa ini dari SEMUA TABEL?`)) return;
         try { 
-            await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'DELETE'); 
+            await Promise.all([
+                apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'DELETE'),
+                apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'DELETE'),
+                apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'DELETE'),
+                apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'DELETE')
+            ]);
             showToast("Dihapus"); loadData(); 
         } catch(e) { showToast(e.message, true); }
     }
 
     function bukaModalBiodata(id) {
-        const s = allStudentsData.find(x => x.id == id); if(!s) return;
+        const s = masterData.find(x => x.id == id); if(!s) return;
         let jkStr = s.jk === 'L' ? 'Laki-laki' : s.jk === 'P' ? 'Perempuan' : '-';
         document.getElementById('content-biodata').innerHTML = `
             <div class="space-y-4"><div class="bg-gray-50 p-4 border rounded-xl"><p class="text-[10px] uppercase font-bold text-gray-500">Data Pribadi</p><p class="text-base font-bold text-brand-navy mt-1">${s.nama_murid || '-'}</p>
@@ -1002,7 +1029,7 @@
     function renderPenganalisisFilter() {
         const sel = document.getElementById('filter-ruang-analisis');
         const rCache = sel.value; sel.innerHTML = '<option value="all">Semua Ruang</option>';
-        const ruangList = [...new Set(allStudentsData.map(s => s.ruang).filter(Boolean))];
+        const ruangList = [...new Set(masterData.map(s => s.ruang).filter(Boolean))];
         ruangList.forEach(r => sel.innerHTML += `<option value="${r}">${r}</option>`);
         sel.value = ruangList.includes(rCache) ? rCache : 'all';
         renderPenganalisis();
@@ -1011,25 +1038,27 @@
     function renderPenganalisis() {
         const tbody = document.getElementById('tbody-penganalisis'); if(!tbody) return;
         const flt = document.getElementById('filter-ruang-analisis').value;
-        const dataFlt = flt === 'all' ? allStudentsData : allStudentsData.filter(s => s.ruang === flt);
+        const dataFlt = flt === 'all' ? masterData : masterData.filter(s => s.ruang === flt);
         
-        tbody.innerHTML = dataFlt.map(s => {
+        tbody.innerHTML = dataFlt.map(sMaster => {
+            // Gabungkan dengan data dari tabel analisis berdasarkan no_ppdb
+            const sAna = analisisData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
             const arr = [
-                s.mengenal_huruf, 
-                s.mengenal_bilangan, 
-                s.menggunting_dan_menempel_puzzel, // Harus sama persis
-                s.menyanyi_lagu_nasional, 
-                s.melafalkan_surat_pendek_doa_harian, 
-                s.interview
+                sAna.mengenal_huruf, 
+                sAna.mengenal_bilangan, 
+                sAna.menggunting_dan_menempel_puzzel, 
+                sAna.menyanyi_lagu_nasional, 
+                sAna.melafalkan_surat_pendek_doa_harian, 
+                sAna.interview
             ].map(n => parseInt(n) || 0);
             const r = Math.round(arr.reduce((a, b) => a + b, 0) / 6);
             return `<tr class="hover:bg-gray-50 border-b border-gray-50">
-                <td class="py-3 px-4 font-medium text-brand-navy">${s.nama_murid || '-'}</td>
+                <td class="py-3 px-4 font-medium text-brand-navy">${sMaster.nama_murid || '-'}</td>
                 <td class="py-3 px-4 text-center"><span class="bg-gray-100 px-3 py-1 rounded-lg font-bold ${r<60?'text-red-500':r<80?'text-yellow-600':'text-green-600'}">${r}</span></td>
-                <td class="py-3 px-4 text-center text-xs">${s.ruang||'-'}</td>
+                <td class="py-3 px-4 text-center text-xs">${sMaster.ruang||'-'}</td>
                 <td class="py-3 px-4 text-center">
-                    <button onclick="bukaModalGrafik('${s.id}')" class="text-purple-600 bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg text-xs font-medium mr-1"><i class="ph-bold ph-chart-polar"></i> Grafik</button>
-                    <button onclick="bukaModalAnalisis('${s.id}')" class="bg-blue-50 text-blue-600 border border-blue-100 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-100"><i class="ph-bold ph-pencil-simple"></i> Input</button>
+                    <button onclick="bukaModalGrafik('${sMaster.no_ppdb}')" class="text-purple-600 bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg text-xs font-medium mr-1"><i class="ph-bold ph-chart-polar"></i> Grafik</button>
+                    <button onclick="bukaModalAnalisis('${sMaster.no_ppdb}', '${sMaster.nama_murid}', '${sMaster.nama_panggilan}')" class="bg-blue-50 text-blue-600 border border-blue-100 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-100"><i class="ph-bold ph-pencil-simple"></i> Input</button>
                 </td>
             </tr>`;
         }).join('');
@@ -1046,50 +1075,47 @@
         document.getElementById(`ket-${id}`).value = t;
     }
 
-    function bukaModalAnalisis(id) {
-        const s = allStudentsData.find(x => x.id == id); if(!s) return;
-        document.getElementById('analisis-id').value = id; 
-        document.getElementById('analisis-nama').innerText = s.nama_murid; 
-        document.getElementById('analisis-nama').dataset.panggilan = s.nama_panggilan || s.nama_murid;
+    function bukaModalAnalisis(no_ppdb, nama_murid, panggilan) {
+        const sAna = analisisData.find(x => x.no_ppdb === no_ppdb) || {};
+        document.getElementById('analisis-id').value = no_ppdb; // Gunakan no_ppdb untuk update
+        document.getElementById('analisis-nama').innerText = nama_murid; 
+        document.getElementById('analisis-nama').dataset.panggilan = panggilan || nama_murid;
         
-        document.getElementById(`val-huruf`).value = s.mengenal_huruf !== null ? s.mengenal_huruf : '';
-        document.getElementById(`val-bilangan`).value = s.mengenal_bilangan !== null ? s.mengenal_bilangan : '';
-        document.getElementById(`val-motorik`).value = s.menggunting_dan_menempel_puzzel !== null ? s.menggunting_dan_menempel_puzzel : ''; 
-        document.getElementById(`val-lagu`).value = s.menyanyi_lagu_nasional !== null ? s.menyanyi_lagu_nasional : '';
-        document.getElementById(`val-doa`).value = s.melafalkan_surat_pendek_doa_harian !== null ? s.melafalkan_surat_pendek_doa_harian : '';
-        document.getElementById(`val-interview`).value = s.interview !== null ? s.interview : '';
+        document.getElementById(`val-huruf`).value = sAna.mengenal_huruf !== null && sAna.mengenal_huruf !== undefined ? sAna.mengenal_huruf : '';
+        document.getElementById(`val-bilangan`).value = sAna.mengenal_bilangan !== null && sAna.mengenal_bilangan !== undefined ? sAna.mengenal_bilangan : '';
+        document.getElementById(`val-motorik`).value = sAna.menggunting_dan_menempel_puzzel !== null && sAna.menggunting_dan_menempel_puzzel !== undefined ? sAna.menggunting_dan_menempel_puzzel : ''; 
+        document.getElementById(`val-lagu`).value = sAna.menyanyi_lagu_nasional !== null && sAna.menyanyi_lagu_nasional !== undefined ? sAna.menyanyi_lagu_nasional : '';
+        document.getElementById(`val-doa`).value = sAna.melafalkan_surat_pendek_doa_harian !== null && sAna.melafalkan_surat_pendek_doa_harian !== undefined ? sAna.melafalkan_surat_pendek_doa_harian : '';
+        document.getElementById(`val-interview`).value = sAna.interview !== null && sAna.interview !== undefined ? sAna.interview : '';
 
-        // Tampilkan teks deskripsi narasi
-        document.getElementById(`ket-huruf`).value = s.ket_mengenal_huruf || '';
-        document.getElementById(`ket-bilangan`).value = s.ket_mengenal_bilangan || '';
-        document.getElementById(`ket-motorik`).value = s.ket_menggunting_dan_menempel_puzzel || '';
-        document.getElementById(`ket-lagu`).value = s.ket_menyanyi_lagu_nasional || '';
-        document.getElementById(`ket-doa`).value = s.ket_melafalkan_surat_pendek_doa_harian || '';
-        document.getElementById(`ket-interview`).value = s.ket_interview || '';
+        document.getElementById(`ket-huruf`).value = sAna.ket_mengenal_huruf || '';
+        document.getElementById(`ket-bilangan`).value = sAna.ket_mengenal_bilangan || '';
+        document.getElementById(`ket-motorik`).value = sAna.ket_menggunting_dan_menempel_puzzel || '';
+        document.getElementById(`ket-lagu`).value = sAna.ket_menyanyi_lagu_nasional || '';
+        document.getElementById(`ket-doa`).value = sAna.ket_melafalkan_surat_pendek_doa_harian || '';
+        document.getElementById(`ket-interview`).value = sAna.ket_interview || '';
 
-        if(!s.ket_mengenal_huruf) autoDes('huruf', 'mengenal huruf');
-        if(!s.ket_mengenal_bilangan) autoDes('bilangan', 'mengenal bilangan');
-        if(!s.ket_menggunting_dan_menempel_puzzel) autoDes('motorik', 'menggunting dan menempel');
-        if(!s.ket_menyanyi_lagu_nasional) autoDes('lagu', 'menyanyi lagu nasional');
-        if(!s.ket_melafalkan_surat_pendek_doa_harian) autoDes('doa', 'doa harian dan surat pendek');
-        if(!s.ket_interview) autoDes('interview', 'menjawab pertanyaan interview');
+        if(!sAna.ket_mengenal_huruf) autoDes('huruf', 'mengenal huruf');
+        if(!sAna.ket_mengenal_bilangan) autoDes('bilangan', 'mengenal bilangan');
+        if(!sAna.ket_menggunting_dan_menempel_puzzel) autoDes('motorik', 'menggunting dan menempel');
+        if(!sAna.ket_menyanyi_lagu_nasional) autoDes('lagu', 'menyanyi lagu nasional');
+        if(!sAna.ket_melafalkan_surat_pendek_doa_harian) autoDes('doa', 'doa harian dan surat pendek');
+        if(!sAna.ket_interview) autoDes('interview', 'menjawab pertanyaan interview');
 
         document.getElementById('modal-analisis').classList.replace('hidden', 'flex');
     }
 
     async function simpanAnalisis() {
-        const id = document.getElementById('analisis-id').value;
+        const no_ppdb = document.getElementById('analisis-id').value;
         const getVal = (elId) => { const v = parseInt(document.getElementById(elId).value); return isNaN(v) ? null : v; };
 
         const pl = { 
             mengenal_huruf: getVal('val-huruf'), 
             mengenal_bilangan: getVal('val-bilangan'), 
-            menggunting_dan_menempel_puzzel: getVal('val-motorik'), // Ejaan harus persis di Supabase
+            menggunting_dan_menempel_puzzel: getVal('val-motorik'),
             menyanyi_lagu_nasional: getVal('val-lagu'), 
             melafalkan_surat_pendek_doa_harian: getVal('val-doa'), 
             interview: getVal('val-interview'),
-            
-            // Kolom ini wajib ada di tabel pendaftar
             ket_mengenal_huruf: document.getElementById('ket-huruf').value,
             ket_mengenal_bilangan: document.getElementById('ket-bilangan').value,
             ket_menggunting_dan_menempel_puzzel: document.getElementById('ket-motorik').value,
@@ -1099,7 +1125,8 @@
         };
         const btn = document.getElementById('btn-simpan-analisis'); btn.disabled = true; btn.innerHTML = 'Processing...';
         try { 
-            await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl);
+            // Patch ke tabel analisis
+            await apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
             showToast("Nilai Tersimpan"); closeModal('modal-analisis'); loadData(); 
         } catch(e) { 
             showToast("Gagal (Nilai): " + e.message, true); 
@@ -1107,8 +1134,10 @@
         btn.disabled = false; btn.innerHTML = 'Simpan Nilai & Deskripsi';
     }
 
-    function bukaModalGrafik(id) {
-        const s = allStudentsData.find(x => x.id == id); if(!s) return;
+    function bukaModalGrafik(no_ppdb) {
+        const sMaster = masterData.find(x => x.no_ppdb === no_ppdb); if(!sMaster) return;
+        const sAna = analisisData.find(x => x.no_ppdb === no_ppdb) || {};
+        
         document.getElementById('modal-grafik').classList.replace('hidden', 'flex');
         const ctx = document.getElementById('radarChartAdmin').getContext('2d');
         if(chartInstanceAdmin) chartInstanceAdmin.destroy();
@@ -1117,14 +1146,14 @@
             data: { 
                 labels: ['Huruf', 'Bilangan', 'Motorik', 'Lagu', 'Doa/Surat', 'Interview'], 
                 datasets: [{ 
-                    label: 'Skor ' + (s.nama_panggilan || s.nama_murid), 
+                    label: 'Skor ' + (sMaster.nama_panggilan || sMaster.nama_murid), 
                     data: [
-                        parseInt(s.mengenal_huruf)||0, 
-                        parseInt(s.mengenal_bilangan)||0, 
-                        parseInt(s.menggunting_dan_menempel_puzzel)||0, 
-                        parseInt(s.menyanyi_lagu_nasional)||0, 
-                        parseInt(s.melafalkan_surat_pendek_doa_harian)||0, 
-                        parseInt(s.interview)||0
+                        parseInt(sAna.mengenal_huruf)||0, 
+                        parseInt(sAna.mengenal_bilangan)||0, 
+                        parseInt(sAna.menggunting_dan_menempel_puzzel)||0, 
+                        parseInt(sAna.menyanyi_lagu_nasional)||0, 
+                        parseInt(sAna.melafalkan_surat_pendek_doa_harian)||0, 
+                        parseInt(sAna.interview)||0
                     ], 
                     backgroundColor: 'rgba(15, 39, 71, 0.2)', borderColor: '#0F2747', borderWidth: 2 
                 }] 
@@ -1136,36 +1165,38 @@
     function renderPewawancara() {
         const tbody = document.getElementById('tbody-pewawancara'); if(!tbody) return;
         const q = document.getElementById('filter-cari-biaya')?.value.toLowerCase() || '';
-        const dataF = allStudentsData.filter(s => (s.nama_murid||'').toLowerCase().includes(q));
-        tbody.innerHTML = dataF.map(s => `
-            <tr class="hover:bg-gray-50 border-b border-gray-50">
-                <td class="py-3 px-4"><a href="javascript:void(0)" onclick="bukaModalBiodata('${s.id}')" class="font-semibold text-brand-navy hover:text-brand-gold hover:underline block">${s.nama_murid||'-'}</a></td>
-                <td class="py-3 px-4 text-xs">A: ${s.ayah||'-'}<br>I: ${s.ibu||'-'}</td>
-                <td class="py-3 px-4 text-center text-xs font-bold text-green-700">${formatRp(s.daftar_ulang)}</td>
-                <td class="py-3 px-4 text-center text-xs font-bold text-blue-700">${formatRp(s.bopd)}</td>
-                <td class="py-3 px-4 text-center"><button onclick="bukaModalPewawancara('${s.id}')" class="bg-brand-bg text-brand-navy border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-brand-gold hover:text-white transition-colors shadow-sm"><i class="ph-bold ph-wallet"></i> Set Biaya</button></td>
-            </tr>`).join('');
+        const dataF = masterData.filter(s => (s.nama_murid||'').toLowerCase().includes(q));
+        tbody.innerHTML = dataF.map(sMaster => {
+            const sUang = keuanganData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
+            return `<tr class="hover:bg-gray-50 border-b border-gray-50">
+                <td class="py-3 px-4"><a href="javascript:void(0)" onclick="bukaModalBiodata('${sMaster.id}')" class="font-semibold text-brand-navy hover:text-brand-gold hover:underline block">${sMaster.nama_murid||'-'}</a></td>
+                <td class="py-3 px-4 text-xs">A: ${sMaster.ayah||'-'}<br>I: ${sMaster.ibu||'-'}</td>
+                <td class="py-3 px-4 text-center text-xs font-bold text-green-700">${formatRp(sUang.daftar_ulang)}</td>
+                <td class="py-3 px-4 text-center text-xs font-bold text-blue-700">${formatRp(sUang.bopd)}</td>
+                <td class="py-3 px-4 text-center"><button onclick="bukaModalPewawancara('${sMaster.no_ppdb}', '${sMaster.jk}')" class="bg-brand-bg text-brand-navy border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-brand-gold hover:text-white transition-colors shadow-sm"><i class="ph-bold ph-wallet"></i> Set Biaya</button></td>
+            </tr>`;
+        }).join('');
     }
 
-    function bukaModalPewawancara(id) {
-        const s = allStudentsData.find(x => x.id == id); if(!s) return;
-        document.getElementById('pewa-id').value = id;
-        document.getElementById('pewa-daftar-ulang').value = s.daftar_ulang || (s.jk === 'P' ? 3805000 : 3780000);
-        document.getElementById('pewa-bopd').value = s.bopd || 9750000;
+    function bukaModalPewawancara(no_ppdb, jk) {
+        const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {};
+        document.getElementById('pewa-id').value = no_ppdb;
+        document.getElementById('pewa-daftar-ulang').value = sUang.daftar_ulang || (jk === 'P' ? 3805000 : 3780000);
+        document.getElementById('pewa-bopd').value = sUang.bopd || 9750000;
         
         const selEarly = document.getElementById('pewa-early');
-        selEarly.value = s.early_bird !== null ? s.early_bird : 1500000;
-        if(selEarly.selectedIndex === -1) selEarly.value = "1500000"; // fallback
+        selEarly.value = sUang.early_bird !== null && sUang.early_bird !== undefined ? sUang.early_bird : 1500000;
+        if(selEarly.selectedIndex === -1) selEarly.value = "1500000"; 
         
         const selAum = document.getElementById('pewa-aum');
-        selAum.value = s.kader_aum !== null ? s.kader_aum : 1000000;
-        if(selAum.selectedIndex === -1) selAum.value = "1000000"; // fallback
+        selAum.value = sUang.kader_aum !== null && sUang.kader_aum !== undefined ? sUang.kader_aum : 1000000;
+        if(selAum.selectedIndex === -1) selAum.value = "1000000"; 
 
         document.getElementById('modal-pewawancara').classList.replace('hidden', 'flex');
     }
 
     async function simpanPewawancara() {
-        const id = document.getElementById('pewa-id').value;
+        const no_ppdb = document.getElementById('pewa-id').value;
         const pl = { 
             daftar_ulang: parseInt(document.getElementById('pewa-daftar-ulang').value)||0, 
             bopd: parseInt(document.getElementById('pewa-bopd').value)||0, 
@@ -1174,7 +1205,7 @@
         };
         const btn = document.getElementById('btn-simpan-pewa'); btn.disabled = true; btn.innerHTML = 'Processing...';
         try { 
-            await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl);
+            await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
             showToast("Biaya Disimpan"); closeModal('modal-pewawancara'); loadData(); 
         } catch(e) { 
             showToast("Gagal (Biaya): " + e.message, true); 
@@ -1184,59 +1215,63 @@
 
     function renderBendahara() {
         const tbody = document.getElementById('tbody-bendahara'); if(!tbody) return;
-        tbody.innerHTML = allStudentsData.map(s => {
-            const tot = (parseInt(s.pendaftaran)||0) + (parseInt(s.daftar_ulang)||0) + (parseInt(s.bopd)||0) - (parseInt(s.early_bird)||0) - (parseInt(s.kader_aum)||0);
-            const isTF = !!s.bukti_transfer;
+        tbody.innerHTML = masterData.map(sMaster => {
+            const sUang = keuanganData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
+            const tot = (parseInt(sUang.pendaftaran)||0) + (parseInt(sUang.daftar_ulang)||0) + (parseInt(sUang.bopd)||0) - (parseInt(sUang.early_bird)||0) - (parseInt(sUang.kader_aum)||0);
+            const isTF = !!sUang.bukti_transfer;
             return `
             <tr class="hover:bg-gray-50 border-b border-gray-50">
-                <td class="py-3 px-4"><p class="text-xs text-brand-muted font-mono">${s.no_ppdb||'-'}</p><p class="font-medium text-brand-navy">${s.nama_murid||'-'}</p></td>
+                <td class="py-3 px-4"><p class="text-xs text-brand-muted font-mono">${sMaster.no_ppdb||'-'}</p><p class="font-medium text-brand-navy">${sMaster.nama_murid||'-'}</p></td>
                 <td class="py-3 px-4 font-bold">${formatRp(tot)}</td>
-                <td class="py-3 px-4 text-center">${isTF ? `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-bold border border-blue-200">Transfer</span><br><a href="${s.bukti_transfer}" target="_blank" class="text-[10px] text-blue-600 underline mt-1 block">Lihat Bukti</a>` : `<span class="bg-orange-100 text-orange-700 px-2 py-1 rounded text-[10px] font-bold border border-orange-200">Tunai</span>`}</td>
+                <td class="py-3 px-4 text-center">${isTF ? `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-bold border border-blue-200">Transfer</span><br><a href="${sUang.bukti_transfer}" target="_blank" class="text-[10px] text-blue-600 underline mt-1 block">Lihat Bukti</a>` : `<span class="bg-orange-100 text-orange-700 px-2 py-1 rounded text-[10px] font-bold border border-orange-200">Tunai</span>`}</td>
                 <td class="py-3 px-4 text-center">
-                    ${s.konfirmasi ? `<button onclick="toggleValidasi('${s.id}', false)" class="text-red-500 bg-red-50 hover:bg-red-100 p-2 rounded-lg border border-red-100" title="Batal"><i class="ph-bold ph-x text-lg"></i></button>` : `<button onclick="toggleValidasi('${s.id}', true)" class="text-green-600 bg-green-50 hover:bg-green-100 p-2 rounded-lg border border-green-100" title="Validasi"><i class="ph-bold ph-check text-lg"></i></button>`}
+                    ${sUang.konfirmasi ? `<button onclick="toggleValidasi('${sMaster.no_ppdb}', false)" class="text-red-500 bg-red-50 hover:bg-red-100 p-2 rounded-lg border border-red-100" title="Batal"><i class="ph-bold ph-x text-lg"></i></button>` : `<button onclick="toggleValidasi('${sMaster.no_ppdb}', true)" class="text-green-600 bg-green-50 hover:bg-green-100 p-2 rounded-lg border border-green-100" title="Validasi"><i class="ph-bold ph-check text-lg"></i></button>`}
                 </td>
                 <td class="py-3 px-4 text-center">
-                    ${s.konfirmasi ? `<button onclick="cetakStruk('${s.id}')" class="bg-brand-navy text-white px-3 py-1.5 rounded-lg text-xs font-medium"><i class="ph-fill ph-printer"></i> Struk</button>` : '-'}
+                    ${sUang.konfirmasi ? `<button onclick="cetakStruk('${sMaster.no_ppdb}', '${sMaster.nama_murid}')" class="bg-brand-navy text-white px-3 py-1.5 rounded-lg text-xs font-medium"><i class="ph-fill ph-printer"></i> Struk</button>` : '-'}
                 </td>
             </tr>`;
         }).join('');
     }
 
-    async function toggleValidasi(id, ok) {
+    async function toggleValidasi(no_ppdb, ok) {
         try { 
-            await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', { konfirmasi: ok, kasir: ok ? currentUsername : null });
+            await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', { konfirmasi: ok, kasir: ok ? currentUsername : null });
             showToast(ok ? "Tervalidasi Lunas" : "Validasi Dibatalkan"); loadData(); 
         } catch(e) { showToast(e.message, true); }
     }
 
-    function cetakStruk(id) {
-        const s = allStudentsData.find(x => x.id == id); if(!s) return;
+    function cetakStruk(no_ppdb, nama_murid) {
+        const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {};
         const w = window.open('','_blank'); if(!w) return showToast("Izinkan pop-up!", true);
-        w.document.write(`<html><body style="font-family:monospace; padding:20px; max-width:350px; margin:auto;"><h3 style="text-align:center; border-bottom:2px dashed #000; padding-bottom:10px;">SDM SUDAGARAN<br>BUKTI LUNAS</h3><p>No PPDB: ${s.no_ppdb||'-'}</p><p>Nama   : ${s.nama_murid||'-'}</p><p>Kasir  : ${s.kasir||'Admin'}</p><h2 style="text-align:center; border:2px dashed #000; padding:10px;">LUNAS</h2><p style="text-align:center; font-size:10px; margin-top:20px;">Simpan struk sebagai bukti.</p><script>window.onload=()=>window.print();</`+`script></body></html>`); w.document.close();
+        w.document.write(`<html><body style="font-family:monospace; padding:20px; max-width:350px; margin:auto;"><h3 style="text-align:center; border-bottom:2px dashed #000; padding-bottom:10px;">SDM SUDAGARAN<br>BUKTI LUNAS</h3><p>No PPDB: ${no_ppdb}</p><p>Nama   : ${nama_murid}</p><p>Kasir  : ${sUang.kasir||'Admin'}</p><h2 style="text-align:center; border:2px dashed #000; padding:10px;">LUNAS</h2><p style="text-align:center; font-size:10px; margin-top:20px;">Simpan struk sebagai bukti.</p><script>window.onload=()=>window.print();</`+`script></body></html>`); w.document.close();
     }
 
     function renderPerlengkapan() {
         const tbody = document.getElementById('tbody-perlengkapan'); if(!tbody) return;
         const f = document.getElementById('filter-perlengkapan').value;
-        const d = allStudentsData.filter(s => {
+        const d = masterData.filter(sMaster => {
+            const sPerkap = perkapData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
             if(f === 'all') return true;
-            let c = s.ambil_souvenir?1:0; for(let i=1; i<=13; i++) if(s[`s${i}`]) c++;
+            let c = sPerkap.ambil_souvenir?1:0; for(let i=1; i<=13; i++) if(sPerkap[`s${i}`]) c++;
             return f === 'lengkap' ? c === 14 : c < 14;
         });
-        tbody.innerHTML = d.map(s => {
-            let c = s.ambil_souvenir?1:0; for(let i=1; i<=13; i++) if(s[`s${i}`]) c++;
+        tbody.innerHTML = d.map(sMaster => {
+            const sPerkap = perkapData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
+            let c = sPerkap.ambil_souvenir?1:0; for(let i=1; i<=13; i++) if(sPerkap[`s${i}`]) c++;
             return `<tr class="hover:bg-gray-50 border-b border-gray-50">
-                <td class="py-3 px-4 font-medium text-brand-navy">${s.nama_murid||'-'}</td>
+                <td class="py-3 px-4 font-medium text-brand-navy">${sMaster.nama_murid||'-'}</td>
                 <td class="py-3 px-4 text-center"><div class="w-24 mx-auto bg-gray-200 rounded-full h-2 mb-1"><div class="bg-brand-gold h-2 rounded-full" style="width:${(c/14)*100}%"></div></div><span class="text-[10px] text-brand-muted">${c}/14 Item</span></td>
-                <td class="py-3 px-4 text-center"><button onclick="bukaModalPerlengkapan('${s.id}')" class="bg-brand-bg text-brand-navy border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-brand-gold hover:text-white transition-colors shadow-sm"><i class="ph-bold ph-check-square-offset"></i> Ceklis Seragam</button></td>
+                <td class="py-3 px-4 text-center"><button onclick="bukaModalPerlengkapan('${sMaster.no_ppdb}')" class="bg-brand-bg text-brand-navy border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-brand-gold hover:text-white transition-colors shadow-sm"><i class="ph-bold ph-check-square-offset"></i> Ceklis Seragam</button></td>
             </tr>`;
         }).join('');
     }
 
-    function bukaModalPerlengkapan(id) {
-        const s = allStudentsData.find(x => x.id == id); if(!s) return;
-        document.getElementById('perkap-id').value = id; document.getElementById('chk-souvenir').checked = s.ambil_souvenir || false;
-        let ac = true; for(let i=1; i<=13; i++) { const k = document.getElementById(`chk-s${i}`); if(k) { k.checked = s[`s${i}`]||false; if(!k.checked) ac = false; } }
+    function bukaModalPerlengkapan(no_ppdb) {
+        const sPerkap = perkapData.find(x => x.no_ppdb === no_ppdb) || {};
+        document.getElementById('perkap-id').value = no_ppdb; 
+        document.getElementById('chk-souvenir').checked = sPerkap.ambil_souvenir || false;
+        let ac = true; for(let i=1; i<=13; i++) { const k = document.getElementById(`chk-s${i}`); if(k) { k.checked = sPerkap[`s${i}`]||false; if(!k.checked) ac = false; } }
         document.getElementById('chk-all-seragam').checked = ac;
         document.getElementById('modal-perlengkapan').classList.replace('hidden', 'flex');
     }
@@ -1244,12 +1279,12 @@
     function toggleAllSeragam(cb) { for(let i=1; i<=13; i++) { const k = document.getElementById(`chk-s${i}`); if(k) k.checked = cb.checked; } }
 
     async function simpanPerlengkapan() {
-        const id = document.getElementById('perkap-id').value;
+        const no_ppdb = document.getElementById('perkap-id').value;
         const pl = { ambil_souvenir: document.getElementById('chk-souvenir').checked };
         for(let i=1; i<=13; i++) { pl[`s${i}`] = document.getElementById(`chk-s${i}`).checked; }
         const btn = document.getElementById('btn-simpan-perkap'); btn.disabled = true; btn.innerHTML = 'Processing...';
         try { 
-            await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl);
+            await apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
             showToast("Checklist Disimpan"); closeModal('modal-perlengkapan'); loadData(); 
         } catch(e) { showToast(e.message, true); }
         btn.disabled = false; btn.innerHTML = 'Simpan Checklist';
