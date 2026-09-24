@@ -898,7 +898,7 @@
         <div class="space-y-4 text-center">
             <p id="tf-nama" class="font-bold text-brand-navy text-lg">Nama Siswa</p>
             <p id="tf-tagihan" class="text-green-600 font-bold text-2xl">Rp 0</p>
-            <div class="border border-gray-200 rounded-xl p-2 bg-gray-50 h-64 flex items-center justify-center overflow-hidden shadow-inner relative group cursor-zoom-in" onclick="window.open(document.getElementById('tf-bukti').src, '_blank')">
+            <div class="border border-gray-200 rounded-xl p-2 bg-gray-50 h-64 flex items-center justify-center overflow-hidden shadow-inner relative group cursor-zoom-in" onclick="bukaZoomBukti()">
                 <img id="tf-bukti" src="" alt="Bukti Transfer" class="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-110">
                 <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                     <i class="ph-bold ph-magnifying-glass-plus text-white text-3xl"></i>
@@ -912,6 +912,11 @@
     </div>
 </div>
 
+<!-- Modal Zoom Bukti Transfer (In-App Preview) -->
+<div id="modal-zoom-bukti" class="fixed inset-0 bg-black/95 z-[80] hidden items-center justify-center p-4 cursor-zoom-out" onclick="closeModal('modal-zoom-bukti')">
+    <button onclick="closeModal('modal-zoom-bukti')" class="absolute top-5 right-5 text-white/50 hover:text-white z-10 transition-colors"><i class="ph-bold ph-x text-4xl"></i></button>
+    <img id="zoom-img-bukti" src="" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl">
+</div>
 
 <!-- Modal Transaksi Pendaftaran -->
 <div id="modal-transaksi-pendaftaran" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
@@ -2052,6 +2057,11 @@
         currentTfNoPpdb = no_ppdb; document.getElementById('tf-nama').innerText = nama; document.getElementById('tf-tagihan').innerText = formatRp(tot);
         document.getElementById('tf-bukti').src = buktiUrl || 'https://placehold.co/400x300/f8fafc/94a3b8?text=Tidak+Ada+Gambar';
         document.getElementById('modal-cek-transfer').classList.replace('hidden', 'flex');
+    }
+
+    function bukaZoomBukti() {
+        document.getElementById('zoom-img-bukti').src = document.getElementById('tf-bukti').src;
+        document.getElementById('modal-zoom-bukti').classList.replace('hidden', 'flex');
     }
 
     async function prosesTransfer(isValid) { if(!currentTfNoPpdb) return; await toggleValidasiDU(currentTfNoPpdb, isValid); closeModal('modal-cek-transfer'); }
