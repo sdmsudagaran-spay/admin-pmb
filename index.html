@@ -536,11 +536,17 @@
                             <h2 class="font-heading font-semibold text-lg text-brand-navy">Distribusi Perlengkapan</h2>
                             <p class="text-xs text-brand-muted mt-1">Klik nama siswa untuk melihat preview perlengkapan yang sudah didapat.</p>
                         </div>
-                        <select id="filter-perlengkapan" onchange="renderPerlengkapan()" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-gold bg-brand-bg w-full sm:w-auto">
-                            <option value="all">Semua Siswa</option>
-                            <option value="lengkap">Sudah Lengkap</option>
-                            <option value="belum">Belum Lengkap</option>
-                        </select>
+                        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                            <div class="relative w-full sm:w-48">
+                                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="filter-cari-perlengkapan" onkeyup="renderPerlengkapan()" class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-brand-gold bg-brand-bg" placeholder="Cari nama siswa...">
+                            </div>
+                            <select id="filter-perlengkapan" onchange="renderPerlengkapan()" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-gold bg-brand-bg w-full sm:w-auto">
+                                <option value="all">Semua Siswa</option>
+                                <option value="lengkap">Sudah Lengkap</option>
+                                <option value="belum">Belum Lengkap</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
                         <table class="w-full text-left text-sm whitespace-nowrap">
@@ -560,7 +566,6 @@
         </div>
     </main>
 </div>
-
 
 <!-- Modal Menu App -->
 <div id="modal-menu-app" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
@@ -2074,7 +2079,14 @@
         
         const btn = document.getElementById('btn-bayar-pend'); btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
         try { 
-            const pl = { konfirmasi_pendaftaran: true, kasir_pendaftaran: currentUsername, pendaftaran: currentTransPend.tagihan };
+            const pl = { 
+                konfirmasi_pendaftaran: true, 
+                kasir_pendaftaran: currentUsername, 
+                pendaftaran: currentTransPend.tagihan,
+                bopd: 0,
+                early_bird: 0,
+                kader_aum: 0
+            };
             const exists = keuanganData.find(x => x.no_ppdb === currentTransPend.no_ppdb);
             
             if (exists && exists.id) {
@@ -2208,11 +2220,16 @@
     function renderPerlengkapan() {
         const tbody = document.getElementById('tbody-perlengkapan'); if(!tbody) return;
         const f = document.getElementById('filter-perlengkapan').value;
+        const q = (document.getElementById('filter-cari-perlengkapan')?.value || '').toLowerCase();
+        
         const d = masterData.filter(sMaster => {
+            const matchName = !q || (sMaster.nama_murid || '').toLowerCase().includes(q);
             const sPerkap = perkapData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
             let c = sPerkap.ambil_souvenir?1:0; for(let i=1; i<=13; i++) if(sPerkap[`s${i}`]) c++;
-            return f === 'all' ? true : (f === 'lengkap' ? c === 14 : c < 14);
+            const matchStatus = f === 'all' ? true : (f === 'lengkap' ? c === 14 : c < 14);
+            return matchName && matchStatus;
         });
+        
         tbody.innerHTML = d.map(sMaster => {
             const sPerkap = perkapData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
             let c = sPerkap.ambil_souvenir?1:0; for(let i=1; i<=13; i++) if(sPerkap[`s${i}`]) c++;
