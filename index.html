@@ -1525,11 +1525,17 @@
         const n = nm.split(' ')[0]; 
         
         let t = "";
-        if (realVal <= 20) t = `Ananda ${n} belum memahami ${label}.`;
-        else if (realVal <= 40) t = `Ananda ${n} mulai memahami ${label}.`;
-        else if (realVal <= 60) t = `Ananda ${n} memahami ${label}.`;
-        else if (realVal <= 80) t = `Ananda ${n} sangat memahami ${label}.`;
-        else t = `Ananda ${n} menguasai ${label} dengan mandiri.`;
+        if (realVal <= 20) {
+            t = `Ananda ${n} belum mampu dan membutuhkan bantuan penuh dan pendampingan melekat dari orang dewasa dalam hal ${label}.`;
+        } else if (realVal <= 40) {
+            t = `Ananda ${n} mulai menunjukkan tanda-tanda kemampuan dalam hal ${label}, namun jarang muncul. Masih membutuhkan banyak arahan, contoh, dan dorongan.`;
+        } else if (realVal <= 60) {
+            t = `Ananda ${n} sudah mampu dan konsisten menunjukkan kemampuan ${label} secara mandiri.`;
+        } else if (realVal <= 80) {
+            t = `Ananda ${n} sangat mahir, menunjukkan kemampuan ${label} secara konsisten tanpa diminta, serta mampu menerapkannya di situasi baru.`;
+        } else {
+            t = `Ananda ${n} menunjukkan kematangan luar biasa dalam hal ${label}, mampu menjadi contoh bagi teman sebaya.`;
+        }
         
         document.getElementById(`ket-${id}`).value = t;
     }
