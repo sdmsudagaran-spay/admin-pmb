@@ -37,7 +37,7 @@
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
         @media (min-width: 640px) {
-            .sidebar-closed { width: 0 !important; overflow: hidden; opacity: 0; }
+            .sidebar-closed { width: 0 !important; overflow: hidden; opacity: 0; border: none; padding: 0; margin: 0; }
         }
         @media (max-width: 639px) {
             .sidebar-mobile-closed { transform: translateX(-100%); }
@@ -62,7 +62,6 @@
         <div class="space-y-4">
             <div>
                 <label class="block text-sm font-medium text-brand-navy mb-1">Username Staf</label>
-                <!-- Menjadi Dropdown yang terhubung dengan akun staf -->
                 <select id="login-username" class="w-full bg-brand-bg border border-gray-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-brand-gold transition-colors cursor-pointer appearance-none">
                     <!-- Option dihasilkan lewat JS -->
                 </select>
@@ -118,7 +117,7 @@
     <main class="flex-1 flex flex-col min-w-0 bg-brand-bg relative h-screen overflow-hidden">
         <header class="bg-white h-16 sm:h-20 border-b border-gray-200 flex items-center justify-between px-4 sm:px-8 shrink-0 shadow-sm z-10">
             <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="text-brand-navy hover:text-brand-gold transition-colors"><i class="ph ph-list text-2xl"></i></button>
+                <button onclick="toggleSidebar()" class="text-brand-navy hover:text-brand-gold transition-colors p-1"><i class="ph ph-list text-2xl"></i></button>
                 <div>
                     <h1 id="desktop-title" class="font-heading font-bold text-lg sm:text-2xl text-brand-navy">Dashboard</h1>
                     <p class="text-xs sm:text-sm text-brand-muted hidden sm:block">Sistem Pengelolaan Terpadu</p>
@@ -146,11 +145,17 @@
                             <h2 class="font-heading font-semibold text-lg text-brand-navy">Akun & Progres Siswa</h2>
                             <p class="text-xs text-brand-muted mt-1">Klik nama untuk melihat biodata.</p>
                         </div>
-                        <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                            <!-- Filter Nama -->
+                            <div class="relative w-full sm:w-48">
+                                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="filter-cari-akun" onkeyup="renderAkunProgress()" class="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-brand-gold bg-brand-bg" placeholder="Cari nama...">
+                            </div>
+                            <!-- Filter Ruang -->
                             <select id="filter-ruang-akun" onchange="renderAkunProgress()" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand-gold bg-brand-bg w-full sm:w-auto">
                                 <option value="all">Semua Ruangan</option>
                             </select>
-                            <button onclick="bukaModalMassal()" class="btn-press bg-brand-gold text-white px-4 py-2.5 rounded-xl text-sm font-medium shadow-md hover:bg-opacity-90 flex items-center gap-2 whitespace-nowrap">
+                            <button onclick="bukaModalMassal()" class="btn-press bg-brand-gold text-white px-4 py-2.5 rounded-xl text-sm font-medium shadow-md hover:bg-opacity-90 flex items-center gap-2 whitespace-nowrap justify-center w-full sm:w-auto">
                                 <i class="ph-bold ph-check-square-offset"></i> Update Terpilih
                             </button>
                         </div>
@@ -224,7 +229,7 @@
                                 <tr>
                                     <th class="py-3.5 px-4">Nama Menu</th>
                                     <th class="py-3.5 px-4">Role Akses</th>
-                                    <th class="py-3.5 px-4">Navigasi Link</th>
+                                    <th class="py-3.5 px-4">Link / Alamat</th>
                                     <th class="py-3.5 px-4">Status</th>
                                     <th class="py-3.5 px-4 text-center">Aksi</th>
                                 </tr>
@@ -260,14 +265,22 @@
 
             <div id="panel-sekretaris" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-4">
                         <div>
                             <h2 class="font-heading font-semibold text-lg text-brand-navy">Master Siswa</h2>
                             <p class="text-xs text-brand-muted mt-1">Data pendaftar tersinkronisasi antar tabel.</p>
                         </div>
-                        <button onclick="bukaModalFormSiswa()" class="btn-press bg-brand-navy text-white px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-md hover:bg-opacity-90">
-                            <i class="ph ph-plus font-bold"></i> Tambah Siswa
-                        </button>
+                        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                            <!-- Filter Kelengkapan Data -->
+                            <select id="filter-master-siswa" onchange="renderSekretaris()" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand-gold bg-brand-bg w-full sm:w-auto">
+                                <option value="all">Semua Siswa</option>
+                                <option value="lengkap">Sudah Lengkap (Analisis & Wawancara)</option>
+                                <option value="belum">Belum Lengkap</option>
+                            </select>
+                            <button onclick="bukaModalFormSiswa()" class="btn-press bg-brand-navy text-white px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-md hover:bg-opacity-90 w-full sm:w-auto justify-center">
+                                <i class="ph ph-plus font-bold"></i> Tambah Siswa
+                            </button>
+                        </div>
                     </div>
                     <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
                         <table class="w-full text-left text-sm whitespace-nowrap">
@@ -318,9 +331,9 @@
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="font-heading font-semibold text-lg text-brand-navy">Biaya & Kesepakatan Ortu</h2>
-                        <div class="relative">
+                        <div class="relative w-full max-w-sm">
                             <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <input type="text" id="filter-cari-biaya" onkeyup="renderPewawancara()" class="pl-9 pr-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-brand-gold" placeholder="Cari nama siswa...">
+                            <input type="text" id="filter-cari-biaya" onkeyup="renderPewawancara()" class="w-full pl-9 pr-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-brand-gold" placeholder="Cari nama siswa...">
                         </div>
                     </div>
                     <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
@@ -396,7 +409,7 @@
                         </div>
                         
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 border-b border-gray-100 pb-2">
-                            <div class="flex gap-2 bg-gray-50 p-1 rounded-lg border border-gray-200 w-full sm:w-auto">
+                            <div class="flex gap-2 bg-gray-50 p-1 rounded-lg border border-gray-200 w-full flex-wrap sm:w-auto">
                                 <button onclick="switchTabPendaftaran('belum')" id="tab-pend-belum" class="flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold bg-white shadow-sm text-brand-navy transition-all">Menunggu Pembayaran</button>
                                 <button onclick="switchTabPendaftaran('lunas')" id="tab-pend-lunas" class="flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold text-brand-muted hover:text-brand-navy transition-all">Riwayat Lunas</button>
                             </div>
@@ -552,7 +565,7 @@
                     <option value="Admin">Admin</option>
                 </select>
             </div>
-            <div><label class="text-xs font-medium text-brand-navy block mb-1">Link (Navigasi Letak)</label><input type="text" id="menu-letak" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Contoh: /timeline"></div>
+            <div><label class="text-xs font-medium text-brand-navy block mb-1">Link / Alamat URL</label><input type="text" id="menu-letak" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Contoh: /timeline atau https://..."></div>
             <div>
                 <label class="text-xs font-medium text-brand-navy block mb-1">Ikon Menu</label>
                 <select id="menu-icon" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm font-mono">
@@ -1021,7 +1034,6 @@
         { id: 'panel-perlengkapan', role: 'perlengkapan', icon: 'ph-t-shirt', text: 'Perlengkapan' }
     ];
 
-    // Initialize Login Dropdown early
     function initLoginDropdown() {
         const sel = document.getElementById('login-username');
         if(!sel) return;
@@ -1165,6 +1177,7 @@
     function renderAkunProgress() {
         const tbody = document.getElementById('tbody-akun-progress'); if(!tbody) return;
         const flt = document.getElementById('filter-ruang-akun')?.value || 'all';
+        const q = (document.getElementById('filter-cari-akun')?.value || '').toLowerCase();
 
         const ruangCounts = {};
         masterData.forEach(s => { const r = s.ruang || 'Belum Diset'; ruangCounts[r] = (ruangCounts[r] || 0) + 1; });
@@ -1185,7 +1198,12 @@
             }
         }
 
-        const dataFlt = flt === 'all' ? masterData : masterData.filter(s => (s.ruang || 'Belum Diset') === flt);
+        const dataFlt = masterData.filter(s => {
+            const matchRuang = flt === 'all' || (s.ruang || 'Belum Diset') === flt;
+            const matchName = !q || (s.nama_murid || '').toLowerCase().includes(q);
+            return matchRuang && matchName;
+        });
+
         document.getElementById('check-all').checked = false; selectedIdsForMassAction = [];
 
         tbody.innerHTML = dataFlt.map(s => `
@@ -1236,18 +1254,44 @@
     ======================================================== */
     function renderSekretaris() {
         const tbody = document.getElementById('tbody-sekretaris'); if(!tbody) return;
-        tbody.innerHTML = masterData.map(s => `
+        const flt = document.getElementById('filter-master-siswa')?.value || 'all';
+
+        const filteredData = masterData.filter(s => {
+            const sAna = analisisData.find(x => x.no_ppdb === s.no_ppdb) || {};
+            const isLengkap = sAna.mengenal_huruf !== null && sAna.mengenal_huruf !== undefined;
+            if (flt === 'lengkap') return isLengkap;
+            if (flt === 'belum') return !isLengkap;
+            return true;
+        });
+
+        tbody.innerHTML = filteredData.map(s => {
+            const sAna = analisisData.find(x => x.no_ppdb === s.no_ppdb) || {};
+            const sUang = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
+            
+            const hasAnalisis = sAna.mengenal_huruf !== null && sAna.mengenal_huruf !== undefined;
+            const hasWawancara = sUang.daftar_ulang !== null && sUang.daftar_ulang !== undefined;
+
+            const btnAnalisis = hasAnalisis 
+                ? `<button onclick="cetakAnalisis('${s.no_ppdb}')" title="Cetak Hasil Analisis" class="text-purple-600 bg-purple-50 hover:bg-purple-100 p-1.5 rounded border border-purple-100"><i class="ph-bold ph-chart-polar text-lg"></i></button>`
+                : `<button disabled title="Analisis belum diinput" class="text-gray-400 bg-gray-100 p-1.5 rounded border border-gray-200 cursor-not-allowed"><i class="ph-bold ph-chart-polar text-lg"></i></button>`;
+                
+            const btnWawancara = hasWawancara
+                ? `<button onclick="cetakHasilWawancara('${s.no_ppdb}')" title="Cetak Hasil Wawancara (Biaya)" class="text-green-600 bg-green-50 hover:bg-green-100 p-1.5 rounded border border-green-100"><i class="ph-bold ph-money text-lg"></i></button>`
+                : `<button disabled title="Biaya belum diinput" class="text-gray-400 bg-gray-100 p-1.5 rounded border border-gray-200 cursor-not-allowed"><i class="ph-bold ph-money text-lg"></i></button>`;
+
+            return `
             <tr class="hover:bg-gray-50 border-b border-gray-50">
                 <td class="py-3 px-4 font-mono text-xs font-medium">${s.no_ppdb||'-'}</td>
                 <td class="py-3 px-4 font-bold text-blue-600">${s.password||'-'}</td>
                 <td class="py-3 px-4 font-semibold text-brand-navy">${s.nama_murid||'-'}</td>
                 <td class="py-3 px-4 text-center flex justify-center gap-1">
-                    <button onclick="cetakAnalisis('${s.no_ppdb}')" title="Cetak Hasil Analisis" class="text-purple-600 bg-purple-50 hover:bg-purple-100 p-1.5 rounded border border-purple-100"><i class="ph-bold ph-chart-polar text-lg"></i></button>
-                    <button onclick="cetakHasilWawancara('${s.no_ppdb}')" title="Cetak Hasil Wawancara (Biaya)" class="text-green-600 bg-green-50 hover:bg-green-100 p-1.5 rounded border border-green-100"><i class="ph-bold ph-money text-lg"></i></button>
+                    ${btnAnalisis}
+                    ${btnWawancara}
                     <button onclick="bukaModalFormSiswa('${s.id}')" title="Edit Siswa" class="text-blue-500 bg-blue-50 hover:bg-blue-100 p-1.5 rounded border border-blue-100 ml-1"><i class="ph-bold ph-pencil-simple text-lg"></i></button>
                     <button onclick="hapusSiswa('${s.id}', '${s.no_ppdb}')" title="Hapus Siswa" class="text-red-500 bg-red-50 hover:bg-red-100 p-1.5 rounded border border-red-100"><i class="ph-bold ph-trash text-lg"></i></button>
                 </td>
-            </tr>`).join('');
+            </tr>`;
+        }).join('');
     }
 
     function autoGenerateAkses() {
@@ -1279,11 +1323,19 @@
             if(id) {
                 await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl);
                 const syncPl = { nama_murid: nama_murid, tgl_lahir: pl.tgl_lahir, ayah: pl.ayah, ibu: pl.ibu };
-                await Promise.all([ 
-                    apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', syncPl), 
-                    apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'PATCH', syncPl), 
-                    apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'PATCH', syncPl) 
+                const checkRes = await Promise.all([
+                    apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}&select=id`, 'GET'),
+                    apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}&select=id`, 'GET'),
+                    apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}&select=id`, 'GET')
                 ]);
+                const cUang = await checkRes[0].json(); const cAna = await checkRes[1].json(); const cPerkap = await checkRes[2].json();
+                
+                const baseData = { no_ppdb: no_ppdb, nama_murid: nama_murid, tgl_lahir: pl.tgl_lahir, ayah: pl.ayah, ibu: pl.ibu };
+                const promises = [];
+                if(cUang.length > 0) promises.push(apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', syncPl)); else promises.push(apiRequest(`${SUPABASE_URL}keuangan`, 'POST', baseData));
+                if(cAna.length > 0) promises.push(apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'PATCH', syncPl)); else promises.push(apiRequest(`${SUPABASE_URL}analisis`, 'POST', baseData));
+                if(cPerkap.length > 0) promises.push(apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'PATCH', syncPl)); else promises.push(apiRequest(`${SUPABASE_URL}perlengkapan`, 'POST', baseData));
+                await Promise.all(promises);
             } else {
                 pl.tgl_pendaftaran = new Date().toISOString().split('T')[0];
                 const baseData = { no_ppdb: no_ppdb, nama_murid: nama_murid, password: pl.password, jk: pl.jk, tempat_lahir: pl.tempat_lahir, tgl_lahir: pl.tgl_lahir, alamat: pl.alamat, tk: pl.tk, ayah: pl.ayah, agama_ayah: pl.agama_ayah, pend_ayah: pl.pend_ayah, pekrj_ayah: pl.pekrj_ayah, ibu: pl.ibu, agama_ibu: pl.agama_ibu, pend_ibu: pl.pend_ibu, pekrj_ibu: pl.pekrj_ibu, tgl_pendaftaran: pl.tgl_pendaftaran };
@@ -1449,7 +1501,7 @@
         const no_ppdb = document.getElementById('pewa-id').value; const sMaster = masterData.find(x => x.no_ppdb === no_ppdb) || {};
         const pl = { password: sMaster.password || null, tgl_pendaftaran: sMaster.tgl_pendaftaran || null, nama_murid: sMaster.nama_murid || null, jk: sMaster.jk || null, tempat_lahir: sMaster.tempat_lahir || null, tgl_lahir: sMaster.tgl_lahir || null, alamat: sMaster.alamat || null, tk: sMaster.tk || null, ayah: sMaster.ayah || null, agama_ayah: sMaster.agama_ayah || null, pend_ayah: sMaster.pend_ayah || null, pekrj_ayah: sMaster.pekrj_ayah || null, ibu: sMaster.ibu || null, agama_ibu: sMaster.agama_ibu || null, pend_ibu: sMaster.pend_ibu || null, pekrj_ibu: sMaster.pekrj_ibu || null, daftar_ulang: parseInt(document.getElementById('pewa-daftar-ulang').value) || 0, bopd: parseInt(document.getElementById('pewa-bopd').value) || 0, early_bird: parseInt(document.getElementById('pewa-early').value) || 0, kader_aum: parseInt(document.getElementById('pewa-aum').value) || 0 };
 
-        const btn = document.getElementById('btn-simpan-pewa'); btn.disabled = true; btn.innerHTML = 'Processing...';
+        const btn = document.getElementById('btn-simpan-pewa'); btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
         try {
             const exists = keuanganData.find(x => x.no_ppdb === no_ppdb);
             if (exists && exists.id) await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
@@ -1471,6 +1523,9 @@
 
         const w = window.open('', '_blank');
         if(!w) return showToast("Izinkan pop-up!", true);
+        
+        let ebRow = eb > 0 ? `<tr><td>3. Diskon Early Bird</td><td class="text-right text-red-600">- ${formatRp(eb)}</td></tr>` : '';
+        let aumRow = aum > 0 ? `<tr><td>${eb > 0 ? '4' : '3'}. Potongan Kader AUM</td><td class="text-right text-red-600">- ${formatRp(aum)}</td></tr>` : '';
 
         const html = `<!DOCTYPE html><html><head><title>Hasil Kesepakatan Biaya - ${sMaster.nama_murid}</title>
             <style>
@@ -1500,8 +1555,8 @@
                 <tbody>
                     <tr><td>1. Daftar Ulang</td><td class="text-right">${formatRp(du)}</td></tr>
                     <tr><td>2. BOPD</td><td class="text-right">${formatRp(bopd)}</td></tr>
-                    <tr><td>3. Diskon Early Bird</td><td class="text-right text-red-600">- ${formatRp(eb)}</td></tr>
-                    <tr><td>4. Potongan Kader AUM</td><td class="text-right text-red-600">- ${formatRp(aum)}</td></tr>
+                    ${ebRow}
+                    ${aumRow}
                 </tbody>
                 <tfoot>
                     <tr><th class="text-right">Total Tagihan Bersih</th><th class="text-right">${formatRp(total)}</th></tr>
