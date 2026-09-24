@@ -130,8 +130,8 @@
 
         <div id="panel-container" class="flex-1 overflow-y-auto p-4 sm:p-8 pb-24 relative z-0">
             
+            <!-- PANEL 1: AKUN & PROGRES -->
             <div id="panel-akun-progress" class="panel-view hidden space-y-6">
-                <!-- Dashboard Ruangan -->
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <h2 class="font-heading font-semibold text-lg text-brand-navy mb-4">Dashboard Distribusi Ruangan</h2>
                     <div id="rekap-ruangan" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -146,12 +146,10 @@
                             <p class="text-xs text-brand-muted mt-1">Klik nama untuk melihat biodata.</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                            <!-- Filter Nama -->
                             <div class="relative w-full sm:w-48">
                                 <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                                 <input type="text" id="filter-cari-akun" onkeyup="renderAkunProgress()" class="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-brand-gold bg-brand-bg" placeholder="Cari nama...">
                             </div>
-                            <!-- Filter Ruang -->
                             <select id="filter-ruang-akun" onchange="renderAkunProgress()" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand-gold bg-brand-bg w-full sm:w-auto">
                                 <option value="all">Semua Ruangan</option>
                             </select>
@@ -176,6 +174,7 @@
                 </div>
             </div>
 
+            <!-- PANEL 2: PENGATURAN -->
             <div id="panel-pengaturan" class="panel-view hidden space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
@@ -215,6 +214,7 @@
                 </div>
             </div>
 
+            <!-- PANEL 3: MENU APP -->
             <div id="panel-menu-app" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-6">
@@ -240,6 +240,7 @@
                 </div>
             </div>
 
+            <!-- PANEL 4: KELOLA AKSES -->
             <div id="panel-kelola-akses" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-6">
@@ -263,6 +264,7 @@
                 </div>
             </div>
 
+            <!-- PANEL 5: MASTER SISWA -->
             <div id="panel-sekretaris" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-4">
@@ -271,7 +273,6 @@
                             <p class="text-xs text-brand-muted mt-1">Data pendaftar tersinkronisasi antar tabel.</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                            <!-- Filter Kelengkapan Data -->
                             <select id="filter-master-siswa" onchange="renderSekretaris()" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand-gold bg-brand-bg w-full sm:w-auto">
                                 <option value="all">Semua Siswa</option>
                                 <option value="lengkap">Sudah Lengkap (Analisis & Wawancara)</option>
@@ -298,19 +299,40 @@
                 </div>
             </div>
 
+            <!-- PANEL 6: PENGANALISIS (INPUT NILAI) -->
             <div id="panel-penganalisis" class="panel-view hidden space-y-6">
+                <!-- Dashboard Progress Ruangan -->
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
-                    <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-heading font-semibold text-lg text-brand-navy mb-4">Progres Input Nilai per Ruang</h2>
+                    <div id="rekap-analisis-ruangan" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <!-- Generate via JS -->
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                         <h2 class="font-heading font-semibold text-lg text-brand-navy">Input Nilai Kesiapan Belajar</h2>
-                        <select id="filter-ruang-analisis" onchange="renderPenganalisis()" class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-brand-gold">
-                            <option value="all">Semua Ruang</option>
-                        </select>
+                        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                            <div class="relative w-full sm:w-48">
+                                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="filter-cari-analisis" onkeyup="renderPenganalisis()" class="w-full pl-9 pr-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-brand-gold bg-brand-bg" placeholder="Cari nama...">
+                            </div>
+                            <select id="filter-status-analisis" onchange="renderPenganalisis()" class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-brand-gold bg-brand-bg">
+                                <option value="all">Semua Status</option>
+                                <option value="sudah">Sudah Diinput</option>
+                                <option value="belum">Belum Diinput</option>
+                            </select>
+                            <select id="filter-ruang-analisis" onchange="renderPenganalisis()" class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-brand-gold">
+                                <option value="all">Semua Ruang</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
                         <table class="w-full text-left text-sm whitespace-nowrap">
                             <thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100">
                                 <tr>
                                     <th class="py-3.5 px-4">Nama Siswa</th>
+                                    <th class="py-3.5 px-4 text-center">Ruang</th>
                                     <th class="py-3.5 px-4 text-center" title="Mengenal Huruf">Huruf</th>
                                     <th class="py-3.5 px-4 text-center" title="Mengenal Bilangan">Bilangan</th>
                                     <th class="py-3.5 px-4 text-center" title="Gunting & Tempel">Gunting/Tempel</th>
@@ -327,13 +349,21 @@
                 </div>
             </div>
 
+            <!-- PANEL 7: PEWAWANCARA (BIAYA) -->
             <div id="panel-pewawancara" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
-                    <div class="flex justify-between items-center mb-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                         <h2 class="font-heading font-semibold text-lg text-brand-navy">Biaya & Kesepakatan Ortu</h2>
-                        <div class="relative w-full max-w-sm">
-                            <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <input type="text" id="filter-cari-biaya" onkeyup="renderPewawancara()" class="w-full pl-9 pr-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-brand-gold" placeholder="Cari nama siswa...">
+                        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                            <select id="filter-status-wawancara" onchange="renderPewawancara()" class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-brand-gold bg-brand-bg">
+                                <option value="all">Semua Status</option>
+                                <option value="sudah">Sudah Wawancara</option>
+                                <option value="belum">Belum Wawancara</option>
+                            </select>
+                            <div class="relative w-full sm:w-48">
+                                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="filter-cari-biaya" onkeyup="renderPewawancara()" class="w-full pl-9 pr-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-brand-gold bg-brand-bg" placeholder="Cari nama siswa...">
+                            </div>
                         </div>
                     </div>
                     <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
@@ -345,6 +375,7 @@
                                     <th class="py-3.5 px-4 text-center">BOPD</th>
                                     <th class="py-3.5 px-4 text-center">Early Bird</th>
                                     <th class="py-3.5 px-4 text-center">Kader AUM</th>
+                                    <th class="py-3.5 px-4 text-center">Pewawancara</th>
                                     <th class="py-3.5 px-4 text-center">Kelola Biaya</th>
                                 </tr>
                             </thead>
@@ -354,13 +385,12 @@
                 </div>
             </div>
 
+            <!-- PANEL 8: BENDAHARA -->
             <div id="panel-bendahara" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm relative">
                     
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 border-b border-gray-100 pb-4">
                         <h2 class="font-heading font-semibold text-lg text-brand-navy">Validasi Pembayaran</h2>
-                        
-                        <!-- Tab Utama Bendahara -->
                         <div class="flex gap-2 bg-gray-100 p-1.5 rounded-xl border border-gray-200 w-full md:w-auto">
                             <button onclick="switchMainBendahara('pendaftaran')" id="tab-main-pendaftaran" class="flex-1 md:flex-none px-5 py-2 rounded-lg text-sm font-semibold bg-white shadow-sm text-brand-navy transition-all">Biaya Pendaftaran</button>
                             <button onclick="switchMainBendahara('daftarulang')" id="tab-main-daftarulang" class="flex-1 md:flex-none px-5 py-2 rounded-lg text-sm font-semibold text-brand-muted hover:text-brand-navy transition-all">Daftar Ulang & BOPD</button>
@@ -413,7 +443,7 @@
                                 <button onclick="switchTabPendaftaran('belum')" id="tab-pend-belum" class="flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold bg-white shadow-sm text-brand-navy transition-all">Menunggu Pembayaran</button>
                                 <button onclick="switchTabPendaftaran('lunas')" id="tab-pend-lunas" class="flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold text-brand-muted hover:text-brand-navy transition-all">Riwayat Lunas</button>
                             </div>
-                            <button onclick="cetakLaporanPendaftaranPDF()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-md text-xs font-bold shadow-sm flex items-center justify-center gap-2 transition-colors"><i class="ph-bold ph-printer"></i> Unduh Laporan PDF</button>
+                            <button onclick="cetakLaporanPendaftaranPDF()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-md text-xs font-bold shadow-sm flex items-center justify-center gap-2 transition-colors"><i class="ph-bold ph-printer"></i> Unduh Laporan PDF (F4)</button>
                         </div>
 
                         <div class="relative w-full max-w-md mb-4">
@@ -449,7 +479,7 @@
                                 <button onclick="switchTabBendahara('transfer')" id="tab-sub-transfer" class="flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold text-brand-muted hover:text-brand-navy transition-all"><i class="ph-bold ph-device-mobile"></i> Cek Transfer</button>
                                 <button onclick="switchTabBendahara('riwayat')" id="tab-sub-riwayat" class="flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold text-brand-muted hover:text-brand-navy transition-all"><i class="ph-bold ph-check-circle"></i> Riwayat Lunas</button>
                             </div>
-                            <button onclick="cetakLaporanDUPDF()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-md text-xs font-bold shadow-sm flex items-center justify-center gap-2 transition-colors"><i class="ph-bold ph-printer"></i> Unduh Laporan PDF</button>
+                            <button onclick="cetakLaporanDUPDF()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-md text-xs font-bold shadow-sm flex items-center justify-center gap-2 transition-colors"><i class="ph-bold ph-printer"></i> Unduh Laporan PDF (F4)</button>
                         </div>
 
                         <div id="view-tunai" class="space-y-4">
@@ -515,6 +545,7 @@
                 </div>
             </div>
 
+            <!-- PANEL 9: PERLENGKAPAN -->
             <div id="panel-perlengkapan" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
@@ -1171,9 +1202,6 @@
         if(isAdmin) { renderAkunProgress(); renderStaf(); renderMenuApp(); }
     }
 
-    /* ========================================================
-       MODUL: AKUN & PROGRES
-    ======================================================== */
     function renderAkunProgress() {
         const tbody = document.getElementById('tbody-akun-progress'); if(!tbody) return;
         const flt = document.getElementById('filter-ruang-akun')?.value || 'all';
@@ -1249,9 +1277,6 @@
         document.querySelectorAll('.lbl-tl-1').forEach(el => el.innerText = v1); document.querySelectorAll('.lbl-tl-2').forEach(el => el.innerText = v2); document.querySelectorAll('.lbl-tl-3').forEach(el => el.innerText = v3); document.querySelectorAll('.lbl-tl-4').forEach(el => el.innerText = v4);
     }
 
-    /* ========================================================
-       MODUL: MASTER SISWA (SEKRETARIS)
-    ======================================================== */
     function renderSekretaris() {
         const tbody = document.getElementById('tbody-sekretaris'); if(!tbody) return;
         const flt = document.getElementById('filter-master-siswa')?.value || 'all';
@@ -1268,14 +1293,14 @@
             const sAna = analisisData.find(x => x.no_ppdb === s.no_ppdb) || {};
             const sUang = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
             
-            const hasAnalisis = sAna.mengenal_huruf !== null && sAna.mengenal_huruf !== undefined;
-            const hasWawancara = sUang.daftar_ulang !== null && sUang.daftar_ulang !== undefined;
+            const isAnaLengkap = (sAna.mengenal_huruf != null && sAna.mengenal_bilangan != null && sAna.menggunting_dan_menempel_puzzel != null && sAna.menyanyi_lagu_nasional != null && sAna.melafalkan_surat_pendek_doa_harian != null && sAna.interview != null);
+            const isUangLengkap = (sUang.daftar_ulang != null && sUang.daftar_ulang > 0) || sUang.pewawancara;
 
-            const btnAnalisis = hasAnalisis 
-                ? `<button onclick="cetakAnalisis('${s.no_ppdb}')" title="Cetak Hasil Analisis" class="text-purple-600 bg-purple-50 hover:bg-purple-100 p-1.5 rounded border border-purple-100"><i class="ph-bold ph-chart-polar text-lg"></i></button>`
-                : `<button disabled title="Analisis belum diinput" class="text-gray-400 bg-gray-100 p-1.5 rounded border border-gray-200 cursor-not-allowed"><i class="ph-bold ph-chart-polar text-lg"></i></button>`;
+            const btnAnalisis = isAnaLengkap
+                ? `<button onclick="cetakAnalisis('${s.no_ppdb}')" title="Preview Hasil Analisis" class="text-purple-600 bg-purple-50 hover:bg-purple-100 p-1.5 rounded border border-purple-100"><i class="ph-bold ph-chart-polar text-lg"></i></button>`
+                : `<button disabled title="Analisis belum lengkap" class="text-gray-400 bg-gray-100 p-1.5 rounded border border-gray-200 cursor-not-allowed"><i class="ph-bold ph-chart-polar text-lg"></i></button>`;
                 
-            const btnWawancara = hasWawancara
+            const btnWawancara = isUangLengkap
                 ? `<button onclick="cetakHasilWawancara('${s.no_ppdb}')" title="Cetak Hasil Wawancara (Biaya)" class="text-green-600 bg-green-50 hover:bg-green-100 p-1.5 rounded border border-green-100"><i class="ph-bold ph-money text-lg"></i></button>`
                 : `<button disabled title="Biaya belum diinput" class="text-gray-400 bg-gray-100 p-1.5 rounded border border-gray-200 cursor-not-allowed"><i class="ph-bold ph-money text-lg"></i></button>`;
 
@@ -1321,6 +1346,7 @@
         
         try { 
             if(id) {
+                // UPDATE EXISITING STUDENT
                 await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl);
                 const syncPl = { nama_murid: nama_murid, tgl_lahir: pl.tgl_lahir, ayah: pl.ayah, ibu: pl.ibu };
                 const checkRes = await Promise.all([
@@ -1337,6 +1363,7 @@
                 if(cPerkap.length > 0) promises.push(apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'PATCH', syncPl)); else promises.push(apiRequest(`${SUPABASE_URL}perlengkapan`, 'POST', baseData));
                 await Promise.all(promises);
             } else {
+                // INSERT NEW STUDENT INTO ALL TABLES
                 pl.tgl_pendaftaran = new Date().toISOString().split('T')[0];
                 const baseData = { no_ppdb: no_ppdb, nama_murid: nama_murid, password: pl.password, jk: pl.jk, tempat_lahir: pl.tempat_lahir, tgl_lahir: pl.tgl_lahir, alamat: pl.alamat, tk: pl.tk, ayah: pl.ayah, agama_ayah: pl.agama_ayah, pend_ayah: pl.pend_ayah, pekrj_ayah: pl.pekrj_ayah, ibu: pl.ibu, agama_ibu: pl.agama_ibu, pend_ibu: pl.pend_ibu, pekrj_ibu: pl.pekrj_ibu, tgl_pendaftaran: pl.tgl_pendaftaran };
                 await Promise.all([ 
@@ -1361,9 +1388,6 @@
         document.getElementById('modal-biodata').classList.replace('hidden', 'flex');
     }
 
-    /* ========================================================
-       MODUL: PENGANALISIS (INPUT NILAI)
-    ======================================================== */
     function renderPenganalisisFilter() {
         const sel = document.getElementById('filter-ruang-analisis'); const rCache = sel.value; sel.innerHTML = '<option value="all">Semua Ruang</option>';
         const ruangList = [...new Set(masterData.map(s => s.ruang).filter(Boolean))]; ruangList.forEach(r => sel.innerHTML += `<option value="${r}">${r}</option>`); sel.value = ruangList.includes(rCache) ? rCache : 'all'; renderPenganalisis();
@@ -1371,7 +1395,45 @@
 
     function renderPenganalisis() {
         const tbody = document.getElementById('tbody-penganalisis'); if(!tbody) return;
-        const flt = document.getElementById('filter-ruang-analisis').value; const dataFlt = flt === 'all' ? masterData : masterData.filter(s => s.ruang === flt);
+        const fltRuang = document.getElementById('filter-ruang-analisis')?.value || 'all';
+        const q = (document.getElementById('filter-cari-analisis')?.value || '').toLowerCase();
+        const statusFlt = document.getElementById('filter-status-analisis')?.value || 'all';
+        
+        // Kalkulasi Statistik Dashboard Ruangan
+        const ruangStats = {};
+        masterData.forEach(s => {
+            const r = s.ruang || 'Belum Diset';
+            if(!ruangStats[r]) ruangStats[r] = { total: 0, done: 0 };
+            ruangStats[r].total++;
+            const sAna = analisisData.find(x => x.no_ppdb === s.no_ppdb) || {};
+            const isComplete = (sAna.mengenal_huruf != null && sAna.mengenal_bilangan != null && sAna.menggunting_dan_menempel_puzzel != null && sAna.menyanyi_lagu_nasional != null && sAna.melafalkan_surat_pendek_doa_harian != null && sAna.interview != null);
+            if(isComplete) ruangStats[r].done++;
+        });
+
+        const rekapContainer = document.getElementById('rekap-analisis-ruangan');
+        if(rekapContainer) {
+            rekapContainer.innerHTML = Object.keys(ruangStats).map(r => `
+                <div class="bg-brand-bg border border-gray-200 rounded-xl p-4 text-center shadow-sm">
+                    <p class="text-xs text-brand-muted font-medium mb-1 truncate">${r}</p>
+                    <p class="text-xl font-bold text-brand-navy">${ruangStats[r].done} <span class="text-sm font-normal text-gray-500">/ ${ruangStats[r].total}</span></p>
+                    <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2 overflow-hidden"><div class="bg-green-500 h-1.5 rounded-full transition-all" style="width: ${(ruangStats[r].done / ruangStats[r].total) * 100}%"></div></div>
+                </div>
+            `).join('');
+        }
+
+        const dataFlt = masterData.filter(sMaster => {
+            const matchRuang = fltRuang === 'all' || (sMaster.ruang || 'Belum Diset') === fltRuang;
+            const matchName = !q || (sMaster.nama_murid || '').toLowerCase().includes(q);
+            
+            const sAna = analisisData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
+            const isComplete = (sAna.mengenal_huruf != null && sAna.mengenal_bilangan != null && sAna.menggunting_dan_menempel_puzzel != null && sAna.menyanyi_lagu_nasional != null && sAna.melafalkan_surat_pendek_doa_harian != null && sAna.interview != null);
+            
+            let matchStatus = true;
+            if(statusFlt === 'sudah') matchStatus = isComplete;
+            if(statusFlt === 'belum') matchStatus = !isComplete;
+
+            return matchRuang && matchName && matchStatus;
+        });
         
         tbody.innerHTML = dataFlt.map(sMaster => {
             const sAna = analisisData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
@@ -1379,21 +1441,32 @@
             const r = Math.round(arr.reduce((a, b) => a + b, 0) / 6);
             const getC = (v) => v === 0 ? 'text-gray-300' : v < 60 ? 'text-red-500 font-bold' : v < 80 ? 'text-yellow-600 font-bold' : 'text-green-600 font-bold';
             
+            const isComplete = (sAna.mengenal_huruf != null && sAna.mengenal_bilangan != null && sAna.menggunting_dan_menempel_puzzel != null && sAna.menyanyi_lagu_nasional != null && sAna.melafalkan_surat_pendek_doa_harian != null && sAna.interview != null);
+
+            const btnGrafik = isComplete
+                ? `<button onclick="bukaModalGrafik('${sMaster.no_ppdb}')" class="flex-1 text-purple-600 bg-purple-50 border border-purple-100 hover:bg-purple-100 px-2 py-1.5 rounded-lg text-xs font-bold transition-colors"><i class="ph-bold ph-chart-polar"></i> Grafik</button>`
+                : `<button disabled class="flex-1 text-gray-400 bg-gray-100 border border-gray-200 px-2 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed" title="Isi semua nilai untuk mengaktifkan grafik"><i class="ph-bold ph-chart-polar"></i> Grafik</button>`;
+
+            const btnPreview = isComplete
+                ? `<button onclick="cetakAnalisis('${sMaster.no_ppdb}')" class="bg-green-50 text-green-700 border border-green-200 w-full max-w-[180px] px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-green-100 transition-colors shadow-sm"><i class="ph-bold ph-eye"></i> Preview (F4)</button>`
+                : `<button disabled class="bg-gray-100 text-gray-400 border border-gray-200 w-full max-w-[180px] px-3 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed shadow-sm" title="Isi semua nilai terlebih dahulu"><i class="ph-bold ph-eye"></i> Preview (F4)</button>`;
+
             return `<tr class="hover:bg-gray-50 border-b border-gray-50">
                 <td class="py-3 px-4 font-semibold text-brand-navy">${sMaster.nama_murid || '-'}</td>
-                <td class="py-3 px-4 text-center ${getC(arr[0])}">${arr[0] || '-'}</td>
-                <td class="py-3 px-4 text-center ${getC(arr[1])}">${arr[1] || '-'}</td>
-                <td class="py-3 px-4 text-center ${getC(arr[2])}">${arr[2] || '-'}</td>
-                <td class="py-3 px-4 text-center ${getC(arr[3])}">${arr[3] || '-'}</td>
-                <td class="py-3 px-4 text-center ${getC(arr[4])}">${arr[4] || '-'}</td>
-                <td class="py-3 px-4 text-center ${getC(arr[5])}">${arr[5] || '-'}</td>
-                <td class="py-3 px-4 text-center"><span class="bg-gray-100 px-3 py-1 rounded-lg font-bold ${r<60?'text-red-500':r<80?'text-yellow-600':'text-green-600'}">${r}</span></td>
+                <td class="py-3 px-4 text-center text-xs font-medium text-brand-muted">${sMaster.ruang || '-'}</td>
+                <td class="py-3 px-4 text-center ${getC(sAna.mengenal_huruf != null ? arr[0] : 0)}">${sAna.mengenal_huruf != null ? arr[0] : '-'}</td>
+                <td class="py-3 px-4 text-center ${getC(sAna.mengenal_bilangan != null ? arr[1] : 0)}">${sAna.mengenal_bilangan != null ? arr[1] : '-'}</td>
+                <td class="py-3 px-4 text-center ${getC(sAna.menggunting_dan_menempel_puzzel != null ? arr[2] : 0)}">${sAna.menggunting_dan_menempel_puzzel != null ? arr[2] : '-'}</td>
+                <td class="py-3 px-4 text-center ${getC(sAna.menyanyi_lagu_nasional != null ? arr[3] : 0)}">${sAna.menyanyi_lagu_nasional != null ? arr[3] : '-'}</td>
+                <td class="py-3 px-4 text-center ${getC(sAna.melafalkan_surat_pendek_doa_harian != null ? arr[4] : 0)}">${sAna.melafalkan_surat_pendek_doa_harian != null ? arr[4] : '-'}</td>
+                <td class="py-3 px-4 text-center ${getC(sAna.interview != null ? arr[5] : 0)}">${sAna.interview != null ? arr[5] : '-'}</td>
+                <td class="py-3 px-4 text-center"><span class="bg-gray-100 px-3 py-1 rounded-lg font-bold ${r<60?'text-red-500':r<80?'text-yellow-600':'text-green-600'}">${isComplete ? r : '-'}</span></td>
                 <td class="py-3 px-4 text-center flex flex-col gap-1 items-center justify-center">
                     <div class="flex gap-1 w-full max-w-[180px]">
-                        <button onclick="bukaModalGrafik('${sMaster.no_ppdb}')" class="flex-1 text-purple-600 bg-purple-50 border border-purple-100 hover:bg-purple-100 px-2 py-1.5 rounded-lg text-xs font-bold"><i class="ph-bold ph-chart-polar"></i> Grafik</button>
-                        <button onclick="bukaModalAnalisis('${sMaster.no_ppdb}', '${sMaster.nama_murid}', '${sMaster.nama_panggilan}')" class="flex-1 bg-blue-50 text-blue-600 border border-blue-100 px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100"><i class="ph-bold ph-pencil-simple"></i> Input</button>
+                        ${btnGrafik}
+                        <button onclick="bukaModalAnalisis('${sMaster.no_ppdb}', '${sMaster.nama_murid}', '${sMaster.nama_panggilan}')" class="flex-1 bg-blue-50 text-blue-600 border border-blue-100 px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors"><i class="ph-bold ph-pencil-simple"></i> Input</button>
                     </div>
-                    <button onclick="cetakAnalisis('${sMaster.no_ppdb}')" class="bg-green-50 text-green-700 border border-green-200 w-full max-w-[180px] px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-green-100 transition-colors shadow-sm"><i class="ph-bold ph-printer"></i> Cetak PDF (F4)</button>
+                    ${btnPreview}
                 </td>
             </tr>`;
         }).join('');
@@ -1435,7 +1508,7 @@
         const sMaster = masterData.find(x => x.no_ppdb === no_ppdb) || {};
 
         const pl = {
-            password: sMaster.password || null, tgl_pendaftaran: sMaster.tgl_pendaftaran || null, nama_murid: sMaster.nama_murid || null, jk: sMaster.jk || null, tempat_lahir: sMaster.tempat_lahir || null, tgl_lahir: sMaster.tgl_lahir || null, alamat: sMaster.alamat || null, tk: sMaster.tk || null,
+            no_ppdb: no_ppdb, password: sMaster.password || null, tgl_pendaftaran: sMaster.tgl_pendaftaran || null, nama_murid: sMaster.nama_murid || null, jk: sMaster.jk || null, tempat_lahir: sMaster.tempat_lahir || null, tgl_lahir: sMaster.tgl_lahir || null, alamat: sMaster.alamat || null, tk: sMaster.tk || null,
             mengenal_huruf: getVal('val-huruf'), mengenal_bilangan: getVal('val-bilangan'), menggunting_dan_menempel_puzzel: getVal('val-motorik'), menyanyi_lagu_nasional: getVal('val-lagu'), melafalkan_surat_pendek_doa_harian: getVal('val-doa'), interview: getVal('val-interview'),
             ket_mengenal_huruf: document.getElementById('ket-huruf').value, ket_mengenal_bilangan: document.getElementById('ket-bilangan').value, ket_menggunting_dan_menempel_puzzel: document.getElementById('ket-motorik').value, ket_menyanyi_lagu_nasional: document.getElementById('ket-lagu').value, ket_melafalkan_surat_pendek_doa_harian: document.getElementById('ket-doa').value, ket_interview: document.getElementById('ket-interview').value
         };
@@ -1444,7 +1517,7 @@
         try {
             const exists = analisisData.find(x => x.no_ppdb === no_ppdb);
             if (exists && exists.id) await apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
-            else { pl.no_ppdb = no_ppdb; await apiRequest(`${SUPABASE_URL}analisis`, 'POST', pl); }
+            else await apiRequest(`${SUPABASE_URL}analisis`, 'POST', pl);
             showToast("Nilai Tersimpan"); closeModal('modal-analisis'); loadData(); 
         } catch(e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Nilai & Deskripsi';
     }
@@ -1458,25 +1531,22 @@
         chartInstanceAdmin = new Chart(ctx, { type: 'radar', data: { labels: ['Huruf', 'Bilangan', 'Motorik', 'Lagu', 'Doa & SP', 'Interview'], datasets: [{ label: 'Skor', data: dataVals, backgroundColor: 'rgba(217, 164, 65, 0.3)', borderColor: '#D9A441', pointBackgroundColor: '#0F2747', borderWidth: 2 }] }, options: { scales: { r: { min: 0, max: 100, ticks: { stepSize: 20 } } }, plugins: { legend: { display: false } } } });
     }
 
-    function cetakAnalisis(no_ppdb) {
-        const sMaster = masterData.find(x => x.no_ppdb === no_ppdb); const sAna = analisisData.find(x => x.no_ppdb === no_ppdb) || {};
-        if(!sMaster) return showToast("Data tidak ditemukan", true);
-        const w = window.open('', '_blank'); if(!w) return showToast("Izinkan pop-up!", true);
-
-        const html = `<!DOCTYPE html><html><head><title>Cetak Analisis - ${sMaster.nama_murid}</title><script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
-            <style>@page { size: 215.9mm 330.2mm; margin: 4cm 1.5cm; } body { font-family: 'Times New Roman', Times, serif; color: #000; line-height: 1.5; font-size: 14px; } .header-title { text-align: center; font-size: 18px; font-weight: bold; text-decoration: underline; margin-bottom: 20px; } .info-table { width: 100%; margin-bottom: 20px; } .info-table td { padding: 4px; vertical-align: top; } .info-table td:first-child { width: 200px; font-weight: bold; } .chart-container { width: 400px; height: 400px; margin: 0 auto 20px auto; } .desc-section { margin-bottom: 40px; } .signature-box { display: flex; justify-content: space-between; margin-top: 50px; text-align: center; } .sig-name { font-weight: bold; text-decoration: underline; margin-top: 80px; }</style>
-        </head><body><div class="header-title">Hasil Analisis Potensi</div><table class="info-table"><tr><td>Nama Calon Peserta Didik</td><td>: ${sMaster.nama_murid || '-'}</td></tr><tr><td>No. Pendaftaran</td><td>: ${sMaster.no_ppdb || '-'}</td></tr></table><div class="chart-container"><canvas id="printChart"></canvas></div><div class="desc-section"><strong>Deskripsi Grafik:</strong><ul style="margin-top: 10px; padding-left: 20px; text-align: justify;">${sAna.ket_mengenal_huruf ? `<li>${sAna.ket_mengenal_huruf}</li>` : ''}${sAna.ket_mengenal_bilangan ? `<li>${sAna.ket_mengenal_bilangan}</li>` : ''}${sAna.ket_menggunting_dan_menempel_puzzel ? `<li>${sAna.ket_menggunting_dan_menempel_puzzel}</li>` : ''}${sAna.ket_menyanyi_lagu_nasional ? `<li>${sAna.ket_menyanyi_lagu_nasional}</li>` : ''}${sAna.ket_melafalkan_surat_pendek_doa_harian ? `<li>${sAna.ket_melafalkan_surat_pendek_doa_harian}</li>` : ''}${sAna.ket_interview ? `<li>${sAna.ket_interview}</li>` : ''}</ul></div><div class="signature-box"><div><div>Ketua SPMB</div><div class="sig-name">Lely Apriliani, M.Pd.</div></div><div><div>Koordinator Tim Analisis</div><div class="sig-name">Thriet Palapa Rini, S.Pd.SD.</div></div></div>
-        <script>window.onload = function() { const ctx = document.getElementById('printChart').getContext('2d'); new Chart(ctx, { type: 'radar', data: { labels: ['Huruf', 'Bilangan', 'Motorik', 'Lagu', 'Doa & SP', 'Interview'], datasets: [{ data: [${parseInt(sAna.mengenal_huruf)||0}, ${parseInt(sAna.mengenal_bilangan)||0}, ${parseInt(sAna.menggunting_dan_menempel_puzzel)||0}, ${parseInt(sAna.menyanyi_lagu_nasional)||0}, ${parseInt(sAna.melafalkan_surat_pendek_doa_harian)||0}, ${parseInt(sAna.interview)||0}], backgroundColor: 'rgba(217, 164, 65, 0.2)', borderColor: 'rgba(217, 164, 65, 1)', pointBackgroundColor: 'rgba(217, 164, 65, 1)', borderWidth: 2 }] }, options: { animation: false, scales: { r: { min: 0, max: 100, ticks: { stepSize: 20 } } }, plugins: { legend: { display: false } } } }); setTimeout(() => { window.print(); window.close(); }, 800); };<\/script></body></html>`;
-        w.document.write(html); w.document.close();
-    }
-
-    /* ========================================================
-       MODUL: BIAYA ORTU (PEWAWANCARA)
-    ======================================================== */
     function renderPewawancara() {
         const tbody = document.getElementById('tbody-pewawancara'); if(!tbody) return;
         const q = (document.getElementById('filter-cari-biaya')?.value || '').toLowerCase();
-        const d = masterData.filter(s => !q || s.nama_murid?.toLowerCase().includes(q));
+        const statusFlt = document.getElementById('filter-status-wawancara')?.value || 'all';
+
+        const d = masterData.filter(sMaster => {
+            const matchName = !q || sMaster.nama_murid?.toLowerCase().includes(q);
+            const sUang = keuanganData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
+            const isSudah = !!sUang.pewawancara || (sUang.daftar_ulang != null && sUang.daftar_ulang > 0); 
+            
+            let matchStatus = true;
+            if(statusFlt === 'sudah') matchStatus = isSudah;
+            if(statusFlt === 'belum') matchStatus = !isSudah;
+            
+            return matchName && matchStatus;
+        });
 
         tbody.innerHTML = d.map(sMaster => {
             const sUang = keuanganData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
@@ -1486,6 +1556,7 @@
                 <td class="py-3 px-4 text-center font-mono text-sm">${formatRp(sUang.bopd || 0)}</td>
                 <td class="py-3 px-4 text-center font-mono text-sm text-red-500">- ${formatRp(sUang.early_bird || 0)}</td>
                 <td class="py-3 px-4 text-center font-mono text-sm text-red-500">- ${formatRp(sUang.kader_aum || 0)}</td>
+                <td class="py-3 px-4 text-center text-xs font-semibold text-gray-500">${sUang.pewawancara || '-'}</td>
                 <td class="py-3 px-4 text-center"><button onclick="bukaModalPewawancara('${sMaster.no_ppdb}')" class="bg-blue-50 text-blue-600 border border-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100"><i class="ph-bold ph-pencil-simple text-sm"></i> Kelola Biaya</button></td>
             </tr>`;
         }).join('');
@@ -1499,15 +1570,92 @@
 
     async function simpanPewawancara() {
         const no_ppdb = document.getElementById('pewa-id').value; const sMaster = masterData.find(x => x.no_ppdb === no_ppdb) || {};
-        const pl = { password: sMaster.password || null, tgl_pendaftaran: sMaster.tgl_pendaftaran || null, nama_murid: sMaster.nama_murid || null, jk: sMaster.jk || null, tempat_lahir: sMaster.tempat_lahir || null, tgl_lahir: sMaster.tgl_lahir || null, alamat: sMaster.alamat || null, tk: sMaster.tk || null, ayah: sMaster.ayah || null, agama_ayah: sMaster.agama_ayah || null, pend_ayah: sMaster.pend_ayah || null, pekrj_ayah: sMaster.pekrj_ayah || null, ibu: sMaster.ibu || null, agama_ibu: sMaster.agama_ibu || null, pend_ibu: sMaster.pend_ibu || null, pekrj_ibu: sMaster.pekrj_ibu || null, daftar_ulang: parseInt(document.getElementById('pewa-daftar-ulang').value) || 0, bopd: parseInt(document.getElementById('pewa-bopd').value) || 0, early_bird: parseInt(document.getElementById('pewa-early').value) || 0, kader_aum: parseInt(document.getElementById('pewa-aum').value) || 0 };
+        const pl = { no_ppdb: no_ppdb, password: sMaster.password || null, tgl_pendaftaran: sMaster.tgl_pendaftaran || null, nama_murid: sMaster.nama_murid || null, jk: sMaster.jk || null, tempat_lahir: sMaster.tempat_lahir || null, tgl_lahir: sMaster.tgl_lahir || null, alamat: sMaster.alamat || null, tk: sMaster.tk || null, ayah: sMaster.ayah || null, agama_ayah: sMaster.agama_ayah || null, pend_ayah: sMaster.pend_ayah || null, pekrj_ayah: sMaster.pekrj_ayah || null, ibu: sMaster.ibu || null, agama_ibu: sMaster.agama_ibu || null, pend_ibu: sMaster.pend_ibu || null, pekrj_ibu: sMaster.pekrj_ibu || null, daftar_ulang: parseInt(document.getElementById('pewa-daftar-ulang').value) || 0, bopd: parseInt(document.getElementById('pewa-bopd').value) || 0, early_bird: parseInt(document.getElementById('pewa-early').value) || 0, kader_aum: parseInt(document.getElementById('pewa-aum').value) || 0, pewawancara: currentUsername };
 
         const btn = document.getElementById('btn-simpan-pewa'); btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
         try {
             const exists = keuanganData.find(x => x.no_ppdb === no_ppdb);
             if (exists && exists.id) await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
-            else { pl.no_ppdb = no_ppdb; await apiRequest(`${SUPABASE_URL}keuangan`, 'POST', pl); }
+            else await apiRequest(`${SUPABASE_URL}keuangan`, 'POST', pl);
             showToast("Biaya Tersimpan"); closeModal('modal-pewawancara'); loadData();
         } catch (e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Biaya';
+    }
+
+    function cetakAnalisis(no_ppdb) {
+        const sMaster = masterData.find(x => x.no_ppdb === no_ppdb); const sAna = analisisData.find(x => x.no_ppdb === no_ppdb) || {};
+        if(!sMaster) return showToast("Data tidak ditemukan", true);
+        const w = window.open('', '_blank'); if(!w) return showToast("Izinkan pop-up!", true);
+
+        const html = `<!DOCTYPE html><html><head><title>Preview Analisis - ${sMaster.nama_murid}</title><script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
+            <style>
+                @page { size: 215.9mm 330.2mm; margin: 4cm 1.5cm; } 
+                body { font-family: 'Times New Roman', Times, serif; color: #000; line-height: 1.5; font-size: 14px; background: #e5e7eb; margin: 0; padding: 20px; } 
+                .page-container { background: white; max-width: 215.9mm; margin: auto; padding: 4cm 1.5cm; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; }
+                .header-title { text-align: center; font-size: 18px; font-weight: bold; text-decoration: underline; margin-bottom: 20px; text-transform: uppercase; } 
+                .info-table { width: 100%; margin-bottom: 20px; } 
+                .info-table td { padding: 4px; vertical-align: top; } 
+                .info-table td:first-child { width: 200px; font-weight: bold; } 
+                .chart-container { width: 400px; height: 400px; margin: 0 auto 20px auto; } 
+                .desc-section { margin-bottom: 40px; } 
+                .signature-box { display: flex; justify-content: space-between; margin-top: 50px; text-align: center; } 
+                .sig-name { font-weight: bold; text-decoration: underline; margin-top: 80px; }
+                @media print { 
+                    body { background: white; padding: 0; } 
+                    .page-container { box-shadow: none; padding: 0; margin: 0; max-width: 100%; } 
+                    .no-print { display: none !important; } 
+                }
+                .print-btn { position: fixed; bottom: 30px; right: 30px; background: #0F2747; color: white; padding: 15px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; font-family: sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: none; font-size: 16px; transition: transform 0.2s; z-index: 1000; }
+                .print-btn:hover { transform: scale(1.05); }
+            </style>
+        </head><body>
+            <button class="no-print print-btn" onclick="window.print()">🖨️ Cetak Dokumen</button>
+            <div class="page-container">
+                <div class="header-title">Hasil Analisis Potensi</div>
+                <table class="info-table">
+                    <tr><td>Nama Calon Peserta Didik</td><td>: ${sMaster.nama_murid || '-'}</td></tr>
+                    <tr><td>No. Pendaftaran</td><td>: ${sMaster.no_ppdb || '-'}</td></tr>
+                </table>
+                <div class="chart-container"><canvas id="printChart"></canvas></div>
+                <div class="desc-section">
+                    <strong>Deskripsi Grafik:</strong>
+                    <ul style="margin-top: 10px; padding-left: 20px; text-align: justify;">
+                        ${sAna.ket_mengenal_huruf ? `<li>${sAna.ket_mengenal_huruf}</li>` : ''}
+                        ${sAna.ket_mengenal_bilangan ? `<li>${sAna.ket_mengenal_bilangan}</li>` : ''}
+                        ${sAna.ket_menggunting_dan_menempel_puzzel ? `<li>${sAna.ket_menggunting_dan_menempel_puzzel}</li>` : ''}
+                        ${sAna.ket_menyanyi_lagu_nasional ? `<li>${sAna.ket_menyanyi_lagu_nasional}</li>` : ''}
+                        ${sAna.ket_melafalkan_surat_pendek_doa_harian ? `<li>${sAna.ket_melafalkan_surat_pendek_doa_harian}</li>` : ''}
+                        ${sAna.ket_interview ? `<li>${sAna.ket_interview}</li>` : ''}
+                    </ul>
+                </div>
+                <div class="signature-box">
+                    <div><div>Ketua SPMB</div><div class="sig-name">Lely Apriliani, M.Pd.</div></div>
+                    <div><div>Koordinator Tim Analisis</div><div class="sig-name">Thriet Palapa Rini, S.Pd.SD.</div></div>
+                </div>
+            </div>
+        <script>
+            window.onload = function() { 
+                const ctx = document.getElementById('printChart').getContext('2d'); 
+                new Chart(ctx, { 
+                    type: 'radar', 
+                    data: { 
+                        labels: ['Huruf', 'Bilangan', 'Motorik', 'Lagu', 'Doa & SP', 'Interview'], 
+                        datasets: [{ 
+                            data: [${parseInt(sAna.mengenal_huruf)||0}, ${parseInt(sAna.mengenal_bilangan)||0}, ${parseInt(sAna.menggunting_dan_menempel_puzzel)||0}, ${parseInt(sAna.menyanyi_lagu_nasional)||0}, ${parseInt(sAna.melafalkan_surat_pendek_doa_harian)||0}, ${parseInt(sAna.interview)||0}], 
+                            backgroundColor: 'rgba(217, 164, 65, 0.2)', 
+                            borderColor: 'rgba(217, 164, 65, 1)', 
+                            pointBackgroundColor: 'rgba(217, 164, 65, 1)', 
+                            borderWidth: 2 
+                        }] 
+                    }, 
+                    options: { 
+                        animation: false, 
+                        scales: { r: { min: 0, max: 100, ticks: { stepSize: 20 } } }, 
+                        plugins: { legend: { display: false } } 
+                    } 
+                }); 
+            };
+        <\/script></body></html>`;
+        w.document.write(html); w.document.close();
     }
 
     function cetakHasilWawancara(no_ppdb) {
@@ -1530,8 +1678,9 @@
         const html = `<!DOCTYPE html><html><head><title>Hasil Kesepakatan Biaya - ${sMaster.nama_murid}</title>
             <style>
                 @page { size: 215.9mm 330.2mm; margin: 4cm 1.5cm; } 
-                body { font-family: 'Times New Roman', Times, serif; color: #000; line-height: 1.5; font-size: 14px; } 
-                .header-title { text-align: center; font-size: 18px; font-weight: bold; text-decoration: underline; margin-bottom: 20px; } 
+                body { font-family: 'Times New Roman', Times, serif; color: #000; line-height: 1.5; font-size: 14px; background: #e5e7eb; margin: 0; padding: 20px; } 
+                .page-container { background: white; max-width: 215.9mm; margin: auto; padding: 4cm 1.5cm; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; }
+                .header-title { text-align: center; font-size: 18px; font-weight: bold; text-decoration: underline; margin-bottom: 20px; text-transform: uppercase; } 
                 .info-table { width: 100%; margin-bottom: 20px; } 
                 .info-table td { padding: 4px; vertical-align: top; } 
                 .info-table td:first-child { width: 200px; font-weight: bold; } 
@@ -1541,40 +1690,46 @@
                 .text-right { text-align: right; }
                 .signature-box { display: flex; justify-content: space-between; margin-top: 50px; text-align: center; } 
                 .sig-name { font-weight: bold; text-decoration: underline; margin-top: 80px; }
+                @media print { 
+                    body { background: white; padding: 0; } 
+                    .page-container { box-shadow: none; padding: 0; margin: 0; max-width: 100%; } 
+                    .no-print { display: none !important; } 
+                }
+                .print-btn { position: fixed; bottom: 30px; right: 30px; background: #16a34a; color: white; padding: 15px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; font-family: sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: none; font-size: 16px; transition: transform 0.2s; z-index: 1000; }
+                .print-btn:hover { transform: scale(1.05); }
             </style>
         </head><body>
-            <div class="header-title">Kesepakatan Pembiayaan Pendidikan</div>
-            <table class="info-table">
-                <tr><td>Nama Calon Peserta Didik</td><td>: ${sMaster.nama_murid || '-'}</td></tr>
-                <tr><td>No. Pendaftaran</td><td>: ${sMaster.no_ppdb || '-'}</td></tr>
-                <tr><td>Nama Orang Tua/Wali</td><td>: ${sMaster.ayah || sMaster.ibu || '-'}</td></tr>
-            </table>
-            <p>Berdasarkan hasil wawancara orang tua/wali murid dengan pihak panitia PMB, disepakati rincian pembiayaan pendidikan sebagai berikut:</p>
-            <table class="financial-table">
-                <thead><tr><th>Uraian Pembiayaan</th><th class="text-right">Nominal</th></tr></thead>
-                <tbody>
-                    <tr><td>1. Daftar Ulang</td><td class="text-right">${formatRp(du)}</td></tr>
-                    <tr><td>2. BOPD</td><td class="text-right">${formatRp(bopd)}</td></tr>
-                    ${ebRow}
-                    ${aumRow}
-                </tbody>
-                <tfoot>
-                    <tr><th class="text-right">Total Tagihan Bersih</th><th class="text-right">${formatRp(total)}</th></tr>
-                </tfoot>
-            </table>
-            <p>Demikian kesepakatan ini dibuat dengan sebenar-benarnya untuk dipergunakan sebagaimana mestinya.</p>
-            <div class="signature-box">
-                <div><div>Wali Murid</div><div class="sig-name">${sMaster.ayah || sMaster.ibu || '..........................'}</div></div>
-                <div><div>Pewawancara</div><div class="sig-name">..........................</div></div>
+            <button class="no-print print-btn" onclick="window.print()">🖨️ Cetak Dokumen</button>
+            <div class="page-container">
+                <div class="header-title">Kesepakatan Pembiayaan Pendidikan</div>
+                <table class="info-table">
+                    <tr><td>Nama Calon Peserta Didik</td><td>: ${sMaster.nama_murid || '-'}</td></tr>
+                    <tr><td>No. Pendaftaran</td><td>: ${sMaster.no_ppdb || '-'}</td></tr>
+                    <tr><td>Nama Orang Tua/Wali</td><td>: ${sMaster.ayah || sMaster.ibu || '-'}</td></tr>
+                </table>
+                <p>Berdasarkan hasil wawancara orang tua/wali murid dengan pihak panitia PMB, disepakati rincian pembiayaan pendidikan sebagai berikut:</p>
+                <table class="financial-table">
+                    <thead><tr><th>Uraian Pembiayaan</th><th class="text-right">Nominal</th></tr></thead>
+                    <tbody>
+                        <tr><td>1. Daftar Ulang</td><td class="text-right">${formatRp(du)}</td></tr>
+                        <tr><td>2. BOPD</td><td class="text-right">${formatRp(bopd)}</td></tr>
+                        ${ebRow}
+                        ${aumRow}
+                    </tbody>
+                    <tfoot>
+                        <tr><th class="text-right">Total Tagihan Bersih</th><th class="text-right">${formatRp(total)}</th></tr>
+                    </tfoot>
+                </table>
+                <p>Demikian kesepakatan ini dibuat dengan sebenar-benarnya untuk dipergunakan sebagaimana mestinya.</p>
+                <div class="signature-box">
+                    <div><div>Wali Murid</div><div class="sig-name">${sMaster.ayah || sMaster.ibu || '..........................'}</div></div>
+                    <div><div>Pewawancara</div><div class="sig-name">${sUang.pewawancara || '..........................'}</div></div>
+                </div>
             </div>
-            <script>window.onload = function() { setTimeout(() => { window.print(); window.close(); }, 800); };<\/script>
         </body></html>`;
         w.document.write(html); w.document.close();
     }
 
-    /* ========================================================
-       MODUL: PEMBAYARAN (BENDAHARA)
-    ======================================================== */
     function switchMainBendahara(viewId) {
         document.getElementById('view-main-pendaftaran').classList.add('hidden');
         document.getElementById('view-main-daftarulang').classList.add('hidden');
@@ -1592,9 +1747,7 @@
             document.getElementById('view-main-daftarulang').classList.remove('hidden');
             document.getElementById('tab-main-daftarulang').classList.add('bg-white', 'shadow-sm', 'text-brand-navy');
             document.getElementById('tab-main-daftarulang').classList.remove('text-brand-muted');
-            renderBendaharaTunai(); 
-            renderBendaharaTransfer();
-            renderBendaharaRiwayat();
+            renderBendaharaTunai(); renderBendaharaTransfer(); renderBendaharaRiwayat();
         }
         hitungRekapBendahara();
     }
@@ -1912,9 +2065,6 @@
         const w = window.open('','_blank'); w.document.write(html); w.document.close();
     }
 
-    /* ========================================================
-       MODUL: PERLENGKAPAN
-    ======================================================== */
     function renderPerlengkapan() {
         const tbody = document.getElementById('tbody-perlengkapan'); if(!tbody) return;
         const f = document.getElementById('filter-perlengkapan').value;
@@ -1946,7 +2096,18 @@
         const no_ppdb = document.getElementById('perkap-id').value; const pl = { ambil_souvenir: document.getElementById('chk-souvenir').checked };
         for(let i=1; i<=13; i++) { pl[`s${i}`] = document.getElementById(`chk-s${i}`).checked; }
         const btn = document.getElementById('btn-simpan-perkap'); btn.disabled = true; btn.innerHTML = 'Processing...';
-        try { await apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl); showToast("Checklist Disimpan"); closeModal('modal-perlengkapan'); loadData(); } catch(e) { } btn.disabled = false; btn.innerHTML = 'Simpan Checklist';
+        try { 
+            const exists = perkapData.find(x => x.no_ppdb === no_ppdb);
+            if (exists && exists.id) {
+                await apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl); 
+            } else {
+                pl.no_ppdb = no_ppdb;
+                const sMaster = masterData.find(x => x.no_ppdb === no_ppdb) || {};
+                pl.nama_murid = sMaster.nama_murid || null;
+                await apiRequest(`${SUPABASE_URL}perlengkapan`, 'POST', pl);
+            }
+            showToast("Checklist Disimpan"); closeModal('modal-perlengkapan'); loadData(); 
+        } catch(e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Checklist';
     }
 
     function bukaModalDetailPerlengkapan(no_ppdb, nama_murid) {
@@ -1966,9 +2127,6 @@
         document.getElementById('modal-detail-perlengkapan').classList.replace('hidden', 'flex');
     }
 
-    /* ========================================================
-       MODUL: KELOLA AKSES & MENU
-    ======================================================== */
     function renderStaf() {
         const tbody = document.getElementById('tbody-staf'); if(!tbody) return;
         tbody.innerHTML = staffAccounts.map(s => `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4 font-bold text-brand-navy">${s.username}</td><td class="py-3 px-4 text-[10px] uppercase font-medium text-brand-muted">${s.role.join(', ')}</td><td class="py-3 px-4 text-center"><button onclick="bukaModalStaf(${s.id})" class="text-blue-500 bg-blue-50 hover:bg-blue-100 p-1.5 rounded mr-1"><i class="ph-bold ph-pencil-simple text-lg"></i></button>${s.username !== 'admin' ? `<button onclick="hapusStaf(${s.id})" class="text-red-500 bg-red-50 hover:bg-red-100 p-1.5 rounded"><i class="ph-bold ph-trash text-lg"></i></button>` : ''}</td></tr>`).join('');
