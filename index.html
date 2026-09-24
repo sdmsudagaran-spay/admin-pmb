@@ -62,8 +62,9 @@
         <div class="space-y-4">
             <div>
                 <label class="block text-sm font-medium text-brand-navy mb-1">Username Staf</label>
+                <!-- Username menggunakan dropdown otomatis dari db -->
                 <select id="login-username" class="w-full bg-brand-bg border border-gray-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-brand-gold transition-colors cursor-pointer appearance-none">
-                    <!-- Option dihasilkan lewat JS -->
+                    <option value="">Memuat data...</option>
                 </select>
             </div>
             <div>
@@ -79,7 +80,6 @@
 </div>
 
 <div id="view-dashboard" class="hidden h-screen w-full flex overflow-hidden">
-    <!-- Overlay Mobile Sidebar -->
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden sm:hidden"></div>
 
     <aside id="sidebar" class="bg-brand-navy text-white w-64 flex-shrink-0 flex flex-col sidebar-transition sidebar-mobile-closed sm:translate-x-0 fixed sm:relative h-full z-50 shadow-xl border-r border-white/10">
@@ -130,7 +130,6 @@
 
         <div id="panel-container" class="flex-1 overflow-y-auto p-4 sm:p-8 pb-24 relative z-0">
             
-            <!-- PANEL 1: AKUN & PROGRES -->
             <div id="panel-akun-progress" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <h2 class="font-heading font-semibold text-lg text-brand-navy mb-4">Dashboard Distribusi Ruangan</h2>
@@ -174,7 +173,6 @@
                 </div>
             </div>
 
-            <!-- PANEL 2: PENGATURAN -->
             <div id="panel-pengaturan" class="panel-view hidden space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
@@ -214,7 +212,6 @@
                 </div>
             </div>
 
-            <!-- PANEL 3: MENU APP -->
             <div id="panel-menu-app" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-6">
@@ -240,7 +237,6 @@
                 </div>
             </div>
 
-            <!-- PANEL 4: KELOLA AKSES -->
             <div id="panel-kelola-akses" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex justify-between items-center mb-6">
@@ -264,7 +260,6 @@
                 </div>
             </div>
 
-            <!-- PANEL 5: MASTER SISWA -->
             <div id="panel-sekretaris" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-4">
@@ -299,9 +294,7 @@
                 </div>
             </div>
 
-            <!-- PANEL 6: PENGANALISIS (INPUT NILAI) -->
             <div id="panel-penganalisis" class="panel-view hidden space-y-6">
-                <!-- Dashboard Progress Ruangan -->
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <h2 class="font-heading font-semibold text-lg text-brand-navy mb-4">Progres Input Nilai per Ruang</h2>
                     <div id="rekap-analisis-ruangan" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -349,7 +342,6 @@
                 </div>
             </div>
 
-            <!-- PANEL 7: PEWAWANCARA (BIAYA) -->
             <div id="panel-pewawancara" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
@@ -385,7 +377,6 @@
                 </div>
             </div>
 
-            <!-- PANEL 8: BENDAHARA -->
             <div id="panel-bendahara" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm relative">
                     
@@ -397,7 +388,6 @@
                         </div>
                     </div>
 
-                    <!-- Rekapitulasi Keuangan Box -->
                     <div id="rekap-keuangan-box" class="bg-gradient-to-r from-brand-navy to-blue-900 rounded-2xl p-5 mb-6 text-white shadow-lg relative overflow-hidden">
                         <div class="absolute -right-10 -top-10 w-32 h-32 bg-white opacity-5 rounded-full"></div>
                         <div class="absolute right-10 -bottom-10 w-24 h-24 bg-white opacity-5 rounded-full"></div>
@@ -411,7 +401,7 @@
                                 <input type="date" id="rekap-start" onchange="hitungRekapBendahara()" class="bg-transparent text-xs outline-none text-white px-2 py-1 [&::-webkit-calendar-picker-indicator]:filter-[invert(1)]" title="Dari Tanggal">
                                 <span class="text-blue-300 text-xs">s/d</span>
                                 <input type="date" id="rekap-end" onchange="hitungRekapBendahara()" class="bg-transparent text-xs outline-none text-white px-2 py-1 [&::-webkit-calendar-picker-indicator]:filter-[invert(1)]" title="Sampai Tanggal">
-                                <button onclick="document.getElementById('rekap-start').value=''; document.getElementById('rekap-end').value=''; hitungRekapBendahara();" class="text-red-400 hover:text-red-300 px-2" title="Reset Tanggal"><i class="ph-bold ph-arrows-clockwise"></i></button>
+                                <button onclick="setRealtimeDate(); hitungRekapBendahara();" class="text-blue-400 hover:text-blue-300 px-2" title="Reset Hari Ini"><i class="ph-bold ph-calendar-check"></i></button>
                             </div>
                         </div>
                         
@@ -431,7 +421,6 @@
                         </div>
                     </div>
 
-                    <!-- VIEW 1: PENDAFTARAN -->
                     <div id="view-main-pendaftaran" class="space-y-4">
                         <div class="flex items-center gap-2 mb-2">
                             <i class="ph-fill ph-ticket text-brand-gold text-xl"></i>
@@ -466,7 +455,6 @@
                         </div>
                     </div>
 
-                    <!-- VIEW 2: DAFTAR ULANG & BOPD -->
                     <div id="view-main-daftarulang" class="hidden space-y-4">
                         <div class="flex items-center gap-2 mb-2">
                             <i class="ph-fill ph-bank text-blue-500 text-xl"></i>
@@ -545,7 +533,6 @@
                 </div>
             </div>
 
-            <!-- PANEL 9: PERLENGKAPAN -->
             <div id="panel-perlengkapan" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
@@ -577,6 +564,7 @@
         </div>
     </main>
 </div>
+
 
 <!-- Modal Menu App -->
 <div id="modal-menu-app" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
@@ -691,7 +679,7 @@
     </div>
 </div>
 
-<!-- Modal Form Siswa -->
+<!-- Modal Form Siswa Baru/Edit -->
 <div id="modal-form-siswa" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl slide-up">
         <div class="flex justify-between items-center mb-4 border-b pb-4 shrink-0">
@@ -701,7 +689,6 @@
         
         <div class="flex-1 overflow-y-auto no-scrollbar space-y-4 px-1 pb-4">
             <input type="hidden" id="fs-id">
-            <input type="hidden" id="fs-panggilan">
             
             <h3 class="font-bold text-brand-gold text-sm border-b border-gray-100 pb-1 mt-2 uppercase tracking-wide">Data Pribadi & Akses</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -745,7 +732,7 @@
     </div>
 </div>
 
-<!-- Modal Biodata -->
+<!-- Modal Biodata (Ditambahkan tombol kelola biaya di bawah) -->
 <div id="modal-biodata" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md max-h-[85vh] flex flex-col shadow-2xl slide-up">
         <div class="flex justify-between items-center mb-4 border-b pb-4 shrink-0">
@@ -756,7 +743,7 @@
     </div>
 </div>
 
-<!-- Modal Input Nilai Penganalisis -->
+<!-- Modal Input Nilai Penganalisis (Skala 1-5 Dropdown) -->
 <div id="modal-analisis" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-lg max-h-[90vh] flex flex-col shadow-2xl slide-up">
         <div class="flex justify-between items-center mb-4 shrink-0 border-b pb-4">
@@ -771,49 +758,61 @@
             <input type="hidden" id="analisis-id">
             
             <div class="bg-blue-50 text-blue-700 text-[10px] p-3 rounded-xl mb-4 border border-blue-100">
-                <strong>Panduan Rentang Nilai (0-100):</strong><br>
-                0 - 60: Perlu bimbingan | 61 - 75: Perlu pendampingan | 76 - 89: Sedikit pendampingan | 90 - 100: Mandiri
+                <strong>Panduan Skala Nilai:</strong><br>
+                1: Belum memahami | 2: Mulai memahami | 3: Memahami | 4: Sangat memahami | 5: Menguasai dgn mandiri
             </div>
             
             <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
                 <div class="flex justify-between items-center mb-2">
                     <label class="text-sm font-semibold text-brand-navy">Mengenal Huruf</label>
-                    <input type="number" id="val-huruf" class="w-20 border rounded-lg p-1.5 text-center font-bold focus:border-brand-gold" min="0" max="100" oninput="autoDes('huruf', 'mengenal huruf')">
+                    <select id="val-huruf" class="w-20 border rounded-lg p-1.5 text-center font-bold focus:border-brand-gold" onchange="autoDes('huruf', 'mengenal huruf')">
+                        <option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                    </select>
                 </div>
                 <textarea id="ket-huruf" rows="2" class="w-full text-xs p-2 border rounded-lg resize-none"></textarea>
             </div>
             <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
                 <div class="flex justify-between items-center mb-2">
                     <label class="text-sm font-semibold text-brand-navy">Mengenal Bilangan</label>
-                    <input type="number" id="val-bilangan" class="w-20 border rounded-lg p-1.5 text-center font-bold focus:border-brand-gold" min="0" max="100" oninput="autoDes('bilangan', 'mengenal bilangan')">
+                    <select id="val-bilangan" class="w-20 border rounded-lg p-1.5 text-center font-bold focus:border-brand-gold" onchange="autoDes('bilangan', 'mengenal bilangan')">
+                        <option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                    </select>
                 </div>
                 <textarea id="ket-bilangan" rows="2" class="w-full text-xs p-2 border rounded-lg resize-none"></textarea>
             </div>
             <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
                 <div class="flex justify-between items-center mb-2">
                     <label class="text-sm font-semibold text-brand-navy">Menggunting & Menempel</label>
-                    <input type="number" id="val-motorik" class="w-20 border rounded-lg p-1.5 text-center font-bold focus:border-brand-gold" min="0" max="100" oninput="autoDes('motorik', 'menggunting dan menempel')">
+                    <select id="val-motorik" class="w-20 border rounded-lg p-1.5 text-center font-bold focus:border-brand-gold" onchange="autoDes('motorik', 'menggunting dan menempel')">
+                        <option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                    </select>
                 </div>
                 <textarea id="ket-motorik" rows="2" class="w-full text-xs p-2 border rounded-lg resize-none"></textarea>
             </div>
             <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
                 <div class="flex justify-between items-center mb-2">
                     <label class="text-sm font-semibold text-brand-navy">Menyanyi Lagu Nasional</label>
-                    <input type="number" id="val-lagu" class="w-20 border rounded-lg p-1.5 text-center font-bold focus:border-brand-gold" min="0" max="100" oninput="autoDes('lagu', 'menyanyi lagu nasional')">
+                    <select id="val-lagu" class="w-20 border rounded-lg p-1.5 text-center font-bold focus:border-brand-gold" onchange="autoDes('lagu', 'menyanyi lagu nasional')">
+                        <option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                    </select>
                 </div>
                 <textarea id="ket-lagu" rows="2" class="w-full text-xs p-2 border rounded-lg resize-none"></textarea>
             </div>
             <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
                 <div class="flex justify-between items-center mb-2">
                     <label class="text-sm font-semibold text-brand-navy">Doa Harian & Surat Pendek</label>
-                    <input type="number" id="val-doa" class="w-20 border rounded-lg p-1.5 text-center font-bold focus:border-brand-gold" min="0" max="100" oninput="autoDes('doa', 'doa harian dan surat pendek')">
+                    <select id="val-doa" class="w-20 border rounded-lg p-1.5 text-center font-bold focus:border-brand-gold" onchange="autoDes('doa', 'doa harian dan surat pendek')">
+                        <option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                    </select>
                 </div>
                 <textarea id="ket-doa" rows="2" class="w-full text-xs p-2 border rounded-lg resize-none"></textarea>
             </div>
             <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
                 <div class="flex justify-between items-center mb-2">
                     <label class="text-sm font-semibold text-brand-navy">Interview Anak</label>
-                    <input type="number" id="val-interview" class="w-20 border rounded-lg p-1.5 text-center font-bold focus:border-brand-gold" min="0" max="100" oninput="autoDes('interview', 'menjawab pertanyaan interview')">
+                    <select id="val-interview" class="w-20 border rounded-lg p-1.5 text-center font-bold focus:border-brand-gold" onchange="autoDes('interview', 'menjawab pertanyaan interview')">
+                        <option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                    </select>
                 </div>
                 <textarea id="ket-interview" rows="2" class="w-full text-xs p-2 border rounded-lg resize-none"></textarea>
             </div>
@@ -838,7 +837,7 @@
     </div>
 </div>
 
-<!-- Modal Biaya Pewawancara -->
+<!-- Modal Biaya Pewawancara (Termasuk Custom Tipe D) -->
 <div id="modal-pewawancara" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl slide-up flex flex-col">
         <div class="flex justify-between items-center mb-4 border-b pb-4">
@@ -856,11 +855,13 @@
             </div>
             <div>
                 <label class="text-xs font-medium text-brand-navy block mb-1">Biaya BOPD</label>
-                <select id="pewa-bopd" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white focus:border-brand-gold">
+                <select id="pewa-bopd" onchange="toggleCustomBOPD()" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white focus:border-brand-gold">
                     <option value="9750000">Tipe A - Rp 9.750.000</option>
                     <option value="10750000">Tipe B - Rp 10.750.000</option>
                     <option value="11750000">Tipe C - Rp 11.750.000</option>
+                    <option value="custom">Tipe D (Kustom / Lainnya)</option>
                 </select>
+                <input type="number" id="pewa-bopd-custom" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white mt-2 hidden focus:border-brand-gold" placeholder="Ketik nominal manual melebihi Tipe C">
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
@@ -886,7 +887,7 @@
     </div>
 </div>
 
-<!-- Modal Cek Transfer -->
+<!-- Modal Cek Transfer (Dengan fitur klik untuk Zoom) -->
 <div id="modal-cek-transfer" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl flex flex-col slide-up">
         <div class="flex justify-between items-center mb-4 border-b pb-4">
@@ -896,8 +897,11 @@
         <div class="space-y-4 text-center">
             <p id="tf-nama" class="font-bold text-brand-navy text-lg">Nama Siswa</p>
             <p id="tf-tagihan" class="text-green-600 font-bold text-2xl">Rp 0</p>
-            <div class="border border-gray-200 rounded-xl p-2 bg-gray-50 h-64 flex items-center justify-center overflow-hidden shadow-inner">
-                <img id="tf-bukti" src="" alt="Bukti Transfer" class="max-h-full max-w-full object-contain">
+            <div class="border border-gray-200 rounded-xl p-2 bg-gray-50 h-64 flex items-center justify-center overflow-hidden shadow-inner relative group cursor-zoom-in" onclick="window.open(document.getElementById('tf-bukti').src, '_blank')">
+                <img id="tf-bukti" src="" alt="Bukti Transfer" class="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-110">
+                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                    <i class="ph-bold ph-magnifying-glass-plus text-white text-3xl"></i>
+                </div>
             </div>
             <div class="flex gap-4 justify-center mt-4 pt-4 border-t">
                 <button onclick="prosesTransfer(false)" class="flex-1 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 rounded-xl border border-red-200 flex items-center justify-center gap-2 transition-colors"><i class="ph-bold ph-x text-lg"></i> Tolak / Batal</button>
@@ -1037,6 +1041,7 @@
     let analisisData = [];
     let perkapData = [];
     let menuAppData = [];
+    let staffAccounts = []; 
     let currentUserRoleArr = [];
     let currentUsername = '';
     let selectedIdsForMassAction = [];
@@ -1045,13 +1050,8 @@
     let currentTransPend = null;
     let currentTfNoPpdb = '';
 
-    // Manajemen Tab Bendahara
     let activeTabPendaftaran = 'belum';
     let activeTabDU = 'tunai';
-
-    let staffAccounts = JSON.parse(localStorage.getItem('staff_acc')) || [
-        { id: 1, username: 'admin', role: ['admin','sekretaris','bendahara','penganalisis','pewawancara','perlengkapan'], password: 'berkah' }
-    ];
 
     const allPanelsDef = [
         { id: 'panel-akun-progress', role: 'admin', icon: 'ph-users-three', text: 'Akun & Progres' },
@@ -1064,13 +1064,6 @@
         { id: 'panel-bendahara', role: 'bendahara', icon: 'ph-wallet', text: 'Pembayaran' },
         { id: 'panel-perlengkapan', role: 'perlengkapan', icon: 'ph-t-shirt', text: 'Perlengkapan' }
     ];
-
-    function initLoginDropdown() {
-        const sel = document.getElementById('login-username');
-        if(!sel) return;
-        sel.innerHTML = staffAccounts.map(s => `<option value="${s.username.toLowerCase()}">${s.username}</option>`).join('');
-    }
-    initLoginDropdown();
 
     function formatRp(angka) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka || 0); }
 
@@ -1096,6 +1089,44 @@
         return res.status === 204 ? {} : res; 
     }
 
+    // Mengambil staf dan mengatasi error jika tabel belum dibuat
+    async function fetchStaffAccounts() {
+        try {
+            const res = await fetch(`${SUPABASE_URL}kelola_akses?select=*`, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
+            if(!res.ok) throw new Error("Tabel tidak ditemukan");
+            staffAccounts = await res.json();
+            initLoginDropdown();
+        } catch(e) {
+            console.warn("Info: Tabel 'kelola_akses' belum dibuat di Supabase. Sistem menggunakan akun Admin default tanpa menampilkan error.");
+            staffAccounts = [ { id: 1, username: 'admin', role: ['admin','sekretaris','bendahara','penganalisis','pewawancara','perlengkapan'], password: 'berkah' } ];
+            initLoginDropdown();
+        }
+    }
+
+    function initLoginDropdown() {
+        const sel = document.getElementById('login-username');
+        if(!sel) return;
+        sel.innerHTML = staffAccounts.map(s => `<option value="${s.username.toLowerCase()}">${s.username}</option>`).join('');
+    }
+
+    function handleLogin() {
+        const u = document.getElementById('login-username').value.trim().toLowerCase();
+        const p = document.getElementById('login-password').value.trim();
+        const err = document.getElementById('login-error');
+        
+        const matched = staffAccounts.find(x => x.username.toLowerCase() === u && x.password === p);
+        if(matched) {
+            currentUsername = matched.username; currentUserRoleArr = matched.role || []; err.classList.add('hidden');
+            document.getElementById('view-login').style.opacity = '0';
+            setTimeout(() => { document.getElementById('view-login').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); initDash(); }, 500);
+        } else { err.classList.remove('hidden'); }
+    }
+    
+    function logout() { 
+        currentUserRoleArr = []; document.getElementById('view-dashboard').classList.add('hidden'); document.getElementById('view-login').classList.remove('hidden'); 
+        requestAnimationFrame(() => document.getElementById('view-login').style.opacity = '1'); document.getElementById('login-password').value = '';
+    }
+
     function toggleSidebar() {
         const s = document.getElementById('sidebar');
         const o = document.getElementById('sidebar-overlay');
@@ -1119,31 +1150,13 @@
             b.dataset.target === id ? b.classList.add('bg-white/10', 'border-l-4', 'border-brand-gold') : b.classList.add('opacity-70');
         });
         
-        if(id === 'panel-bendahara') hitungRekapBendahara();
+        if(id === 'panel-bendahara') { setRealtimeDate(); hitungRekapBendahara(); }
         if(window.innerWidth < 640 && document.getElementById('sidebar').classList.contains('sidebar-mobile-open')) toggleSidebar();
     }
 
     function closeModal(id) { 
         document.getElementById(id).classList.add('hidden'); 
         document.getElementById(id).classList.remove('flex'); 
-    }
-
-    function handleLogin() {
-        const u = document.getElementById('login-username').value.trim().toLowerCase();
-        const p = document.getElementById('login-password').value.trim();
-        const err = document.getElementById('login-error');
-        
-        const matched = staffAccounts.find(x => x.username.toLowerCase() === u && x.password === p);
-        if(matched) {
-            currentUsername = matched.username; currentUserRoleArr = matched.role || []; err.classList.add('hidden');
-            document.getElementById('view-login').style.opacity = '0';
-            setTimeout(() => { document.getElementById('view-login').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); initDash(); }, 500);
-        } else { err.classList.remove('hidden'); }
-    }
-    
-    function logout() { 
-        currentUserRoleArr = []; document.getElementById('view-dashboard').classList.add('hidden'); document.getElementById('view-login').classList.remove('hidden'); 
-        requestAnimationFrame(() => document.getElementById('view-login').style.opacity = '1'); document.getElementById('login-password').value = '';
     }
 
     function initDash() {
@@ -1321,23 +1334,43 @@
 
     function autoGenerateAkses() {
         const nm = document.getElementById('fs-nama').value.trim();
-        if(nm.length > 0 && !document.getElementById('fs-id').value) { const kata1 = nm.split(' ')[0].toLowerCase(); document.getElementById('fs-no').value = 'sdm-' + Math.floor(100 + Math.random() * 900); document.getElementById('fs-panggilan').value = kata1; }
+        if(nm.length > 0 && !document.getElementById('fs-id').value) { const kata1 = nm.split(' ')[0].toLowerCase(); document.getElementById('fs-no').value = 'sdm-' + Math.floor(100 + Math.random() * 900); }
     }
 
     function bukaModalFormSiswa(id = null) {
         document.getElementById('modal-siswa-title').innerText = id ? "Edit Data Siswa" : "Tambah Siswa Baru"; document.getElementById('fs-id').value = id || '';
         const s = id ? masterData.find(x => x.id == id) : {};
-        const mapping = { 'noppdb': 'no_ppdb', 'no': 'password', 'panggilan': 'nama_panggilan', 'nama': 'nama_murid', 'tk': 'tk', 'tmplahir': 'tempat_lahir', 'tgllahir': 'tgl_lahir', 'alamat': 'alamat', 'ayah': 'ayah', 'agayah': 'agama_ayah', 'pendayah': 'pend_ayah', 'krjayah': 'pekrj_ayah', 'ibu': 'ibu', 'agibu': 'agama_ibu', 'pendibu': 'pend_ibu', 'krjibu': 'pekrj_ibu' };
+        const mapping = { 'noppdb': 'no_ppdb', 'no': 'password', 'nama': 'nama_murid', 'tk': 'tk', 'tmplahir': 'tempat_lahir', 'tgllahir': 'tgl_lahir', 'alamat': 'alamat', 'ayah': 'ayah', 'agayah': 'agama_ayah', 'pendayah': 'pend_ayah', 'krjayah': 'pekrj_ayah', 'ibu': 'ibu', 'agibu': 'agama_ibu', 'pendibu': 'pend_ibu', 'krjibu': 'pekrj_ibu' };
         for (const [keyHtml, keyDb] of Object.entries(mapping)) { document.getElementById(`fs-${keyHtml}`).value = s[keyDb] || ''; }
         document.getElementById('fs-jk').value = s.jk || 'L'; if(!id) { document.getElementById('fs-agayah').value = 'Islam'; document.getElementById('fs-agibu').value = 'Islam'; }
         document.getElementById('modal-form-siswa').classList.replace('hidden', 'flex');
     }
 
     async function simpanDataSiswa() {
-        const id = document.getElementById('fs-id').value; const no_ppdb = document.getElementById('fs-noppdb').value.trim(); const nama_murid = document.getElementById('fs-nama').value.trim().toUpperCase();
+        const id = document.getElementById('fs-id').value; 
+        const no_ppdb = document.getElementById('fs-noppdb').value.trim(); 
+        const nama_murid = document.getElementById('fs-nama').value.trim().toUpperCase();
+        
         if(!nama_murid || !no_ppdb) return showToast("Nama Lengkap dan No PPDB wajib!", true);
 
-        const pl = { no_ppdb: no_ppdb, password: document.getElementById('fs-no').value.trim(), nama_panggilan: document.getElementById('fs-panggilan').value.trim(), nama_murid: nama_murid, jk: document.getElementById('fs-jk').value, tk: document.getElementById('fs-tk').value.trim(), tempat_lahir: document.getElementById('fs-tmplahir').value.trim(), alamat: document.getElementById('fs-alamat').value.trim(), ayah: document.getElementById('fs-ayah').value.trim(), agama_ayah: document.getElementById('fs-agayah').value.trim(), pend_ayah: document.getElementById('fs-pendayah').value.trim(), pekrj_ayah: document.getElementById('fs-krjayah').value.trim(), ibu: document.getElementById('fs-ibu').value.trim(), agama_ibu: document.getElementById('fs-agibu').value.trim(), pend_ibu: document.getElementById('fs-pendibu').value.trim(), pekrj_ibu: document.getElementById('fs-krjibu').value.trim() };
+        // Payload DIBERSIHKAN: Hanya kolom asli dari tabel pendaftar
+        const pl = { 
+            no_ppdb: no_ppdb, 
+            password: document.getElementById('fs-no').value.trim(), 
+            nama_murid: nama_murid, 
+            jk: document.getElementById('fs-jk').value, 
+            tk: document.getElementById('fs-tk').value.trim(), 
+            tempat_lahir: document.getElementById('fs-tmplahir').value.trim(), 
+            alamat: document.getElementById('fs-alamat').value.trim(), 
+            ayah: document.getElementById('fs-ayah').value.trim(), 
+            agama_ayah: document.getElementById('fs-agayah').value.trim(), 
+            pend_ayah: document.getElementById('fs-pendayah').value.trim(), 
+            pekrj_ayah: document.getElementById('fs-krjayah').value.trim(), 
+            ibu: document.getElementById('fs-ibu').value.trim(), 
+            agama_ibu: document.getElementById('fs-agibu').value.trim(), 
+            pend_ibu: document.getElementById('fs-pendibu').value.trim(), 
+            pekrj_ibu: document.getElementById('fs-krjibu').value.trim() 
+        };
         
         const tgl = document.getElementById('fs-tgllahir').value; 
         if(tgl) pl.tgl_lahir = tgl; else pl.tgl_lahir = null;
@@ -1346,32 +1379,12 @@
         
         try { 
             if(id) {
-                // UPDATE EXISITING STUDENT
+                // UPDATE Pendaftar
                 await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl);
-                const syncPl = { nama_murid: nama_murid, tgl_lahir: pl.tgl_lahir, ayah: pl.ayah, ibu: pl.ibu };
-                const checkRes = await Promise.all([
-                    apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}&select=id`, 'GET'),
-                    apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}&select=id`, 'GET'),
-                    apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}&select=id`, 'GET')
-                ]);
-                const cUang = await checkRes[0].json(); const cAna = await checkRes[1].json(); const cPerkap = await checkRes[2].json();
-                
-                const baseData = { no_ppdb: no_ppdb, nama_murid: nama_murid, tgl_lahir: pl.tgl_lahir, ayah: pl.ayah, ibu: pl.ibu };
-                const promises = [];
-                if(cUang.length > 0) promises.push(apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', syncPl)); else promises.push(apiRequest(`${SUPABASE_URL}keuangan`, 'POST', baseData));
-                if(cAna.length > 0) promises.push(apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'PATCH', syncPl)); else promises.push(apiRequest(`${SUPABASE_URL}analisis`, 'POST', baseData));
-                if(cPerkap.length > 0) promises.push(apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'PATCH', syncPl)); else promises.push(apiRequest(`${SUPABASE_URL}perlengkapan`, 'POST', baseData));
-                await Promise.all(promises);
             } else {
-                // INSERT NEW STUDENT INTO ALL TABLES
+                // INSERT NEW HANYA Pendaftar
                 pl.tgl_pendaftaran = new Date().toISOString().split('T')[0];
-                const baseData = { no_ppdb: no_ppdb, nama_murid: nama_murid, password: pl.password, jk: pl.jk, tempat_lahir: pl.tempat_lahir, tgl_lahir: pl.tgl_lahir, alamat: pl.alamat, tk: pl.tk, ayah: pl.ayah, agama_ayah: pl.agama_ayah, pend_ayah: pl.pend_ayah, pekrj_ayah: pl.pekrj_ayah, ibu: pl.ibu, agama_ibu: pl.agama_ibu, pend_ibu: pl.pend_ibu, pekrj_ibu: pl.pekrj_ibu, tgl_pendaftaran: pl.tgl_pendaftaran };
-                await Promise.all([ 
-                    apiRequest(`${SUPABASE_URL}pendaftar`, 'POST', pl), 
-                    apiRequest(`${SUPABASE_URL}keuangan`, 'POST', baseData), 
-                    apiRequest(`${SUPABASE_URL}analisis`, 'POST', baseData), 
-                    apiRequest(`${SUPABASE_URL}perlengkapan`, 'POST', baseData) 
-                ]);
+                await apiRequest(`${SUPABASE_URL}pendaftar`, 'POST', pl);
             }
             showToast("Data Siswa Disimpan"); closeModal('modal-form-siswa'); loadData();
         } catch(e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Data Siswa';
@@ -1384,7 +1397,40 @@
 
     function bukaModalBiodata(id) {
         const s = masterData.find(x => x.id == id); if(!s) return;
-        document.getElementById('content-biodata').innerHTML = `<div class="space-y-4"><div class="bg-gray-50 p-4 border rounded-xl"><p class="text-[10px] uppercase font-bold text-gray-500">Data Pribadi</p><p class="text-base font-bold text-brand-navy mt-1">${s.nama_murid || '-'}</p><div class="grid grid-cols-2 gap-2 mt-2 text-xs"><div><span class="text-brand-muted block">No PPDB:</span><span class="font-medium">${s.no_ppdb||'-'}</span></div><div><span class="text-brand-muted block">Password (No):</span><span class="font-bold text-blue-600">${s.password||'-'}</span></div><div><span class="text-brand-muted block">Gender:</span><span class="font-medium">${s.jk === 'L' ? 'Laki-laki' : s.jk === 'P' ? 'Perempuan' : '-'}</span></div><div><span class="text-brand-muted block">Asal TK:</span><span class="font-medium">${s.tk||'-'}</span></div><div class="col-span-2"><span class="text-brand-muted block">TTL:</span><span class="font-medium">${s.tempat_lahir||'-'}, ${s.tgl_lahir||'-'}</span></div><div class="col-span-2"><span class="text-brand-muted block">Alamat:</span><span class="font-medium">${s.alamat||'-'}</span></div></div></div><div class="grid grid-cols-2 gap-3"><div class="bg-blue-50 p-3 border border-blue-100 rounded-xl"><p class="text-[10px] uppercase font-bold text-blue-500">Ayah</p><p class="text-sm font-semibold text-brand-navy mt-1">${s.ayah||'-'}</p><p class="text-xs text-brand-muted mt-1">Pend: ${s.pend_ayah||'-'}</p><p class="text-xs text-brand-muted">Kerja: ${s.pekrj_ayah||'-'}</p></div><div class="bg-pink-50 p-3 border border-pink-100 rounded-xl"><p class="text-[10px] uppercase font-bold text-pink-500">Ibu</p><p class="text-sm font-semibold text-brand-navy mt-1">${s.ibu||'-'}</p><p class="text-xs text-brand-muted mt-1">Pend: ${s.pend_ibu||'-'}</p><p class="text-xs text-brand-muted">Kerja: ${s.pekrj_ibu||'-'}</p></div></div></div>`;
+        
+        // Memunculkan tombol kelola biaya jika user punya akses
+        const canManageBiaya = currentUserRoleArr.includes('admin') || currentUserRoleArr.includes('pewawancara');
+        const btnBiaya = canManageBiaya ? `<div class="mt-4 pt-4 border-t border-gray-100"><button onclick="closeModal('modal-biodata'); setTimeout(() => bukaModalPewawancara('${s.no_ppdb}'), 300)" class="w-full bg-brand-gold hover:bg-yellow-600 text-white py-3 rounded-xl font-bold shadow-md flex items-center justify-center gap-2 transition-colors"><i class="ph-bold ph-money text-lg"></i> Kelola Biaya / Wawancara</button></div>` : '';
+
+        document.getElementById('content-biodata').innerHTML = `<div class="space-y-4">
+            <div class="bg-gray-50 p-4 border rounded-xl">
+                <p class="text-[10px] uppercase font-bold text-gray-500">Data Pribadi</p>
+                <p class="text-base font-bold text-brand-navy mt-1">${s.nama_murid || '-'}</p>
+                <div class="grid grid-cols-2 gap-2 mt-2 text-xs">
+                    <div><span class="text-brand-muted block">No PPDB:</span><span class="font-medium">${s.no_ppdb||'-'}</span></div>
+                    <div><span class="text-brand-muted block">Password (No):</span><span class="font-bold text-blue-600">${s.password||'-'}</span></div>
+                    <div><span class="text-brand-muted block">Gender:</span><span class="font-medium">${s.jk === 'L' ? 'Laki-laki' : s.jk === 'P' ? 'Perempuan' : '-'}</span></div>
+                    <div><span class="text-brand-muted block">Asal TK:</span><span class="font-medium">${s.tk||'-'}</span></div>
+                    <div class="col-span-2"><span class="text-brand-muted block">TTL:</span><span class="font-medium">${s.tempat_lahir||'-'}, ${s.tgl_lahir||'-'}</span></div>
+                    <div class="col-span-2"><span class="text-brand-muted block">Alamat:</span><span class="font-medium">${s.alamat||'-'}</span></div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-blue-50 p-3 border border-blue-100 rounded-xl">
+                    <p class="text-[10px] uppercase font-bold text-blue-500">Ayah</p>
+                    <p class="text-sm font-semibold text-brand-navy mt-1">${s.ayah||'-'}</p>
+                    <p class="text-xs text-brand-muted mt-1">Pend: ${s.pend_ayah||'-'}</p>
+                    <p class="text-xs text-brand-muted">Kerja: ${s.pekrj_ayah||'-'}</p>
+                </div>
+                <div class="bg-pink-50 p-3 border border-pink-100 rounded-xl">
+                    <p class="text-[10px] uppercase font-bold text-pink-500">Ibu</p>
+                    <p class="text-sm font-semibold text-brand-navy mt-1">${s.ibu||'-'}</p>
+                    <p class="text-xs text-brand-muted mt-1">Pend: ${s.pend_ibu||'-'}</p>
+                    <p class="text-xs text-brand-muted">Kerja: ${s.pekrj_ibu||'-'}</p>
+                </div>
+            </div>
+            ${btnBiaya}
+        </div>`;
         document.getElementById('modal-biodata').classList.replace('hidden', 'flex');
     }
 
@@ -1399,7 +1445,6 @@
         const q = (document.getElementById('filter-cari-analisis')?.value || '').toLowerCase();
         const statusFlt = document.getElementById('filter-status-analisis')?.value || 'all';
         
-        // Kalkulasi Statistik Dashboard Ruangan
         const ruangStats = {};
         masterData.forEach(s => {
             const r = s.ruang || 'Belum Diset';
@@ -1439,7 +1484,7 @@
             const sAna = analisisData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
             const arr = [parseInt(sAna.mengenal_huruf)||0, parseInt(sAna.mengenal_bilangan)||0, parseInt(sAna.menggunting_dan_menempel_puzzel)||0, parseInt(sAna.menyanyi_lagu_nasional)||0, parseInt(sAna.melafalkan_surat_pendek_doa_harian)||0, parseInt(sAna.interview)||0];
             const r = Math.round(arr.reduce((a, b) => a + b, 0) / 6);
-            const getC = (v) => v === 0 ? 'text-gray-300' : v < 60 ? 'text-red-500 font-bold' : v < 80 ? 'text-yellow-600 font-bold' : 'text-green-600 font-bold';
+            const getC = (v) => v === 0 ? 'text-gray-300' : v <= 20 ? 'text-red-500 font-bold' : v <= 60 ? 'text-yellow-600 font-bold' : 'text-green-600 font-bold';
             
             const isComplete = (sAna.mengenal_huruf != null && sAna.mengenal_bilangan != null && sAna.menggunting_dan_menempel_puzzel != null && sAna.menyanyi_lagu_nasional != null && sAna.melafalkan_surat_pendek_doa_harian != null && sAna.interview != null);
 
@@ -1460,11 +1505,11 @@
                 <td class="py-3 px-4 text-center ${getC(sAna.menyanyi_lagu_nasional != null ? arr[3] : 0)}">${sAna.menyanyi_lagu_nasional != null ? arr[3] : '-'}</td>
                 <td class="py-3 px-4 text-center ${getC(sAna.melafalkan_surat_pendek_doa_harian != null ? arr[4] : 0)}">${sAna.melafalkan_surat_pendek_doa_harian != null ? arr[4] : '-'}</td>
                 <td class="py-3 px-4 text-center ${getC(sAna.interview != null ? arr[5] : 0)}">${sAna.interview != null ? arr[5] : '-'}</td>
-                <td class="py-3 px-4 text-center"><span class="bg-gray-100 px-3 py-1 rounded-lg font-bold ${r<60?'text-red-500':r<80?'text-yellow-600':'text-green-600'}">${isComplete ? r : '-'}</span></td>
+                <td class="py-3 px-4 text-center"><span class="bg-gray-100 px-3 py-1 rounded-lg font-bold ${r<60?'text-red-500':r<=80?'text-yellow-600':'text-green-600'}">${isComplete ? r : '-'}</span></td>
                 <td class="py-3 px-4 text-center flex flex-col gap-1 items-center justify-center">
                     <div class="flex gap-1 w-full max-w-[180px]">
                         ${btnGrafik}
-                        <button onclick="bukaModalAnalisis('${sMaster.no_ppdb}', '${sMaster.nama_murid}', '${sMaster.nama_panggilan}')" class="flex-1 bg-blue-50 text-blue-600 border border-blue-100 px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors"><i class="ph-bold ph-pencil-simple"></i> Input</button>
+                        <button onclick="bukaModalAnalisis('${sMaster.no_ppdb}', '${sMaster.nama_murid}')" class="flex-1 bg-blue-50 text-blue-600 border border-blue-100 px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors"><i class="ph-bold ph-pencil-simple"></i> Input</button>
                     </div>
                     ${btnPreview}
                 </td>
@@ -1473,51 +1518,66 @@
     }
 
     function autoDes(id, label) {
-        const v = parseInt(document.getElementById(`val-${id}`).value) || 0;
-        const rawPanggilan = document.getElementById('analisis-nama').dataset.panggilan;
-        const nm = (rawPanggilan && rawPanggilan !== 'undefined' && rawPanggilan.trim() !== '') ? rawPanggilan : (document.getElementById('analisis-nama').innerText || 'Siswa');
+        const selVal = parseInt(document.getElementById(`val-${id}`).value) || 0;
+        if(selVal === 0) { document.getElementById(`ket-${id}`).value = ''; return; }
+        
+        const realVal = selVal * 20; 
+        const nm = document.getElementById('analisis-nama').innerText || 'Siswa';
         const n = nm.split(' ')[0]; 
         
         let t = "";
-        if (v <= 60) t = `Ananda ${n} masih perlu bimbingan penuh dalam ${label}.`;
-        else if (v <= 75) t = `Ananda ${n} sudah dapat ${label} namun masih perlu pendampingan.`;
-        else if (v <= 89) t = `Ananda ${n} sudah lancar ${label} namun masih perlu sedikit pendampingan.`;
-        else t = `Ananda ${n} sudah lancar ${label} dan mandiri.`;
+        if (realVal <= 20) t = `Ananda ${n} belum memahami ${label}.`;
+        else if (realVal <= 40) t = `Ananda ${n} mulai memahami ${label}.`;
+        else if (realVal <= 60) t = `Ananda ${n} memahami ${label}.`;
+        else if (realVal <= 80) t = `Ananda ${n} sangat memahami ${label}.`;
+        else t = `Ananda ${n} menguasai ${label} dengan mandiri.`;
+        
         document.getElementById(`ket-${id}`).value = t;
     }
 
-    function bukaModalAnalisis(no_ppdb, nama_murid, panggilan) {
+    function bukaModalAnalisis(no_ppdb, nama_murid) {
         const sAna = analisisData.find(x => x.no_ppdb === no_ppdb) || {};
-        document.getElementById('analisis-id').value = no_ppdb; document.getElementById('analisis-nama').innerText = nama_murid; document.getElementById('analisis-nama').dataset.panggilan = panggilan || nama_murid;
+        document.getElementById('analisis-id').value = no_ppdb; document.getElementById('analisis-nama').innerText = nama_murid;
         
         const fld = ['huruf', 'bilangan', 'motorik', 'lagu', 'doa', 'interview'];
         const dbFld = ['mengenal_huruf', 'mengenal_bilangan', 'menggunting_dan_menempel_puzzel', 'menyanyi_lagu_nasional', 'melafalkan_surat_pendek_doa_harian', 'interview'];
         const lbl = ['mengenal huruf', 'mengenal bilangan', 'menggunting dan menempel', 'menyanyi lagu nasional', 'doa harian dan surat pendek', 'menjawab pertanyaan interview'];
 
         fld.forEach((f, i) => {
-            const v = sAna[dbFld[i]]; document.getElementById(`val-${f}`).value = v !== null && v !== undefined ? v : '';
+            let v = sAna[dbFld[i]]; 
+            if (v !== null && v !== undefined) v = v / 20;
+            document.getElementById(`val-${f}`).value = (v !== null && !isNaN(v) && v > 0) ? v : '';
             document.getElementById(`ket-${f}`).value = sAna[`ket_${dbFld[i]}`] || '';
-            if(!sAna[`ket_${dbFld[i]}`]) autoDes(f, lbl[i]);
+            if(!sAna[`ket_${dbFld[i]}`] && v !== null && v !== undefined) autoDes(f, lbl[i]);
         });
         document.getElementById('modal-analisis').classList.replace('hidden', 'flex');
     }
 
     async function simpanAnalisis() {
         const no_ppdb = document.getElementById('analisis-id').value;
-        const getVal = (elId) => { const v = parseInt(document.getElementById(elId).value); return isNaN(v) ? null : v; };
-        const sMaster = masterData.find(x => x.no_ppdb === no_ppdb) || {};
+        const getVal = (elId) => { const v = parseInt(document.getElementById(elId).value); return isNaN(v) ? null : v * 20; };
 
+        // Payload Dibersihkan
         const pl = {
-            no_ppdb: no_ppdb, password: sMaster.password || null, tgl_pendaftaran: sMaster.tgl_pendaftaran || null, nama_murid: sMaster.nama_murid || null, jk: sMaster.jk || null, tempat_lahir: sMaster.tempat_lahir || null, tgl_lahir: sMaster.tgl_lahir || null, alamat: sMaster.alamat || null, tk: sMaster.tk || null,
-            mengenal_huruf: getVal('val-huruf'), mengenal_bilangan: getVal('val-bilangan'), menggunting_dan_menempel_puzzel: getVal('val-motorik'), menyanyi_lagu_nasional: getVal('val-lagu'), melafalkan_surat_pendek_doa_harian: getVal('val-doa'), interview: getVal('val-interview'),
-            ket_mengenal_huruf: document.getElementById('ket-huruf').value, ket_mengenal_bilangan: document.getElementById('ket-bilangan').value, ket_menggunting_dan_menempel_puzzel: document.getElementById('ket-motorik').value, ket_menyanyi_lagu_nasional: document.getElementById('ket-lagu').value, ket_melafalkan_surat_pendek_doa_harian: document.getElementById('ket-doa').value, ket_interview: document.getElementById('ket-interview').value
+            mengenal_huruf: getVal('val-huruf'), 
+            mengenal_bilangan: getVal('val-bilangan'), 
+            menggunting_dan_menempel_puzzel: getVal('val-motorik'), 
+            menyanyi_lagu_nasional: getVal('val-lagu'), 
+            melafalkan_surat_pendek_doa_harian: getVal('val-doa'), 
+            interview: getVal('val-interview'),
+            ket_mengenal_huruf: document.getElementById('ket-huruf').value, 
+            ket_mengenal_bilangan: document.getElementById('ket-bilangan').value, 
+            ket_menggunting_dan_menempel_puzzel: document.getElementById('ket-motorik').value, 
+            ket_menyanyi_lagu_nasional: document.getElementById('ket-lagu').value, 
+            ket_melafalkan_surat_pendek_doa_harian: document.getElementById('ket-doa').value, 
+            ket_interview: document.getElementById('ket-interview').value
         };
 
         const btn = document.getElementById('btn-simpan-analisis'); btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
         try {
             const exists = analisisData.find(x => x.no_ppdb === no_ppdb);
             if (exists && exists.id) await apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
-            else await apiRequest(`${SUPABASE_URL}analisis`, 'POST', pl);
+            else { pl.no_ppdb = no_ppdb; await apiRequest(`${SUPABASE_URL}analisis`, 'POST', pl); }
             showToast("Nilai Tersimpan"); closeModal('modal-analisis'); loadData(); 
         } catch(e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Nilai & Deskripsi';
     }
@@ -1562,21 +1622,57 @@
         }).join('');
     }
 
+    function toggleCustomBOPD() {
+        const sel = document.getElementById('pewa-bopd');
+        const cust = document.getElementById('pewa-bopd-custom');
+        if(sel.value === 'custom') { cust.classList.remove('hidden'); } else { cust.classList.add('hidden'); }
+    }
+
     function bukaModalPewawancara(no_ppdb) {
-        document.getElementById('pewa-id').value = no_ppdb; const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {};
-        document.getElementById('pewa-daftar-ulang').value = sUang.daftar_ulang || '3780000'; document.getElementById('pewa-bopd').value = sUang.bopd || '9750000'; document.getElementById('pewa-early').value = sUang.early_bird !== undefined ? sUang.early_bird : '1500000'; document.getElementById('pewa-aum').value = sUang.kader_aum !== undefined ? sUang.kader_aum : '1000000';
+        document.getElementById('pewa-id').value = no_ppdb; 
+        const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {};
+        
+        document.getElementById('pewa-daftar-ulang').value = sUang.daftar_ulang || '3780000'; 
+        const bopdVal = sUang.bopd;
+        if (bopdVal === 9750000 || bopdVal === 10750000 || bopdVal === 11750000 || !bopdVal) {
+            document.getElementById('pewa-bopd').value = bopdVal || '9750000';
+            document.getElementById('pewa-bopd-custom').classList.add('hidden');
+            document.getElementById('pewa-bopd-custom').value = '';
+        } else {
+            document.getElementById('pewa-bopd').value = 'custom';
+            document.getElementById('pewa-bopd-custom').value = bopdVal;
+            document.getElementById('pewa-bopd-custom').classList.remove('hidden');
+        }
+        document.getElementById('pewa-early').value = sUang.early_bird !== undefined ? sUang.early_bird : '1500000'; 
+        document.getElementById('pewa-aum').value = sUang.kader_aum !== undefined ? sUang.kader_aum : '1000000';
+        
         document.getElementById('modal-pewawancara').classList.replace('hidden', 'flex');
     }
 
     async function simpanPewawancara() {
-        const no_ppdb = document.getElementById('pewa-id').value; const sMaster = masterData.find(x => x.no_ppdb === no_ppdb) || {};
-        const pl = { no_ppdb: no_ppdb, password: sMaster.password || null, tgl_pendaftaran: sMaster.tgl_pendaftaran || null, nama_murid: sMaster.nama_murid || null, jk: sMaster.jk || null, tempat_lahir: sMaster.tempat_lahir || null, tgl_lahir: sMaster.tgl_lahir || null, alamat: sMaster.alamat || null, tk: sMaster.tk || null, ayah: sMaster.ayah || null, agama_ayah: sMaster.agama_ayah || null, pend_ayah: sMaster.pend_ayah || null, pekrj_ayah: sMaster.pekrj_ayah || null, ibu: sMaster.ibu || null, agama_ibu: sMaster.agama_ibu || null, pend_ibu: sMaster.pend_ibu || null, pekrj_ibu: sMaster.pekrj_ibu || null, daftar_ulang: parseInt(document.getElementById('pewa-daftar-ulang').value) || 0, bopd: parseInt(document.getElementById('pewa-bopd').value) || 0, early_bird: parseInt(document.getElementById('pewa-early').value) || 0, kader_aum: parseInt(document.getElementById('pewa-aum').value) || 0, pewawancara: currentUsername };
+        const no_ppdb = document.getElementById('pewa-id').value; 
+        
+        let valBopd = document.getElementById('pewa-bopd').value;
+        if (valBopd === 'custom') {
+            valBopd = parseInt(document.getElementById('pewa-bopd-custom').value) || 0;
+            if (valBopd < 11750000) return showToast("BOPD Custom (Tipe D) harus di atas Tipe C!", true);
+        } else {
+            valBopd = parseInt(valBopd) || 0;
+        }
+
+        const pl = { 
+            daftar_ulang: parseInt(document.getElementById('pewa-daftar-ulang').value) || 0, 
+            bopd: valBopd, 
+            early_bird: parseInt(document.getElementById('pewa-early').value) || 0, 
+            kader_aum: parseInt(document.getElementById('pewa-aum').value) || 0, 
+            pewawancara: currentUsername 
+        };
 
         const btn = document.getElementById('btn-simpan-pewa'); btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
         try {
             const exists = keuanganData.find(x => x.no_ppdb === no_ppdb);
             if (exists && exists.id) await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
-            else await apiRequest(`${SUPABASE_URL}keuangan`, 'POST', pl);
+            else { pl.no_ppdb = no_ppdb; await apiRequest(`${SUPABASE_URL}keuangan`, 'POST', pl); }
             showToast("Biaya Tersimpan"); closeModal('modal-pewawancara'); loadData();
         } catch (e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Biaya';
     }
@@ -1730,6 +1826,15 @@
         w.document.write(html); w.document.close();
     }
 
+    function setRealtimeDate() {
+        const today = new Date();
+        const localDate = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+        const startInput = document.getElementById('rekap-start');
+        const endInput = document.getElementById('rekap-end');
+        if (startInput) startInput.value = localDate;
+        if (endInput) endInput.value = localDate;
+    }
+
     function switchMainBendahara(viewId) {
         document.getElementById('view-main-pendaftaran').classList.add('hidden');
         document.getElementById('view-main-daftarulang').classList.add('hidden');
@@ -1756,7 +1861,6 @@
         activeTabPendaftaran = tab;
         document.getElementById('tab-pend-belum').className = 'flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold text-brand-muted hover:text-brand-navy transition-all';
         document.getElementById('tab-pend-lunas').className = 'flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold text-brand-muted hover:text-brand-navy transition-all';
-        
         document.getElementById(`tab-pend-${tab}`).className = 'flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold bg-white shadow-sm text-brand-navy transition-all';
         renderBendaharaPendaftaran();
     }
@@ -1773,16 +1877,13 @@
 
         if(tab === 'tunai') {
             document.getElementById('tab-sub-tunai').className = 'flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold bg-white shadow-sm text-brand-navy transition-all';
-            document.getElementById('view-tunai').classList.remove('hidden');
-            renderBendaharaTunai();
+            document.getElementById('view-tunai').classList.remove('hidden'); renderBendaharaTunai();
         } else if(tab === 'transfer') {
             document.getElementById('tab-sub-transfer').className = 'flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold bg-white shadow-sm text-brand-navy transition-all';
-            document.getElementById('view-transfer').classList.remove('hidden');
-            renderBendaharaTransfer();
+            document.getElementById('view-transfer').classList.remove('hidden'); renderBendaharaTransfer();
         } else {
             document.getElementById('tab-sub-riwayat').className = 'flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold bg-white shadow-sm text-brand-navy transition-all';
-            document.getElementById('view-riwayat').classList.remove('hidden');
-            renderBendaharaRiwayat();
+            document.getElementById('view-riwayat').classList.remove('hidden'); renderBendaharaRiwayat();
         }
     }
 
@@ -1805,13 +1906,12 @@
                 if(start && tgl < start) return;
                 if(end && tgl > end) return;
             }
-
             const sUang = keuanganData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
 
             if (isPendaftaran) {
                 if (sUang.konfirmasi_pendaftaran) {
                     const valPendaftaran = (sUang.pendaftaran === null || sUang.pendaftaran === undefined) ? 300000 : parseInt(sUang.pendaftaran);
-                    totalTunai += valPendaftaran; // Pendaftaran selalu diasumsikan tunai saat ini
+                    totalTunai += valPendaftaran; 
                 }
             } else {
                 if (sUang.konfirmasi) {
@@ -1871,11 +1971,10 @@
     function renderBendaharaTunai() {
         const tbody = document.getElementById('tbody-bendahara-tunai'); if(!tbody) return;
         const q = (document.getElementById('filter-cari-tunai')?.value || '').toLowerCase();
-        
         const d = masterData.filter(s => {
             if(q && !s.nama_murid?.toLowerCase().includes(q)) return false;
             const sUang = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
-            return !sUang.konfirmasi && !sUang.bukti_transfer; // Tunai (Belum Lunas & Tanpa Bukti TF)
+            return !sUang.konfirmasi && !sUang.bukti_transfer;
         });
 
         tbody.innerHTML = d.map(sMaster => {
@@ -1917,7 +2016,7 @@
         const d = masterData.filter(s => {
             if(q && !s.nama_murid?.toLowerCase().includes(q)) return false;
             const sUang = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
-            return sUang.konfirmasi === true; // Hanya yang sudah lunas DU
+            return sUang.konfirmasi === true;
         });
 
         tbody.innerHTML = d.map(sMaster => {
@@ -2098,14 +2197,8 @@
         const btn = document.getElementById('btn-simpan-perkap'); btn.disabled = true; btn.innerHTML = 'Processing...';
         try { 
             const exists = perkapData.find(x => x.no_ppdb === no_ppdb);
-            if (exists && exists.id) {
-                await apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl); 
-            } else {
-                pl.no_ppdb = no_ppdb;
-                const sMaster = masterData.find(x => x.no_ppdb === no_ppdb) || {};
-                pl.nama_murid = sMaster.nama_murid || null;
-                await apiRequest(`${SUPABASE_URL}perlengkapan`, 'POST', pl);
-            }
+            if (exists && exists.id) { await apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl); } 
+            else { pl.no_ppdb = no_ppdb; const sMaster = masterData.find(x => x.no_ppdb === no_ppdb) || {}; pl.nama_murid = sMaster.nama_murid || null; await apiRequest(`${SUPABASE_URL}perlengkapan`, 'POST', pl); }
             showToast("Checklist Disimpan"); closeModal('modal-perlengkapan'); loadData(); 
         } catch(e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Checklist';
     }
@@ -2129,23 +2222,39 @@
 
     function renderStaf() {
         const tbody = document.getElementById('tbody-staf'); if(!tbody) return;
-        tbody.innerHTML = staffAccounts.map(s => `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4 font-bold text-brand-navy">${s.username}</td><td class="py-3 px-4 text-[10px] uppercase font-medium text-brand-muted">${s.role.join(', ')}</td><td class="py-3 px-4 text-center"><button onclick="bukaModalStaf(${s.id})" class="text-blue-500 bg-blue-50 hover:bg-blue-100 p-1.5 rounded mr-1"><i class="ph-bold ph-pencil-simple text-lg"></i></button>${s.username !== 'admin' ? `<button onclick="hapusStaf(${s.id})" class="text-red-500 bg-red-50 hover:bg-red-100 p-1.5 rounded"><i class="ph-bold ph-trash text-lg"></i></button>` : ''}</td></tr>`).join('');
+        tbody.innerHTML = staffAccounts.map(s => `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4 font-bold text-brand-navy">${s.username}</td><td class="py-3 px-4 text-[10px] uppercase font-medium text-brand-muted">${(s.role||[]).join(', ')}</td><td class="py-3 px-4 text-center"><button onclick="bukaModalStaf(${s.id})" class="text-blue-500 bg-blue-50 hover:bg-blue-100 p-1.5 rounded mr-1"><i class="ph-bold ph-pencil-simple text-lg"></i></button>${s.username !== 'admin' ? `<button onclick="hapusStaf(${s.id})" class="text-red-500 bg-red-50 hover:bg-red-100 p-1.5 rounded"><i class="ph-bold ph-trash text-lg"></i></button>` : ''}</td></tr>`).join('');
     }
 
     function bukaModalStaf(id = null) {
         document.querySelectorAll('.chk-role').forEach(c => c.checked = false);
-        if(id) { const s = staffAccounts.find(x => x.id == id); document.getElementById('staf-id').value = id; document.getElementById('staf-username').value = s.username; document.getElementById('staf-password').value = s.password; document.querySelectorAll('.chk-role').forEach(c => { if(s.role.includes(c.value)) c.checked = true; }); } else { document.getElementById('staf-id').value = ''; document.getElementById('staf-username').value = ''; document.getElementById('staf-password').value = 'berkah'; }
+        if(id) { 
+            const s = staffAccounts.find(x => x.id == id); 
+            document.getElementById('staf-id').value = id; 
+            document.getElementById('staf-username').value = s.username; 
+            document.getElementById('staf-password').value = s.password; 
+            document.querySelectorAll('.chk-role').forEach(c => { if((s.role||[]).includes(c.value)) c.checked = true; }); 
+        } else { 
+            document.getElementById('staf-id').value = ''; 
+            document.getElementById('staf-username').value = ''; 
+            document.getElementById('staf-password').value = 'berkah'; 
+        }
         document.getElementById('modal-staf').classList.replace('hidden', 'flex');
     }
 
-    function simpanStaf() {
+    async function simpanStaf() {
         const id = document.getElementById('staf-id').value; const u = document.getElementById('staf-username').value.trim(); const p = document.getElementById('staf-password').value.trim(); const r = Array.from(document.querySelectorAll('.chk-role:checked')).map(c => c.value);
         if(!u || !p) return showToast("User & Pass wajib diisi!", true); if(r.length === 0) return showToast("Pilih min 1 role!", true);
-        if(id) { const i = staffAccounts.findIndex(x => x.id == id); staffAccounts[i].username = u; staffAccounts[i].password = p; if(u !== 'admin') staffAccounts[i].role = r; } else { staffAccounts.push({ id: Date.now(), username: u, password: p, role: r }); }
-        localStorage.setItem('staff_acc', JSON.stringify(staffAccounts)); showToast("Akun Disimpan"); closeModal('modal-staf'); renderStaf(); initLoginDropdown();
+        const pl = { username: u, password: p, role: r };
+        try {
+            if(id) { await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'PATCH', pl); } else { await apiRequest(`${SUPABASE_URL}kelola_akses`, 'POST', pl); }
+            showToast("Akun Disimpan"); closeModal('modal-staf'); await fetchStaffAccounts(); renderStaf();
+        } catch(e) { showToast(e.message, true); }
     }
     
-    function hapusStaf(id) { if(!confirm("Hapus akun staf?")) return; staffAccounts = staffAccounts.filter(x => x.id != id); localStorage.setItem('staff_acc', JSON.stringify(staffAccounts)); renderStaf(); initLoginDropdown(); }
+    async function hapusStaf(id) { 
+        if(!confirm("Hapus akun staf?")) return; 
+        try { await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'DELETE'); showToast("Akun Dihapus"); await fetchStaffAccounts(); renderStaf(); } catch(e) { showToast(e.message, true); }
+    }
 
     function renderMenuApp() {
         const tbody = document.getElementById('tbody-menu-app'); if(!tbody) return;
@@ -2167,6 +2276,8 @@
     
     async function hapusMenu(id) { if(!confirm("Hapus menu ini secara permanen?")) return; try { await apiRequest(`${SUPABASE_URL}menu_aplikasi?id=eq.${id}`, 'DELETE'); showToast("Menu Dihapus"); loadData(); } catch(e) { showToast(e.message, true); } }
 
+    // Fetch Staff Accounts on load to populate dropdown
+    fetchStaffAccounts();
 </script>
 </body>
 </html>
