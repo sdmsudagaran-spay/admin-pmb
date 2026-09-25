@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="https://iili.io/nuUTLcN.md.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -302,7 +302,20 @@
                         </div>
                     </div>
                     <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
-                        <table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100"><tr><th class="py-3.5 px-4">Nama Siswa (Klik utk Biodata & Kelola)</th><th class="py-3.5 px-4 text-center">Daftar Ulang</th><th class="py-3.5 px-4 text-center">BOPD</th><th class="py-3.5 px-4 text-center">Early Bird</th><th class="py-3.5 px-4 text-center">Kader AUM</th><th class="py-3.5 px-4 text-center">Pewawancara</th></tr></thead><tbody id="tbody-pewawancara" class="divide-y divide-gray-100 bg-white"></tbody></table>
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100">
+                                <tr>
+                                    <th class="py-3.5 px-4">Nama Siswa (Klik utk Biodata & Kelola)</th>
+                                    <th class="py-3.5 px-4 text-center">Daftar Ulang</th>
+                                    <th class="py-3.5 px-4 text-center">BOPD</th>
+                                    <th class="py-3.5 px-4 text-center">Early Bird</th>
+                                    <th class="py-3.5 px-4 text-center">Kader AUM</th>
+                                    <th class="py-3.5 px-4 text-center text-pink-600">Beasiswa Lainnya</th>
+                                    <th class="py-3.5 px-4 text-center">Pewawancara</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-pewawancara" class="divide-y divide-gray-100 bg-white"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -313,9 +326,9 @@
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 border-b border-gray-100 pb-4">
                         <h2 class="font-heading font-semibold text-lg text-brand-navy">Validasi Pembayaran</h2>
                         <div class="flex gap-2 bg-gray-100 p-1.5 rounded-xl border border-gray-200 w-full md:w-auto overflow-x-auto no-scrollbar">
-                            <button onclick="switchKategoriBendahara('pendaftaran')" id="tab-kat-pendaftaran" class="px-4 py-2 rounded-lg text-sm font-semibold bg-white shadow-sm text-brand-navy transition-all whitespace-nowrap">Pendaftaran</button>
-                            <button onclick="switchKategoriBendahara('daftarulang')" id="tab-kat-daftarulang" class="px-4 py-2 rounded-lg text-sm font-semibold text-brand-muted hover:text-brand-navy transition-all whitespace-nowrap">Daftar Ulang</button>
-                            <button onclick="switchKategoriBendahara('bopd')" id="tab-kat-bopd" class="px-4 py-2 rounded-lg text-sm font-semibold text-brand-muted hover:text-brand-navy transition-all whitespace-nowrap">Biaya BOPD</button>
+                            <button onclick="switchKategoriBendahara('pendaftaran')" id="tab-kat-pendaftaran" class="relative px-4 py-2 rounded-lg text-sm font-semibold bg-white shadow-sm text-brand-navy transition-all whitespace-nowrap">Pendaftaran <span id="badge-kat-pendaftaran" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full shadow-md">0</span></button>
+                            <button onclick="switchKategoriBendahara('daftarulang')" id="tab-kat-daftarulang" class="relative px-4 py-2 rounded-lg text-sm font-semibold text-brand-muted hover:text-brand-navy transition-all whitespace-nowrap">Daftar Ulang <span id="badge-kat-daftarulang" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full shadow-md">0</span></button>
+                            <button onclick="switchKategoriBendahara('bopd')" id="tab-kat-bopd" class="relative px-4 py-2 rounded-lg text-sm font-semibold text-brand-muted hover:text-brand-navy transition-all whitespace-nowrap">Biaya BOPD <span id="badge-kat-bopd" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full shadow-md">0</span></button>
                         </div>
                     </div>
 
@@ -354,9 +367,9 @@
 
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 border-b border-gray-100 pb-2">
                         <div class="flex gap-2 bg-gray-50 p-1 rounded-lg border border-gray-200 w-full flex-wrap sm:w-auto">
-                            <button onclick="switchSubTabBendahara('tunai')" id="tab-sub-tunai" class="flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold bg-white shadow-sm text-brand-navy transition-all"><i class="ph-bold ph-money"></i> Kasir Tunai</button>
-                            <button onclick="switchSubTabBendahara('transfer')" id="tab-sub-transfer" class="flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold text-brand-muted hover:text-brand-navy transition-all"><i class="ph-bold ph-device-mobile"></i> Cek Transfer</button>
-                            <button onclick="switchSubTabBendahara('riwayat')" id="tab-sub-riwayat" class="flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold text-brand-muted hover:text-brand-navy transition-all"><i class="ph-bold ph-check-circle"></i> Riwayat Lunas</button>
+                            <button onclick="switchSubTabBendahara('tunai')" id="tab-sub-tunai" class="flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold bg-white shadow-sm text-brand-navy transition-all flex items-center justify-center gap-1"><i class="ph-bold ph-money"></i> Kasir Tunai</button>
+                            <button onclick="switchSubTabBendahara('transfer')" id="tab-sub-transfer" class="relative flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold text-brand-muted hover:text-brand-navy transition-all flex items-center justify-center gap-1"><i class="ph-bold ph-device-mobile"></i> Cek Transfer <span id="badge-sub-transfer" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full shadow-md">0</span></button>
+                            <button onclick="switchSubTabBendahara('riwayat')" id="tab-sub-riwayat" class="flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold text-brand-muted hover:text-brand-navy transition-all flex items-center justify-center gap-1"><i class="ph-bold ph-check-circle"></i> Riwayat Lunas</button>
                         </div>
                         <button onclick="cetakLaporanDinamis()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-md text-xs font-bold shadow-sm flex items-center justify-center gap-2 transition-colors"><i class="ph-bold ph-printer"></i> Unduh Laporan PDF (F4)</button>
                     </div>
@@ -409,7 +422,6 @@
     </main>
 </div>
 
-<!-- Modal Menu App -->
 <div id="modal-menu-app" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl slide-up flex flex-col">
         <div class="flex justify-between items-center mb-4 border-b pb-4">
@@ -450,7 +462,6 @@
     </div>
 </div>
 
-<!-- Modal Akun & Progres -->
 <div id="modal-akun" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl flex flex-col slide-up">
         <div class="flex justify-between items-center mb-4 border-b pb-4">
@@ -476,7 +487,6 @@
     </div>
 </div>
 
-<!-- Modal Staf -->
 <div id="modal-staf" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl flex flex-col slide-up">
         <div class="flex justify-between items-center mb-4 border-b pb-4">
@@ -505,7 +515,6 @@
     </div>
 </div>
 
-<!-- Modal Form Siswa -->
 <div id="modal-form-siswa" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl slide-up">
         <div class="flex justify-between items-center mb-4 border-b pb-4 shrink-0">
@@ -551,7 +560,6 @@
     </div>
 </div>
 
-<!-- Modal Biodata -->
 <div id="modal-biodata" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md max-h-[85vh] flex flex-col shadow-2xl slide-up">
         <div class="flex justify-between items-center mb-4 border-b pb-4 shrink-0">
@@ -562,7 +570,6 @@
     </div>
 </div>
 
-<!-- Modal Input Nilai Penganalisis -->
 <div id="modal-analisis" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-lg max-h-[90vh] flex flex-col shadow-2xl slide-up">
         <div class="flex justify-between items-center mb-4 shrink-0 border-b pb-4">
@@ -643,27 +650,25 @@
     </div>
 </div>
 
-<!-- Modal Grafik Penganalisis -->
 <div id="modal-grafik" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl slide-up flex flex-col">
         <div class="flex justify-between items-center mb-4 border-b pb-4">
             <h2 class="font-heading font-bold text-lg text-brand-navy">Grafik Analisis</h2>
             <button onclick="closeModal('modal-grafik')" class="text-gray-400 hover:text-red-500"><i class="ph ph-x text-2xl"></i></button>
         </div>
-        <div class="w-full aspect-square">
+        <div class="w-full aspect-square bg-gray-50 rounded-xl p-2 border border-gray-100">
             <canvas id="radarChartAdmin"></canvas>
         </div>
     </div>
 </div>
 
-<!-- Modal Biaya Pewawancara -->
 <div id="modal-pewawancara" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
-    <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl slide-up flex flex-col">
-        <div class="flex justify-between items-center mb-4 border-b pb-4">
+    <div class="bg-white rounded-[24px] p-6 w-full max-w-lg shadow-2xl slide-up flex flex-col max-h-[90vh]">
+        <div class="flex justify-between items-center mb-4 border-b pb-4 shrink-0">
             <h2 class="font-heading font-bold text-lg text-brand-navy">Kelola Pembiayaan</h2>
             <button onclick="closeModal('modal-pewawancara')" class="text-gray-400 hover:text-red-500"><i class="ph ph-x text-2xl"></i></button>
         </div>
-        <div class="space-y-4">
+        <div class="space-y-4 overflow-y-auto no-scrollbar pb-2 px-1">
             <input type="hidden" id="pewa-id">
             <div>
                 <label class="text-xs font-medium text-brand-navy block mb-1">Daftar Ulang</label>
@@ -671,16 +676,6 @@
                     <option value="3780000">Putra (PA) - Rp 3.780.000</option>
                     <option value="3805000">Putri (PI) - Rp 3.805.000</option>
                 </select>
-            </div>
-            <div>
-                <label class="text-xs font-medium text-brand-navy block mb-1">Biaya BOPD</label>
-                <select id="pewa-bopd" onchange="toggleCustomBOPD()" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white focus:border-brand-gold">
-                    <option value="9750000">Tipe A - Rp 9.750.000</option>
-                    <option value="10750000">Tipe B - Rp 10.750.000</option>
-                    <option value="11750000">Tipe C - Rp 11.750.000</option>
-                    <option value="custom">Tipe D (Kustom / Lainnya)</option>
-                </select>
-                <input type="number" id="pewa-bopd-custom" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white mt-2 hidden focus:border-brand-gold" placeholder="Ketik nominal manual melebihi Tipe C">
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
@@ -699,14 +694,48 @@
                     </select>
                 </div>
             </div>
+            <div>
+                <label class="text-xs font-medium text-brand-navy block mb-1">Beasiswa Lainnya (Rp)</label>
+                <input type="text" id="pewa-beasiswa" oninput="formatInputRibuan(this)" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white focus:border-brand-gold" placeholder="Contoh: 1.000.000">
+            </div>
+            <hr class="border-gray-200">
+            <div>
+                <label class="text-xs font-medium text-brand-navy block mb-1">Biaya BOPD</label>
+                <select id="pewa-bopd" onchange="toggleCustomBOPD()" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white focus:border-brand-gold">
+                    <option value="9750000">Tipe A - Rp 9.750.000</option>
+                    <option value="10750000">Tipe B - Rp 10.750.000</option>
+                    <option value="11750000">Tipe C - Rp 11.750.000</option>
+                    <option value="custom">Tipe D (Kustom / Lainnya)</option>
+                </select>
+                <input type="number" id="pewa-bopd-custom" oninput="hitungAngsuranBOPD()" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white mt-2 hidden focus:border-brand-gold" placeholder="Ketik nominal manual melebihi Tipe C">
+            </div>
+            <div>
+                <label class="text-xs font-medium text-brand-navy block mb-1">Jenis Pembayaran BOPD</label>
+                <select id="pewa-jenis-bopd" onchange="toggleJenisPembayaranBOPD()" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white focus:border-brand-gold">
+                    <option value="">-- Pilih Jenis Pembayaran --</option>
+                    <option value="Lunas">Lunas</option>
+                    <option value="Angsuran">Angsuran</option>
+                </select>
+            </div>
+            
+            <div id="pewa-lunas-box" class="hidden bg-blue-50 border border-blue-200 p-3 rounded-lg">
+                <label class="text-xs font-bold text-blue-700 block mb-1">Rencana Tanggal Pelunasan</label>
+                <input type="date" id="pewa-tgl-lunas" class="w-full border border-blue-200 rounded-lg p-2 text-sm bg-white focus:border-blue-500">
+            </div>
+
+            <div id="pewa-angsuran-box" class="hidden bg-gray-50 border border-gray-200 p-3 rounded-lg space-y-2">
+                <p class="text-xs font-bold text-brand-navy border-b border-gray-200 pb-1">Skema Angsuran BOPD</p>
+                <div class="flex justify-between text-xs font-medium"><span class="text-brand-muted">Tahap 1 (50%) <br><span id="lbl-tgl-a1" class="text-[10px] text-gray-400"></span></span> <span id="lbl-rp-a1" class="font-bold text-brand-navy mt-1">Rp 0</span></div>
+                <div class="flex justify-between text-xs font-medium"><span class="text-brand-muted">Tahap 2 (25%) <br><span id="lbl-tgl-a2" class="text-[10px] text-gray-400"></span></span> <span id="lbl-rp-a2" class="font-bold text-brand-navy mt-1">Rp 0</span></div>
+                <div class="flex justify-between text-xs font-medium"><span class="text-brand-muted">Tahap 3 (25%) <br><span id="lbl-tgl-a3" class="text-[10px] text-gray-400"></span></span> <span id="lbl-rp-a3" class="font-bold text-brand-navy mt-1">Rp 0</span></div>
+            </div>
         </div>
-        <div class="pt-4 mt-4 border-t shrink-0">
+        <div class="pt-4 mt-2 border-t shrink-0">
             <button onclick="simpanPewawancara()" id="btn-simpan-pewa" class="btn-press w-full bg-brand-navy text-white py-3.5 rounded-xl font-medium shadow-md">Simpan Biaya</button>
         </div>
     </div>
 </div>
 
-<!-- Modal Cek Transfer -->
 <div id="modal-cek-transfer" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl flex flex-col slide-up">
         <div class="flex justify-between items-center mb-4 border-b pb-4">
@@ -730,13 +759,11 @@
     </div>
 </div>
 
-<!-- Modal Zoom Bukti Layar Penuh -->
 <div id="modal-zoom-bukti" class="fixed inset-0 bg-black/95 z-[80] hidden items-center justify-center p-4 cursor-zoom-out" onclick="closeModal('modal-zoom-bukti')">
     <button onclick="closeModal('modal-zoom-bukti')" class="absolute top-5 right-5 text-white/50 hover:text-white z-10 transition-colors"><i class="ph-bold ph-x text-4xl"></i></button>
     <img id="zoom-img-bukti" src="" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl">
 </div>
 
-<!-- Modal Transaksi Kasir Dinamis (Untuk Bendahara) -->
 <div id="modal-kasir-dinamis" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl flex flex-col slide-up">
         <div class="flex justify-between items-center mb-4 border-b pb-4">
@@ -769,7 +796,6 @@
     </div>
 </div>
 
-<!-- Modal Checklist Perlengkapan -->
 <div id="modal-perlengkapan" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-lg max-h-[90vh] flex flex-col shadow-2xl slide-up">
         <div class="flex justify-between items-center mb-4 border-b pb-4 shrink-0">
@@ -815,7 +841,6 @@
     </div>
 </div>
 
-<!-- Modal Detail/Preview Perlengkapan -->
 <div id="modal-detail-perlengkapan" class="fixed inset-0 bg-black/50 z-[70] hidden items-center justify-center p-4">
     <div class="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl flex flex-col slide-up">
         <div class="flex justify-between items-center mb-4 border-b pb-4">
@@ -829,6 +854,19 @@
     </div>
 </div>
 
+<!-- Custom Confirmation Modal replacing confirm() -->
+<div id="modal-confirm" class="fixed inset-0 bg-black/60 z-[90] hidden items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-[24px] p-6 w-full max-w-sm shadow-2xl flex flex-col slide-up text-center border border-gray-100">
+        <i class="ph-fill ph-warning-circle text-red-500 text-6xl mb-4 mx-auto animate-pulse"></i>
+        <h2 class="font-heading font-bold text-xl text-brand-navy mb-2">Konfirmasi Aksi</h2>
+        <p id="confirm-msg" class="text-sm text-brand-muted mb-6 font-medium">Apakah Anda yakin?</p>
+        <div class="flex gap-3">
+            <button onclick="closeConfirm()" class="btn-press flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition-colors border border-gray-200">Batal</button>
+            <button id="btn-confirm-yes" class="btn-press flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition-colors shadow-md shadow-red-500/20">Ya, Lanjutkan</button>
+        </div>
+    </div>
+</div>
+
 <script>
     const SUPABASE_URL = 'https://ckbarwrfpktcdoydbjzy.supabase.co/rest/v1/';
     const SUPABASE_KEY = 'sb_publishable_jBXJV3WzlzbTlRkpEqGebA_BOlcBWoO';
@@ -837,7 +875,7 @@
     let currentUserRoleArr = []; let currentUsername = ''; let selectedIdsForMassAction = [];
     let chartInstanceAdmin = null; 
     
-    // State Dinamis Bendahara
+    // Bendahara Dynamics
     let activeKatBendahara = 'pendaftaran'; // pendaftaran, daftarulang, bopd
     let activeSubBendahara = 'tunai';       // tunai, transfer, riwayat
     let currentDataKasir = null;            // object info kasir dinamis
@@ -855,6 +893,8 @@
     ];
 
     function formatRp(angka) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka || 0); }
+    function formatInputRibuan(e) { let val = e.value.replace(/[^0-9]/g, ''); if(val !== "") { e.value = new Intl.NumberFormat('id-ID').format(val); } else { e.value = ''; } }
+    function unformatRibuan(str) { if(!str) return 0; return parseInt(String(str).replace(/[^0-9]/g, '')) || 0; }
 
     function showToast(msg, isError = false) {
         const c = document.getElementById(isError ? 'error-toast-container' : 'toast-container');
@@ -865,6 +905,21 @@
         requestAnimationFrame(() => { isError ? t.classList.remove('-translate-y-full', 'opacity-0') : t.classList.remove('translate-x-full'); });
         setTimeout(() => { isError ? t.classList.add('-translate-y-full', 'opacity-0') : t.classList.add('translate-x-full'); setTimeout(() => t.remove(), 300); }, isError ? 7000 : 5000);
     }
+
+    let confirmActionCallback = null;
+    function askConfirm(msg, callback) {
+        document.getElementById('confirm-msg').innerText = msg;
+        confirmActionCallback = callback;
+        document.getElementById('modal-confirm').classList.replace('hidden', 'flex');
+    }
+    function closeConfirm() {
+        document.getElementById('modal-confirm').classList.replace('flex', 'hidden');
+        confirmActionCallback = null;
+    }
+    document.getElementById('btn-confirm-yes').addEventListener('click', () => {
+        if (confirmActionCallback) confirmActionCallback();
+        closeConfirm();
+    });
 
     async function apiRequest(url, method, body = null) {
         const options = { method: method, headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } };
@@ -911,7 +966,11 @@
         } else { err.innerText = "Password salah!"; err.classList.remove('hidden'); }
     }
     
-    function togglePassword() { const inp = document.getElementById('login-password'); const icon = document.getElementById('icon-toggle-password'); if(inp.type === 'password') { inp.type = 'text'; icon.classList.replace('ph-eye', 'ph-eye-closed'); } else { inp.type = 'password'; icon.classList.replace('ph-eye-closed', 'ph-eye'); } }
+    function togglePassword() { 
+        const inp = document.getElementById('login-password'); const icon = document.getElementById('icon-toggle-password'); 
+        if(inp.type === 'password') { inp.type = 'text'; icon.classList.replace('ph-eye', 'ph-eye-closed'); } 
+        else { inp.type = 'password'; icon.classList.replace('ph-eye-closed', 'ph-eye'); } 
+    }
 
     function logout() { currentUserRoleArr = []; document.getElementById('view-dashboard').classList.add('hidden'); document.getElementById('view-login').classList.remove('hidden'); requestAnimationFrame(() => document.getElementById('view-login').style.opacity = '1'); document.getElementById('login-password').value = ''; }
     function toggleSidebar() { const s = document.getElementById('sidebar'); const o = document.getElementById('sidebar-overlay'); if (window.innerWidth < 640) { if(s.classList.contains('sidebar-mobile-closed')) { s.classList.replace('sidebar-mobile-closed', 'sidebar-mobile-open'); o.classList.remove('hidden'); } else { s.classList.replace('sidebar-mobile-open', 'sidebar-mobile-closed'); o.classList.add('hidden'); } } else { s.classList.toggle('sidebar-closed'); } }
@@ -1029,7 +1088,6 @@
         const id = document.getElementById('fs-id').value; const no_ppdb = document.getElementById('fs-noppdb').value.trim(); const nama_murid = document.getElementById('fs-nama').value.trim().toUpperCase();
         if(!nama_murid || !no_ppdb) return showToast("Nama Lengkap dan No PPDB wajib!", true);
 
-        // Hanya mengirim payload ke tabel pendaftar agar aman dari schema crash
         const pl = { no_ppdb: no_ppdb, password: document.getElementById('fs-no').value.trim(), nama_murid: nama_murid, jk: document.getElementById('fs-jk').value, tk: document.getElementById('fs-tk').value.trim(), tempat_lahir: document.getElementById('fs-tmplahir').value.trim(), alamat: document.getElementById('fs-alamat').value.trim(), ayah: document.getElementById('fs-ayah').value.trim(), agama_ayah: document.getElementById('fs-agayah').value.trim(), pend_ayah: document.getElementById('fs-pendayah').value.trim(), pekrj_ayah: document.getElementById('fs-krjayah').value.trim(), ibu: document.getElementById('fs-ibu').value.trim(), agama_ibu: document.getElementById('fs-agibu').value.trim(), pend_ibu: document.getElementById('fs-pendibu').value.trim(), pekrj_ibu: document.getElementById('fs-krjibu').value.trim() };
         const tgl = document.getElementById('fs-tgllahir').value; if(tgl) pl.tgl_lahir = tgl; else pl.tgl_lahir = null;
         
@@ -1041,7 +1099,19 @@
         } catch(e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Data Siswa';
     }
 
-    async function hapusSiswa(id, no_ppdb) { if(!confirm(`Hapus permanen data siswa ini dari SEMUA TABEL?`)) return; try { await Promise.all([ apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'DELETE'), apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'DELETE'), apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'DELETE'), apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'DELETE') ]); showToast("Siswa Dihapus"); loadData(); } catch(e) { showToast(e.message, true); } }
+    function hapusSiswa(id, no_ppdb) { 
+        askConfirm(`Hapus permanen data siswa ini dari SEMUA TABEL?`, async () => {
+            try { 
+                await Promise.all([ 
+                    apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'DELETE'), 
+                    apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'DELETE'), 
+                    apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'DELETE'), 
+                    apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'DELETE') 
+                ]); 
+                showToast("Siswa Dihapus"); loadData(); 
+            } catch(e) { showToast(e.message, true); } 
+        });
+    }
 
     function bukaModalBiodata(id) {
         const s = masterData.find(x => x.id == id); if(!s) return;
@@ -1081,13 +1151,13 @@
             const sAna = analisisData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
             const arr = [parseInt(sAna.mengenal_huruf)||0, parseInt(sAna.mengenal_bilangan)||0, parseInt(sAna.menggunting_dan_menempel_puzzel)||0, parseInt(sAna.menyanyi_lagu_nasional)||0, parseInt(sAna.melafalkan_surat_pendek_doa_harian)||0, parseInt(sAna.interview)||0];
             const r = Math.round(arr.reduce((a, b) => a + b, 0) / 6);
-            const getC = (v) => v === 0 ? 'text-gray-300' : v <= 20 ? 'text-red-500 font-bold' : v <= 60 ? 'text-yellow-600 font-bold' : 'text-green-600 font-bold';
+            const getC = (v) => v === 0 ? 'text-gray-300' : v <= 40 ? 'text-red-500 font-bold' : v <= 80 ? 'text-green-600 font-bold' : 'text-blue-600 font-bold';
             const isComplete = (sAna.mengenal_huruf != null && sAna.mengenal_bilangan != null && sAna.menggunting_dan_menempel_puzzel != null && sAna.menyanyi_lagu_nasional != null && sAna.melafalkan_surat_pendek_doa_harian != null && sAna.interview != null);
 
             const btnGrafik = isComplete ? `<button onclick="bukaModalGrafik('${sMaster.no_ppdb}')" class="flex-1 text-purple-600 bg-purple-50 border border-purple-100 hover:bg-purple-100 px-2 py-1.5 rounded-lg text-xs font-bold transition-colors"><i class="ph-bold ph-chart-polar"></i> Grafik</button>` : `<button disabled class="flex-1 text-gray-400 bg-gray-100 border border-gray-200 px-2 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed"><i class="ph-bold ph-chart-polar"></i> Grafik</button>`;
             const btnPreview = isComplete ? `<button onclick="cetakAnalisis('${sMaster.no_ppdb}')" class="bg-green-50 text-green-700 border border-green-200 w-full max-w-[180px] px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-green-100 transition-colors shadow-sm"><i class="ph-bold ph-eye"></i> Preview (F4)</button>` : `<button disabled class="bg-gray-100 text-gray-400 border border-gray-200 w-full max-w-[180px] px-3 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed shadow-sm"><i class="ph-bold ph-eye"></i> Preview (F4)</button>`;
 
-            return `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4 font-semibold text-brand-navy">${sMaster.nama_murid || '-'}</td><td class="py-3 px-4 text-center text-xs font-medium text-brand-muted">${sMaster.ruang || '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.mengenal_huruf != null ? arr[0] : 0)}">${sAna.mengenal_huruf != null ? arr[0] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.mengenal_bilangan != null ? arr[1] : 0)}">${sAna.mengenal_bilangan != null ? arr[1] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.menggunting_dan_menempel_puzzel != null ? arr[2] : 0)}">${sAna.menggunting_dan_menempel_puzzel != null ? arr[2] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.menyanyi_lagu_nasional != null ? arr[3] : 0)}">${sAna.menyanyi_lagu_nasional != null ? arr[3] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.melafalkan_surat_pendek_doa_harian != null ? arr[4] : 0)}">${sAna.melafalkan_surat_pendek_doa_harian != null ? arr[4] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.interview != null ? arr[5] : 0)}">${sAna.interview != null ? arr[5] : '-'}</td><td class="py-3 px-4 text-center"><span class="bg-gray-100 px-3 py-1 rounded-lg font-bold ${r<60?'text-red-500':r<=80?'text-yellow-600':'text-green-600'}">${isComplete ? r : '-'}</span></td><td class="py-3 px-4 text-center flex flex-col gap-1 items-center justify-center"><div class="flex gap-1 w-full max-w-[180px]">${btnGrafik}<button onclick="bukaModalAnalisis('${sMaster.no_ppdb}', '${sMaster.nama_murid}')" class="flex-1 bg-blue-50 text-blue-600 border border-blue-100 px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors"><i class="ph-bold ph-pencil-simple"></i> Input</button></div>${btnPreview}</td></tr>`;
+            return `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4 font-semibold text-brand-navy">${sMaster.nama_murid || '-'}</td><td class="py-3 px-4 text-center text-xs font-medium text-brand-muted">${sMaster.ruang || '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.mengenal_huruf != null ? arr[0] : 0)}">${sAna.mengenal_huruf != null ? arr[0] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.mengenal_bilangan != null ? arr[1] : 0)}">${sAna.mengenal_bilangan != null ? arr[1] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.menggunting_dan_menempel_puzzel != null ? arr[2] : 0)}">${sAna.menggunting_dan_menempel_puzzel != null ? arr[2] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.menyanyi_lagu_nasional != null ? arr[3] : 0)}">${sAna.menyanyi_lagu_nasional != null ? arr[3] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.melafalkan_surat_pendek_doa_harian != null ? arr[4] : 0)}">${sAna.melafalkan_surat_pendek_doa_harian != null ? arr[4] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.interview != null ? arr[5] : 0)}">${sAna.interview != null ? arr[5] : '-'}</td><td class="py-3 px-4 text-center"><span class="bg-gray-100 px-3 py-1 rounded-lg font-bold ${r<=40?'text-red-500':r<=80?'text-green-600':'text-blue-600'}">${isComplete ? r : '-'}</span></td><td class="py-3 px-4 text-center flex flex-col gap-1 items-center justify-center"><div class="flex gap-1 w-full max-w-[180px]">${btnGrafik}<button onclick="bukaModalAnalisis('${sMaster.no_ppdb}', '${sMaster.nama_murid}')" class="flex-1 bg-blue-50 text-blue-600 border border-blue-100 px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors"><i class="ph-bold ph-pencil-simple"></i> Input</button></div>${btnPreview}</td></tr>`;
         }).join('');
     }
 
@@ -1118,8 +1188,35 @@
     }
 
     function bukaModalGrafik(no_ppdb) {
-        const sAna = analisisData.find(x => x.no_ppdb === no_ppdb) || {}; const dataVals = [parseInt(sAna.mengenal_huruf)||0, parseInt(sAna.mengenal_bilangan)||0, parseInt(sAna.menggunting_dan_menempel_puzzel)||0, parseInt(sAna.menyanyi_lagu_nasional)||0, parseInt(sAna.melafalkan_surat_pendek_doa_harian)||0, parseInt(sAna.interview)||0];
-        document.getElementById('modal-grafik').classList.replace('hidden', 'flex'); const ctx = document.getElementById('radarChartAdmin'); if(chartInstanceAdmin) chartInstanceAdmin.destroy(); chartInstanceAdmin = new Chart(ctx, { type: 'radar', data: { labels: ['Huruf', 'Bilangan', 'Motorik', 'Lagu', 'Doa & SP', 'Interview'], datasets: [{ label: 'Skor', data: dataVals, backgroundColor: 'rgba(217, 164, 65, 0.3)', borderColor: '#D9A441', pointBackgroundColor: '#0F2747', borderWidth: 2 }] }, options: { scales: { r: { min: 0, max: 100, ticks: { stepSize: 20 } } }, plugins: { legend: { display: false } } } });
+        const sAna = analisisData.find(x => x.no_ppdb === no_ppdb) || {}; 
+        const dataVals = [parseInt(sAna.mengenal_huruf)||0, parseInt(sAna.mengenal_bilangan)||0, parseInt(sAna.menggunting_dan_menempel_puzzel)||0, parseInt(sAna.menyanyi_lagu_nasional)||0, parseInt(sAna.melafalkan_surat_pendek_doa_harian)||0, parseInt(sAna.interview)||0];
+        const pointColors = dataVals.map(v => v <= 40 ? '#ef4444' : v <= 80 ? '#22c55e' : '#3b82f6');
+        document.getElementById('modal-grafik').classList.replace('hidden', 'flex'); 
+        const ctx = document.getElementById('radarChartAdmin'); 
+        if(chartInstanceAdmin) chartInstanceAdmin.destroy(); 
+        chartInstanceAdmin = new Chart(ctx, { 
+            type: 'radar', 
+            data: { 
+                labels: ['Huruf', 'Bilangan', 'Motorik', 'Lagu', 'Doa & SP', 'Interview'], 
+                datasets: [{ 
+                    label: 'Skor', 
+                    data: dataVals, 
+                    backgroundColor: 'rgba(217, 164, 65, 0.2)', 
+                    borderColor: '#D9A441', 
+                    pointBackgroundColor: pointColors, 
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    borderWidth: 2 
+                }] 
+            }, 
+            options: { 
+                scales: { 
+                    r: { min: 0, max: 100, ticks: { stepSize: 20, backdropColor: 'transparent' } } 
+                }, 
+                plugins: { legend: { display: false } } 
+            } 
+        });
     }
 
     function cetakAnalisis(no_ppdb) {
@@ -1170,79 +1267,229 @@
         });
         tbody.innerHTML = d.map(sMaster => {
             const sUang = keuanganData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
-            return `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4"><a href="javascript:void(0)" onclick="bukaModalBiodata('${sMaster.id}')" class="font-bold text-brand-navy hover:text-brand-gold underline block">${sMaster.nama_murid || '-'}</a></td><td class="py-3 px-4 text-center font-mono text-sm">${formatRp(sUang.daftar_ulang || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm">${formatRp(sUang.bopd || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm text-red-500">- ${formatRp(sUang.early_bird || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm text-red-500">- ${formatRp(sUang.kader_aum || 0)}</td><td class="py-3 px-4 text-center text-xs font-semibold text-gray-500">${sUang.pewawancara || '-'}</td></tr>`;
+            return `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4"><a href="javascript:void(0)" onclick="bukaModalBiodata('${sMaster.id}')" class="font-bold text-brand-navy hover:text-brand-gold underline block">${sMaster.nama_murid || '-'}</a></td><td class="py-3 px-4 text-center font-mono text-sm">${formatRp(sUang.daftar_ulang || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm">${formatRp(sUang.bopd || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm text-red-500">- ${formatRp(sUang.early_bird || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm text-red-500">- ${formatRp(sUang.kader_aum || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm text-pink-600">- ${formatRp(sUang.beasiswa_lainnya || 0)}</td><td class="py-3 px-4 text-center text-xs font-semibold text-gray-500">${sUang.pewawancara || '-'}</td></tr>`;
         }).join('');
     }
 
-    function toggleCustomBOPD() { const sel = document.getElementById('pewa-bopd'); const cust = document.getElementById('pewa-bopd-custom'); if(sel.value === 'custom') { cust.classList.remove('hidden'); } else { cust.classList.add('hidden'); } }
+    function toggleCustomBOPD() { 
+        const sel = document.getElementById('pewa-bopd'); const cust = document.getElementById('pewa-bopd-custom'); 
+        if(sel.value === 'custom') { cust.classList.remove('hidden'); } else { cust.classList.add('hidden'); } 
+        hitungAngsuranBOPD(); 
+    }
     
+    function hitungAngsuranBOPD() {
+        const valBopd = document.getElementById('pewa-bopd').value; let bopdTotal = 0;
+        if (valBopd === 'custom') bopdTotal = parseInt(document.getElementById('pewa-bopd-custom').value) || 0; else bopdTotal = parseInt(valBopd) || 0;
+        document.getElementById('lbl-rp-a1').innerText = formatRp(bopdTotal * 0.50);
+        document.getElementById('lbl-rp-a2').innerText = formatRp(bopdTotal * 0.25);
+        document.getElementById('lbl-rp-a3').innerText = formatRp(bopdTotal * 0.25);
+    }
+
+    function toggleJenisPembayaranBOPD() {
+        const jp = document.getElementById('pewa-jenis-bopd').value; const lunasBox = document.getElementById('pewa-lunas-box'); const angBox = document.getElementById('pewa-angsuran-box');
+        lunasBox.classList.add('hidden'); angBox.classList.add('hidden');
+        if (jp === 'Lunas') { lunasBox.classList.remove('hidden'); } 
+        else if (jp === 'Angsuran') {
+            angBox.classList.remove('hidden'); const d = new Date(); const opt = { year: 'numeric', month: 'long' };
+            let d1 = new Date(d); d1.setMonth(d1.getMonth() + 2); document.getElementById('lbl-tgl-a1').innerText = d1.toLocaleDateString('id-ID', opt);
+            let d2 = new Date(d); d2.setMonth(d2.getMonth() + 4); document.getElementById('lbl-tgl-a2').innerText = d2.toLocaleDateString('id-ID', opt);
+            let d3 = new Date(d); d3.setMonth(d3.getMonth() + 6); document.getElementById('lbl-tgl-a3').innerText = d3.toLocaleDateString('id-ID', opt);
+            hitungAngsuranBOPD();
+        }
+    }
+
     function bukaModalPewawancara(no_ppdb) {
-        document.getElementById('pewa-id').value = no_ppdb; const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {};
-        document.getElementById('pewa-daftar-ulang').value = sUang.daftar_ulang || '3780000'; const bopdVal = sUang.bopd;
-        if (bopdVal === 9750000 || bopdVal === 10750000 || bopdVal === 11750000 || !bopdVal) { document.getElementById('pewa-bopd').value = bopdVal || '9750000'; document.getElementById('pewa-bopd-custom').classList.add('hidden'); document.getElementById('pewa-bopd-custom').value = ''; } else { document.getElementById('pewa-bopd').value = 'custom'; document.getElementById('pewa-bopd-custom').value = bopdVal; document.getElementById('pewa-bopd-custom').classList.remove('hidden'); }
-        document.getElementById('pewa-early').value = sUang.early_bird !== undefined ? sUang.early_bird : '1500000'; document.getElementById('pewa-aum').value = sUang.kader_aum !== undefined ? sUang.kader_aum : '1000000'; document.getElementById('modal-pewawancara').classList.replace('hidden', 'flex');
+        document.getElementById('pewa-id').value = no_ppdb; 
+        const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {};
+        
+        document.getElementById('pewa-daftar-ulang').value = sUang.daftar_ulang || '3780000'; 
+        
+        const bopdVal = sUang.bopd;
+        if (bopdVal === 9750000 || bopdVal === 10750000 || bopdVal === 11750000 || !bopdVal) { 
+            document.getElementById('pewa-bopd').value = bopdVal || '9750000'; 
+            document.getElementById('pewa-bopd-custom').classList.add('hidden'); 
+            document.getElementById('pewa-bopd-custom').value = ''; 
+        } else { 
+            document.getElementById('pewa-bopd').value = 'custom'; 
+            document.getElementById('pewa-bopd-custom').value = bopdVal; 
+            document.getElementById('pewa-bopd-custom').classList.remove('hidden'); 
+        }
+        
+        document.getElementById('pewa-early').value = sUang.early_bird !== undefined ? sUang.early_bird : '1500000'; 
+        document.getElementById('pewa-aum').value = sUang.kader_aum !== undefined ? sUang.kader_aum : '1000000'; 
+        
+        document.getElementById('pewa-beasiswa').value = sUang.beasiswa_lainnya ? new Intl.NumberFormat('id-ID').format(sUang.beasiswa_lainnya) : '';
+        document.getElementById('pewa-jenis-bopd').value = sUang.jenis_pembayaran_bopd || '';
+        document.getElementById('pewa-tgl-lunas').value = sUang.tgl_lunas_bopd || '';
+        
+        toggleJenisPembayaranBOPD(); 
+        document.getElementById('modal-pewawancara').classList.replace('hidden', 'flex');
     }
 
     async function simpanPewawancara() {
-        const no_ppdb = document.getElementById('pewa-id').value; let valBopd = document.getElementById('pewa-bopd').value;
-        if (valBopd === 'custom') { valBopd = parseInt(document.getElementById('pewa-bopd-custom').value) || 0; if (valBopd < 11750000) return showToast("BOPD Custom (Tipe D) harus di atas Tipe C!", true); } else { valBopd = parseInt(valBopd) || 0; }
-        const pl = { daftar_ulang: parseInt(document.getElementById('pewa-daftar-ulang').value) || 0, bopd: valBopd, early_bird: parseInt(document.getElementById('pewa-early').value) || 0, kader_aum: parseInt(document.getElementById('pewa-aum').value) || 0, pewawancara: currentUsername };
-        const btn = document.getElementById('btn-simpan-pewa'); btn.disabled = true; btn.innerHTML = 'Processing...';
-        try { const exists = keuanganData.find(x => x.no_ppdb === no_ppdb); if (exists && exists.id) await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl); else { pl.no_ppdb = no_ppdb; await apiRequest(`${SUPABASE_URL}keuangan`, 'POST', pl); } showToast("Biaya Tersimpan"); closeModal('modal-pewawancara'); loadData(); } catch (e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Biaya';
+        const no_ppdb = document.getElementById('pewa-id').value; 
+        let valBopd = document.getElementById('pewa-bopd').value;
+        if (valBopd === 'custom') { 
+            valBopd = parseInt(document.getElementById('pewa-bopd-custom').value) || 0; 
+            if (valBopd < 11750000) return showToast("BOPD Custom (Tipe D) harus di atas Tipe C!", true); 
+        } else { 
+            valBopd = parseInt(valBopd) || 0; 
+        }
+        
+        const exists = keuanganData.find(x => x.no_ppdb === no_ppdb);
+        let valPendaftaran = 0;
+        if (exists && exists.pendaftaran !== null && exists.pendaftaran !== undefined) {
+            valPendaftaran = parseInt(exists.pendaftaran) || 0;
+        }
+
+        const beasiswaRaw = unformatRibuan(document.getElementById('pewa-beasiswa').value);
+        const jenisBopd = document.getElementById('pewa-jenis-bopd').value;
+        const tglLunas = document.getElementById('pewa-tgl-lunas').value;
+
+        let nominalBopd1 = 0, nominalBopd2 = 0, nominalBopd3 = 0;
+        if (jenisBopd === 'Angsuran') {
+            nominalBopd1 = valBopd * 0.50;
+            nominalBopd2 = valBopd * 0.25;
+            nominalBopd3 = valBopd * 0.25;
+        }
+
+        const pl = { 
+            daftar_ulang: parseInt(document.getElementById('pewa-daftar-ulang').value) || 0, 
+            bopd: valBopd, 
+            early_bird: parseInt(document.getElementById('pewa-early').value) || 0, 
+            kader_aum: parseInt(document.getElementById('pewa-aum').value) || 0, 
+            beasiswa_lainnya: beasiswaRaw,
+            jenis_pembayaran_bopd: jenisBopd || null,
+            tgl_lunas_bopd: (jenisBopd === 'Lunas' && tglLunas) ? tglLunas : null,
+            pendaftaran: valPendaftaran,
+            bopd1: nominalBopd1,
+            bopd2: nominalBopd2,
+            bopd3: nominalBopd3,
+            pewawancara: currentUsername
+        };
+        
+        const btn = document.getElementById('btn-simpan-pewa'); 
+        btn.disabled = true; btn.innerHTML = 'Processing...';
+        
+        try { 
+            if (exists && exists.id) await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl); 
+            else { pl.no_ppdb = no_ppdb; await apiRequest(`${SUPABASE_URL}keuangan`, 'POST', pl); } 
+            showToast("Biaya Tersimpan"); closeModal('modal-pewawancara'); loadData(); 
+        } catch (e) { 
+            if(e.message.includes("type boolean") || e.message.includes("Angsuran")) {
+                showToast("Gagal: Kolom jenis_pembayaran_bopd di Supabase masih bertipe Boolean. Ubah ke TEXT!", true);
+            } else {
+                showToast(e.message, true); 
+            }
+        } 
+        btn.disabled = false; btn.innerHTML = 'Simpan Biaya';
     }
 
     function cetakHasilWawancara(no_ppdb) {
-        const sMaster = masterData.find(x => x.no_ppdb === no_ppdb); const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {}; if(!sMaster) return showToast("Data tidak ditemukan", true);
-        const du = parseInt(sUang.daftar_ulang) || 0; const bopd = parseInt(sUang.bopd) || 0; const eb = parseInt(sUang.early_bird) || 0; const aum = parseInt(sUang.kader_aum) || 0; const total = (du+bopd) - eb - aum;
+        const sMaster = masterData.find(x => x.no_ppdb === no_ppdb);
+        const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {};
+        if(!sMaster) return showToast("Data tidak ditemukan", true);
+
+        const du = parseInt(sUang.daftar_ulang) || 0;
+        const bopd = parseInt(sUang.bopd) || 0;
+        const eb = parseInt(sUang.early_bird) || 0;
+        const aum = parseInt(sUang.kader_aum) || 0;
+        const bea = parseInt(sUang.beasiswa_lainnya) || 0;
+        const total = (du + bopd) - eb - aum - bea;
+
+        let tglDaftar = sMaster.tgl_pendaftaran ? new Date(sMaster.tgl_pendaftaran) : new Date();
+        
+        let dDU = new Date(tglDaftar); dDU.setDate(dDU.getDate() + 7);
+        let d1 = new Date(tglDaftar); d1.setMonth(d1.getMonth() + 2);
+        let d2 = new Date(tglDaftar); d2.setMonth(d2.getMonth() + 4);
+        let d3 = new Date(tglDaftar); d3.setMonth(d3.getMonth() + 6);
+        
+        const opt = { year: 'numeric', month: 'long', day: 'numeric' };
+        const strDU = dDU.toLocaleDateString('id-ID', opt);
+        const isAngsuran = sUang.jenis_pembayaran_bopd === 'Angsuran';
+
         const w = window.open('', '_blank'); if(!w) return showToast("Izinkan pop-up!", true);
-        let ebRow = eb > 0 ? `<tr><td>3. Diskon Early Bird</td><td class="text-right text-red-600">- ${formatRp(eb)}</td></tr>` : ''; let aumRow = aum > 0 ? `<tr><td>${eb > 0 ? '4' : '3'}. Potongan Kader AUM</td><td class="text-right text-red-600">- ${formatRp(aum)}</td></tr>` : '';
-        const html = `<!DOCTYPE html><html><head><title>Hasil Kesepakatan Biaya - ${sMaster.nama_murid}</title><style>@page { size: 215.9mm 330.2mm; margin: 4cm 1.5cm; } body { font-family: 'Times New Roman', Times, serif; color: #000; line-height: 1.5; font-size: 14px; background: #e5e7eb; margin: 0; padding: 20px; } .page-container { background: white; max-width: 215.9mm; margin: auto; padding: 4cm 1.5cm; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; } .header-title { text-align: center; font-size: 18px; font-weight: bold; text-decoration: underline; margin-bottom: 20px; text-transform: uppercase; } .info-table { width: 100%; margin-bottom: 20px; } .info-table td { padding: 4px; vertical-align: top; } .info-table td:first-child { width: 200px; font-weight: bold; } .financial-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; } .financial-table th, .financial-table td { border: 1px solid #000; padding: 8px; } .financial-table th { background-color: #f3f4f6; text-align: left; } .text-right { text-align: right; } .signature-box { display: flex; justify-content: space-between; margin-top: 50px; text-align: center; } .sig-name { font-weight: bold; text-decoration: underline; margin-top: 80px; } @media print { body { background: white; padding: 0; } .page-container { box-shadow: none; padding: 0; margin: 0; max-width: 100%; } .no-print { display: none !important; } } .print-btn { position: fixed; bottom: 30px; right: 30px; background: #16a34a; color: white; padding: 15px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; font-family: sans-serif; border: none; font-size: 16px; z-index: 1000; }</style></head><body><button class="no-print print-btn" onclick="window.print()">🖨️ Cetak Dokumen</button><div class="page-container"><div class="header-title">Kesepakatan Pembiayaan Pendidikan</div><table class="info-table"><tr><td>Nama Calon Peserta Didik</td><td>: ${sMaster.nama_murid || '-'}</td></tr><tr><td>No. Pendaftaran</td><td>: ${sMaster.no_ppdb || '-'}</td></tr><tr><td>Nama Orang Tua/Wali</td><td>: ${sMaster.ayah || sMaster.ibu || '-'}</td></tr></table><p>Berdasarkan hasil wawancara orang tua/wali murid dengan pihak panitia PMB, disepakati rincian pembiayaan pendidikan sebagai berikut:</p><table class="financial-table"><thead><tr><th>Uraian Pembiayaan</th><th class="text-right">Nominal</th></tr></thead><tbody><tr><td>1. Daftar Ulang</td><td class="text-right">${formatRp(du)}</td></tr><tr><td>2. BOPD</td><td class="text-right">${formatRp(bopd)}</td></tr>${ebRow}${aumRow}</tbody><tfoot><tr><th class="text-right">Total Tagihan Bersih</th><th class="text-right">${formatRp(total)}</th></tr></tfoot></table><p>Demikian kesepakatan ini dibuat dengan sebenar-benarnya untuk dipergunakan sebagaimana mestinya.</p><div class="signature-box"><div><div>Wali Murid</div><div class="sig-name">${sMaster.ayah || sMaster.ibu || '..........................'}</div></div><div><div>Pewawancara</div><div class="sig-name">${sUang.pewawancara || '..........................'}</div></div></div></div></body></html>`;
+
+        let ebRow = eb > 0 ? `<tr><td>Diskon Early Bird</td><td class="text-right text-red-600">- ${formatRp(eb)}</td></tr>` : '';
+        let aumRow = aum > 0 ? `<tr><td>Potongan Kader AUM</td><td class="text-right text-red-600">- ${formatRp(aum)}</td></tr>` : '';
+        let beaRow = bea > 0 ? `<tr><td>Beasiswa Lainnya</td><td class="text-right text-red-600">- ${formatRp(bea)}</td></tr>` : '';
+
+        let angsuranHtml = '';
+        if (isAngsuran && bopd > 0) {
+            angsuranHtml = `<h4 style="margin-top:20px; margin-bottom:10px;">Skema Angsuran BOPD</h4>
+            <table class="financial-table">
+                <tr><th>Tahap 1 (50%)</th><td class="text-right">${formatRp(bopd * 0.5)}</td><td>Jatuh Tempo: ${d1.toLocaleDateString('id-ID', opt)}</td></tr>
+                <tr><th>Tahap 2 (25%)</th><td class="text-right">${formatRp(bopd * 0.25)}</td><td>Jatuh Tempo: ${d2.toLocaleDateString('id-ID', opt)}</td></tr>
+                <tr><th>Tahap 3 (25%)</th><td class="text-right">${formatRp(bopd * 0.25)}</td><td>Jatuh Tempo: ${d3.toLocaleDateString('id-ID', opt)}</td></tr>
+            </table>`;
+        }
+
+        const html = `<!DOCTYPE html><html><head><title>Hasil Kesepakatan Biaya - ${sMaster.nama_murid}</title><style>@page { size: 215.9mm 330.2mm; margin: 4cm 1.5cm; } body { font-family: 'Times New Roman', Times, serif; color: #000; line-height: 1.5; font-size: 14px; background: #e5e7eb; margin: 0; padding: 20px; } .page-container { background: white; max-width: 215.9mm; margin: auto; padding: 4cm 1.5cm; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; } .header-title { text-align: center; font-size: 18px; font-weight: bold; text-decoration: underline; margin-bottom: 20px; text-transform: uppercase; } .info-table { width: 100%; margin-bottom: 20px; } .info-table td { padding: 4px; vertical-align: top; } .info-table td:first-child { width: 200px; font-weight: bold; } .financial-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; } .financial-table th, .financial-table td { border: 1px solid #000; padding: 8px; } .financial-table th { background-color: #f3f4f6; text-align: left; } .text-right { text-align: right; } .signature-box { display: flex; justify-content: space-between; margin-top: 50px; text-align: center; } .sig-name { font-weight: bold; text-decoration: underline; margin-top: 80px; } @media print { body { background: white; padding: 0; } .page-container { box-shadow: none; padding: 0; margin: 0; max-width: 100%; } .no-print { display: none !important; } } .print-btn { position: fixed; bottom: 30px; right: 30px; background: #16a34a; color: white; padding: 15px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; font-family: sans-serif; border: none; font-size: 16px; z-index: 1000; }</style></head><body><button class="no-print print-btn" onclick="window.print()">🖨️ Cetak Dokumen</button><div class="page-container"><div class="header-title">Kesepakatan Pembiayaan Pendidikan</div><table class="info-table"><tr><td>Nama Calon Peserta Didik</td><td>: ${sMaster.nama_murid || '-'}</td></tr><tr><td>No. Pendaftaran</td><td>: ${sMaster.no_ppdb || '-'}</td></tr><tr><td>Nama Orang Tua/Wali</td><td>: ${sMaster.ayah || sMaster.ibu || '-'}</td></tr></table><p>Berdasarkan hasil wawancara orang tua/wali murid dengan pihak panitia PMB, disepakati rincian pembiayaan pendidikan sebagai berikut:</p><table class="financial-table"><thead><tr><th>Uraian Pembiayaan</th><th class="text-right">Nominal</th></tr></thead><tbody><tr><td>1. Daftar Ulang <br><small><i>(Maksimal pelunasan: ${strDU})</i></small></td><td class="text-right">${formatRp(du)}</td></tr><tr><td>2. BOPD <br><small><i>(${isAngsuran ? 'Diangsur 3x' : 'Lunas'})</i></small></td><td class="text-right">${formatRp(bopd)}</td></tr>${ebRow}${aumRow}${beaRow}</tbody><tfoot><tr><th class="text-right">Total Tagihan Bersih</th><th class="text-right">${formatRp(total)}</th></tr></tfoot></table>${angsuranHtml}<p style="margin-top:20px;">Demikian kesepakatan ini dibuat dengan sebenar-benarnya untuk dipergunakan sebagaimana mestinya.</p><div class="signature-box"><div><div>Wali Murid</div><div class="sig-name">${sMaster.ayah || sMaster.ibu || '..........................'}</div></div><div><div>Pewawancara</div><div class="sig-name">${sUang.pewawancara || currentUsername || '..........................'}</div></div></div></div></body></html>`;
         w.document.write(html); w.document.close();
     }
 
-    function setRealtimeDate() { const t = new Date(); const d = new Date(t.getTime() - (t.getTimezoneOffset() * 60000)).toISOString().split('T')[0]; if (document.getElementById('rekap-start')) document.getElementById('rekap-start').value = d; if (document.getElementById('rekap-end')) document.getElementById('rekap-end').value = d; }
+    function setRealtimeDate() {
+        const today = new Date().toISOString().split('T')[0];
+        const start = document.getElementById('rekap-start');
+        const end = document.getElementById('rekap-end');
+        if(start) start.value = today;
+        if(end) end.value = today;
+    }
 
     function getKeuanganInfo(sMaster, kat) {
         const sUang = keuanganData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
-        let tagihan = 0, isLunas = false, bukti = null, kasir = null;
-
+        let tagihan = 0, isLunas = false, bukti = null, kasir = '';
+        
         if (kat === 'pendaftaran') {
-            tagihan = parseInt(sUang.pendaftaran) || 300000;
-            isLunas = sUang.konfirmasi_pendaftaran || false;
-            bukti = sUang.bukti_transfer_pendaftaran || null;
-            kasir = sUang.kasir_pendaftaran || '-';
+            tagihan = 300000;
+            isLunas = sUang.konf_pendaftaran === true;
+            bukti = sUang.bukti_tf_pendaftaran;
         } else if (kat === 'daftarulang') {
-            tagihan = (parseInt(sUang.daftar_ulang) || 0) - (parseInt(sUang.early_bird) || 0) - (parseInt(sUang.kader_aum) || 0);
-            isLunas = sUang.konfirmasi || false;
-            bukti = sUang.bukti_transfer || null;
-            kasir = sUang.kasir || '-';
+            tagihan = parseInt(sUang.daftar_ulang) || 0;
+            const eb = parseInt(sUang.early_bird) || 0;
+            const aum = parseInt(sUang.kader_aum) || 0;
+            const bea = parseInt(sUang.beasiswa_lainnya) || 0;
+            tagihan = tagihan - eb - aum - bea;
+            isLunas = sUang.konf_daftar_ulang === true;
+            bukti = sUang.bukti_tf_daftar_ulang;
         } else if (kat === 'bopd') {
             tagihan = parseInt(sUang.bopd) || 0;
-            isLunas = sUang.konfirmasi_bopd || false;
-            bukti = sUang.bukti_transfer_bopd || null;
-            kasir = sUang.kasir_bopd || '-';
+            isLunas = sUang.konfirmasi_bopd === true;
+            bukti = sUang.bukti_transfer;
         }
-        return { tagihan, isLunas, bukti, kasir, sUang };
+        return { tagihan: tagihan > 0 ? tagihan : 0, isLunas, bukti, kasir, sUang };
     }
 
     function switchKategoriBendahara(kat) {
         activeKatBendahara = kat;
-        ['pendaftaran', 'daftarulang', 'bopd'].forEach(k => { document.getElementById(`tab-kat-${k}`).className = 'px-4 py-2 rounded-lg text-sm font-semibold text-brand-muted hover:text-brand-navy transition-all whitespace-nowrap'; });
-        document.getElementById(`tab-kat-${kat}`).classList.add('bg-white', 'shadow-sm', 'text-brand-navy'); document.getElementById(`tab-kat-${kat}`).classList.remove('text-brand-muted', 'hover:text-brand-navy');
+        ['pendaftaran', 'daftarulang', 'bopd'].forEach(k => {
+            const btn = document.getElementById(`tab-kat-${k}`);
+            if (btn) {
+                btn.classList.remove('bg-white', 'shadow-sm', 'text-brand-navy');
+                btn.classList.add('text-brand-muted', 'hover:text-brand-navy');
+            }
+        });
+        const activeBtn = document.getElementById(`tab-kat-${kat}`);
+        if (activeBtn) {
+            activeBtn.classList.remove('text-brand-muted', 'hover:text-brand-navy');
+            activeBtn.classList.add('bg-white', 'shadow-sm', 'text-brand-navy');
+        }
         
-        let title = "Kategori: Biaya Pendaftaran";
-        if(kat === 'daftarulang') title = "Kategori: Daftar Ulang (Tanpa BOPD)";
-        if(kat === 'bopd') title = "Kategori: Biaya BOPD Khusus";
-        document.getElementById('rekap-title-label').innerText = title;
-        
-        hitungRekapBendahara(); renderTableBendahara();
+        const titleLbl = document.getElementById('rekap-title-label');
+        if(titleLbl) {
+            if(kat === 'pendaftaran') titleLbl.innerText = 'Kategori: Biaya Pendaftaran';
+            else if(kat === 'daftarulang') titleLbl.innerText = 'Kategori: Daftar Ulang';
+            else if(kat === 'bopd') titleLbl.innerText = 'Kategori: Biaya BOPD';
+        }
+        renderTableBendahara();
+        hitungRekapBendahara();
     }
 
     function switchSubTabBendahara(sub) {
         activeSubBendahara = sub;
-        ['tunai', 'transfer', 'riwayat'].forEach(s => { document.getElementById(`tab-sub-${s}`).className = 'flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold text-brand-muted hover:text-brand-navy transition-all'; });
+        ['tunai', 'transfer', 'riwayat'].forEach(s => { document.getElementById(`tab-sub-${s}`).className = 'flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold text-brand-muted hover:text-brand-navy transition-all flex items-center justify-center gap-1'; });
         document.getElementById(`tab-sub-${sub}`).classList.add('bg-white', 'shadow-sm', 'text-brand-navy'); document.getElementById(`tab-sub-${sub}`).classList.remove('text-brand-muted', 'hover:text-brand-navy');
-        renderTableBendahara();
+        renderTableBendahara(); updateBendaharaBadges();
     }
 
     function hitungRekapBendahara() {
@@ -1256,6 +1503,25 @@
             if (info.isLunas) { if (info.bukti) totalTransfer += info.tagihan; else totalTunai += info.tagihan; }
         });
         document.getElementById('rekap-tunai').innerText = formatRp(totalTunai); document.getElementById('rekap-transfer').innerText = formatRp(totalTransfer); document.getElementById('rekap-total').innerText = formatRp(totalTunai + totalTransfer);
+    }
+
+    function updateBendaharaBadges() {
+        let cP = 0, cDU = 0, cB = 0;
+        masterData.forEach(s => {
+            const i1 = getKeuanganInfo(s, 'pendaftaran'); if(!i1.isLunas && i1.bukti) cP++;
+            const i2 = getKeuanganInfo(s, 'daftarulang'); if(!i2.isLunas && i2.bukti) cDU++;
+            const i3 = getKeuanganInfo(s, 'bopd'); if(!i3.isLunas && i3.bukti) cB++;
+        });
+        
+        const bP = document.getElementById('badge-kat-pendaftaran'); if(bP){ bP.innerText = cP; cP>0 ? bP.classList.remove('hidden') : bP.classList.add('hidden'); }
+        const bD = document.getElementById('badge-kat-daftarulang'); if(bD){ bD.innerText = cDU; cDU>0 ? bD.classList.remove('hidden') : bD.classList.add('hidden'); }
+        const bB = document.getElementById('badge-kat-bopd'); if(bB){ bB.innerText = cB; cB>0 ? bB.classList.remove('hidden') : bB.classList.add('hidden'); }
+        
+        const bSub = document.getElementById('badge-sub-transfer');
+        if(bSub){
+            let act = activeKatBendahara === 'pendaftaran' ? cP : (activeKatBendahara === 'daftarulang' ? cDU : cB);
+            bSub.innerText = act; act>0 ? bSub.classList.remove('hidden') : bSub.classList.add('hidden');
+        }
     }
 
     function renderTableBendahara() {
@@ -1290,6 +1556,8 @@
                 return `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4"><p class="text-xs text-brand-muted font-mono">${s.no_ppdb}</p><p class="font-bold text-brand-navy">${s.nama_murid}</p></td><td class="py-3 px-4 font-bold text-brand-gold">${formatRp(info.tagihan)}</td><td class="py-3 px-4 text-center text-xs font-semibold">${metode}</td><td class="py-3 px-4 text-center text-xs text-gray-500">${info.kasir}</td><td class="py-3 px-4 text-center flex justify-center gap-2"><button onclick="batalValidasi('${s.no_ppdb}', '${activeKatBendahara}')" class="text-red-500 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg border border-red-100 text-xs font-bold transition-colors"><i class="ph-bold ph-x text-sm"></i> Batal</button><button onclick="cetakStruk('${s.no_ppdb}', '${s.nama_murid}', '${info.kasir}', ${info.tagihan}, ${info.tagihan}, '${activeKatBendahara}')" class="bg-brand-navy text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-brand-gold transition-colors shadow-sm"><i class="ph-fill ph-printer"></i> Struk</button></td></tr>`;
             }
         }).join('');
+        
+        updateBendaharaBadges();
     }
 
     function bukaZoomBukti() { document.getElementById('zoom-img-bukti').src = document.getElementById('tf-bukti').src; document.getElementById('modal-zoom-bukti').classList.replace('hidden', 'flex'); }
@@ -1307,28 +1575,34 @@
         try {
             const exists = keuanganData.find(x => x.no_ppdb === currentDataKasir.no_ppdb);
             let pl = {};
-            if(currentDataKasir.kat === 'pendaftaran') { pl = { konfirmasi_pendaftaran: isValid, kasir_pendaftaran: isValid ? currentUsername : null }; if(isValid && (!exists || !exists.pendaftaran)) { pl.pendaftaran = 300000; pl.bopd = 0; pl.early_bird = 0; pl.kader_aum = 0; } }
-            else if(currentDataKasir.kat === 'daftarulang') { pl = { konfirmasi: isValid, kasir: isValid ? currentUsername : null }; }
-            else if(currentDataKasir.kat === 'bopd') { pl = { konfirmasi_bopd: isValid, kasir_bopd: isValid ? currentUsername : null }; }
+            if(currentDataKasir.kat === 'pendaftaran') { 
+                pl = { konf_pendaftaran: isValid }; 
+                if(isValid && (!exists || !exists.pendaftaran)) { pl.pendaftaran = 300000; } 
+            }
+            else if(currentDataKasir.kat === 'daftarulang') { 
+                pl = { konf_daftar_ulang: isValid }; 
+            }
+            else if(currentDataKasir.kat === 'bopd') { 
+                pl = { konfirmasi_bopd: isValid }; 
+            }
 
             if (exists && exists.id) await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${currentDataKasir.no_ppdb}`, 'PATCH', pl);
             else { pl.no_ppdb = currentDataKasir.no_ppdb; await apiRequest(`${SUPABASE_URL}keuangan`, 'POST', pl); }
             showToast(isValid ? "Transfer Tervalidasi!" : "Validasi Ditolak"); closeModal('modal-cek-transfer'); loadData();
-        } catch(e) {
-            if(e.message.includes("Could not find the column") || e.message.includes("column")) showToast("GAGAL: Tambahkan kolom konfirmasi_bopd dan lainnya di Supabase Anda! (Lihat Instruksi)", true); else showToast(e.message, true);
-        }
+        } catch(e) { showToast(e.message, true); }
     }
 
-    async function batalValidasi(no_ppdb, kat) {
-        if(!confirm("Yakin ingin membatalkan status LUNAS siswa ini?")) return;
-        try {
-            let pl = {};
-            if(kat === 'pendaftaran') { pl = { konfirmasi_pendaftaran: false, kasir_pendaftaran: null }; }
-            else if(kat === 'daftarulang') { pl = { konfirmasi: false, kasir: null }; }
-            else if(kat === 'bopd') { pl = { konfirmasi_bopd: false, kasir_bopd: null }; }
-            await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
-            showToast("Pembatalan Berhasil"); loadData();
-        } catch(e) { showToast(e.message, true); }
+    function batalValidasi(no_ppdb, kat) {
+        askConfirm("Yakin ingin membatalkan status LUNAS siswa ini?", async () => {
+            try {
+                let pl = {};
+                if(kat === 'pendaftaran') { pl = { konf_pendaftaran: false }; }
+                else if(kat === 'daftarulang') { pl = { konf_daftar_ulang: false }; }
+                else if(kat === 'bopd') { pl = { konfirmasi_bopd: false }; }
+                await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl);
+                showToast("Pembatalan Berhasil"); loadData();
+            } catch(e) { showToast(e.message, true); }
+        });
     }
 
     function bukaKasir(no_ppdb, kat) {
@@ -1343,36 +1617,51 @@
         } else if (kat === 'daftarulang') {
             judul = "Kasir Daftar Ulang";
             htmlRincian = `<p class="text-xs font-bold text-brand-navy border-b border-gray-200 pb-1 mb-2">Pilih Item Pembayaran:</p>
-            <label class="flex justify-between items-center cursor-pointer hover:bg-gray-100 p-1 rounded"><span class="flex items-center gap-2"><input type="checkbox" id="chk-dyn-item" class="accent-brand-gold w-4 h-4" checked onchange="hitungTagihanDyn()"> Tagihan Daftar Ulang</span><span>${formatRp(info.sUang.daftar_ulang)}</span></label>`;
-            if (info.sUang.early_bird > 0) htmlRincian += `<div class="flex justify-between text-red-500 p-1"><span>Diskon Early Bird</span><span>- ${formatRp(info.sUang.early_bird)}</span></div>`;
-            if (info.sUang.kader_aum > 0) htmlRincian += `<div class="flex justify-between text-red-500 p-1"><span>Potongan AUM</span><span>- ${formatRp(info.sUang.kader_aum)}</span></div>`;
+            <label class="flex justify-between items-center cursor-pointer hover:bg-gray-100 p-1 rounded"><span class="flex items-center gap-2"><input type="checkbox" id="chk-dyn-item-du" class="chk-dyn-item accent-brand-gold w-4 h-4" checked value="${info.tagihan}" onchange="hitungTagihanDyn()"> Tagihan Daftar Ulang (Net)</span><span>${formatRp(info.tagihan)}</span></label>`;
+            if (info.sUang.early_bird > 0) htmlRincian += `<div class="flex justify-between text-red-500 p-1 text-xs"><span>Diskon Early Bird</span><span>- ${formatRp(info.sUang.early_bird)}</span></div>`;
+            if (info.sUang.kader_aum > 0) htmlRincian += `<div class="flex justify-between text-red-500 p-1 text-xs"><span>Potongan AUM</span><span>- ${formatRp(info.sUang.kader_aum)}</span></div>`;
             htmlRincian += `<hr class="my-2 border-gray-200"><div class="flex justify-between font-bold text-brand-navy p-1 text-base"><span>Total Dibayar</span><span id="lbl-dyn-total">${formatRp(info.tagihan)}</span></div>`;
         } else if (kat === 'bopd') {
             judul = "Kasir Biaya BOPD";
-            htmlRincian = `<p class="text-xs font-bold text-brand-navy border-b border-gray-200 pb-1 mb-2">Pilih Item Pembayaran:</p>
-            <label class="flex justify-between items-center cursor-pointer hover:bg-gray-100 p-1 rounded"><span class="flex items-center gap-2"><input type="checkbox" id="chk-dyn-item" class="accent-brand-gold w-4 h-4" checked onchange="hitungTagihanDyn()"> Tagihan BOPD</span><span>${formatRp(info.tagihan)}</span></label>
-            <hr class="my-2 border-gray-200"><div class="flex justify-between font-bold text-brand-navy p-1 text-base"><span>Total Dibayar</span><span id="lbl-dyn-total">${formatRp(info.tagihan)}</span></div>`;
+            htmlRincian = `<p class="text-xs font-bold text-brand-navy border-b border-gray-200 pb-1 mb-2">Pilih Item Pembayaran:</p>`;
+            
+            if (info.sUang.jenis_pembayaran_bopd === 'Angsuran') {
+                if (!info.sUang.konf_bopd1) htmlRincian += `<label class="flex justify-between items-center cursor-pointer hover:bg-gray-100 p-1 rounded"><span class="flex items-center gap-2"><input type="checkbox" id="chk-bopd-1" class="chk-dyn-item accent-brand-gold w-4 h-4" value="${info.sUang.bopd1 || 0}" onchange="hitungTagihanDyn()"> Tahap 1 (50%)</span><span>${formatRp(info.sUang.bopd1 || 0)}</span></label>`;
+                else htmlRincian += `<div class="flex justify-between items-center p-1 rounded text-gray-400 bg-gray-50"><span class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-green-500"></i> Tahap 1 Lunas</span><span>${formatRp(info.sUang.bopd1 || 0)}</span></div>`;
+                
+                if (!info.sUang.konf_bopd2) htmlRincian += `<label class="flex justify-between items-center cursor-pointer hover:bg-gray-100 p-1 rounded"><span class="flex items-center gap-2"><input type="checkbox" id="chk-bopd-2" class="chk-dyn-item accent-brand-gold w-4 h-4" value="${info.sUang.bopd2 || 0}" onchange="hitungTagihanDyn()"> Tahap 2 (25%)</span><span>${formatRp(info.sUang.bopd2 || 0)}</span></label>`;
+                else htmlRincian += `<div class="flex justify-between items-center p-1 rounded text-gray-400 bg-gray-50"><span class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-green-500"></i> Tahap 2 Lunas</span><span>${formatRp(info.sUang.bopd2 || 0)}</span></div>`;
+                
+                if (!info.sUang.konf_bopd3) htmlRincian += `<label class="flex justify-between items-center cursor-pointer hover:bg-gray-100 p-1 rounded"><span class="flex items-center gap-2"><input type="checkbox" id="chk-bopd-3" class="chk-dyn-item accent-brand-gold w-4 h-4" value="${info.sUang.bopd3 || 0}" onchange="hitungTagihanDyn()"> Tahap 3 (25%)</span><span>${formatRp(info.sUang.bopd3 || 0)}</span></label>`;
+                else htmlRincian += `<div class="flex justify-between items-center p-1 rounded text-gray-400 bg-gray-50"><span class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-green-500"></i> Tahap 3 Lunas</span><span>${formatRp(info.sUang.bopd3 || 0)}</span></div>`;
+            } else {
+                htmlRincian += `<label class="flex justify-between items-center cursor-pointer hover:bg-gray-100 p-1 rounded"><span class="flex items-center gap-2"><input type="checkbox" id="chk-bopd-lunas" class="chk-dyn-item accent-brand-gold w-4 h-4" checked value="${info.tagihan}" onchange="hitungTagihanDyn()"> Pelunasan Total BOPD</span><span>${formatRp(info.tagihan)}</span></label>`;
+            }
+            htmlRincian += `<hr class="my-2 border-gray-200"><div class="flex justify-between font-bold text-brand-navy p-1 text-base"><span>Total Dibayar</span><span id="lbl-dyn-total">Rp 0</span></div>`;
         }
 
         document.getElementById('kasir-dyn-title').innerText = judul;
         document.getElementById('kasir-dyn-rincian').innerHTML = htmlRincian;
-        document.getElementById('kasir-dyn-bayar').value = info.tagihan;
         
         hitungTagihanDyn(); document.getElementById('modal-kasir-dinamis').classList.replace('hidden', 'flex');
     }
 
     function hitungTagihanDyn() {
         if(!currentDataKasir) return;
-        let tot = 0; const chk = document.getElementById('chk-dyn-item');
-        if(!chk || chk.checked) { tot = currentDataKasir.baseTagihan; } // Jika checkbox ada dan dicentang, atau tidak ada checkbox (pendaftaran)
+        let tot = 0; const chks = document.querySelectorAll('.chk-dyn-item');
+        if(chks.length > 0) {
+            chks.forEach(c => { if(c.checked) tot += parseInt(c.value) || 0; });
+        } else {
+            tot = currentDataKasir.baseTagihan; 
+        }
         currentDataKasir.tagihanSkrg = tot;
         if(document.getElementById('lbl-dyn-total')) document.getElementById('lbl-dyn-total').innerText = formatRp(tot);
         document.getElementById('kasir-dyn-bayar').value = tot; hitungKembalianDyn();
     }
 
     function hitungKembalianDyn() {
-        if(!currentDataKasir) return; let bayar = parseInt(document.getElementById('kasir-dyn-bayar').value) || 0; let kembali = bayar - currentDataKasir.tagihanSkrg; let el = document.getElementById('kasir-dyn-kembali');
-        if(kembali < 0) { el.innerText = "Uang Kurang: " + formatRp(Math.abs(kembali)); el.classList.replace('text-green-600', 'text-red-500'); } else { el.innerText = formatRp(kembali); el.classList.replace('text-red-500', 'text-green-600'); }
+        if(!currentDataKasir) return; let bayar = parseInt(document.getElementById('kasir-dyn-bayar').value) || 0;
+        let k = bayar - currentDataKasir.tagihanSkrg; document.getElementById('kasir-dyn-kembali').innerText = k >= 0 ? formatRp(k) : 'Kurang';
     }
 
     async function prosesBayarDyn() {
@@ -1382,26 +1671,98 @@
         try { 
             const exists = keuanganData.find(x => x.no_ppdb === currentDataKasir.no_ppdb); let pl = {};
             
-            if(currentDataKasir.kat === 'pendaftaran') { pl = { konfirmasi_pendaftaran: true, kasir_pendaftaran: currentUsername }; if(!exists || !exists.pendaftaran) { pl.pendaftaran = 300000; pl.bopd = 0; pl.early_bird = 0; pl.kader_aum = 0; } }
-            else if(currentDataKasir.kat === 'daftarulang') { pl = { konfirmasi: true, kasir: currentUsername }; }
-            else if(currentDataKasir.kat === 'bopd') { pl = { konfirmasi_bopd: true, kasir_bopd: currentUsername }; }
+            if(currentDataKasir.kat === 'pendaftaran') { 
+                pl = { konf_pendaftaran: true, pendaftaran: 300000 }; 
+            }
+            else if(currentDataKasir.kat === 'daftarulang') { 
+                pl = { konf_daftar_ulang: true }; 
+            }
+            else if(currentDataKasir.kat === 'bopd') { 
+                const sUang = exists || {};
+                if (sUang.jenis_pembayaran_bopd === 'Angsuran') {
+                    const c1 = document.getElementById('chk-bopd-1');
+                    const c2 = document.getElementById('chk-bopd-2');
+                    const c3 = document.getElementById('chk-bopd-3');
+                    
+                    if(c1 && c1.checked) pl.konf_bopd1 = true;
+                    if(c2 && c2.checked) pl.konf_bopd2 = true;
+                    if(c3 && c3.checked) pl.konf_bopd3 = true;
+                    
+                    const t1 = (c1 && c1.checked) || sUang.konf_bopd1;
+                    const t2 = (c2 && c2.checked) || sUang.konf_bopd2;
+                    const t3 = (c3 && c3.checked) || sUang.konf_bopd3;
+                    
+                    if(t1 && t2 && t3) pl.konfirmasi_bopd = true;
+                } else {
+                    pl.konfirmasi_bopd = true; 
+                }
+            }
 
             if (exists && exists.id) await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${currentDataKasir.no_ppdb}`, 'PATCH', pl); 
             else { pl.no_ppdb = currentDataKasir.no_ppdb; await apiRequest(`${SUPABASE_URL}keuangan`, 'POST', pl); }
             
             showToast("Pembayaran Berhasil!"); closeModal('modal-kasir-dinamis'); 
             cetakStruk(currentDataKasir.no_ppdb, currentDataKasir.nama, currentUsername, currentDataKasir.tagihanSkrg, bayar, currentDataKasir.kat); loadData(); 
-        } catch(e) { 
-            if(e.message.includes("Could not find the column") || e.message.includes("column")) showToast("GAGAL: Tambahkan kolom konfirmasi_bopd dan lainnya di Supabase Anda! (Lihat Instruksi)", true); else showToast(e.message, true); 
-        } 
+        } catch(e) { showToast(e.message, true); } 
         btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-printer text-lg"></i> Bayar & Cetak Struk';
     }
 
     function cetakStruk(no_ppdb, nama_murid, kasir, total, uang_tunai = 0, kat) {
-        let kembalian = uang_tunai > total ? uang_tunai - total : 0; let infoTunai = uang_tunai > 0 ? `<p style="margin:4px 0;">Tunai    : ${formatRp(uang_tunai)}</p><p style="margin:4px 0;">Kembali  : ${formatRp(kembalian)}</p>` : '';
+        let kembalian = uang_tunai > total ? uang_tunai - total : 0;
         let label = "BUKTI PENDAFTARAN"; if(kat === 'daftarulang') label = "BUKTI DAFTAR ULANG"; else if(kat === 'bopd') label = "BUKTI BIAYA BOPD";
+        
+        const optDate = { year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute:'2-digit' };
+        const nowStr = new Date().toLocaleDateString('id-ID', optDate);
+
         const w = window.open('','_blank'); if(!w) return showToast("Izinkan pop-up!", true);
-        w.document.write(`<html><body style="font-family:monospace; padding:20px; max-width:350px; margin:auto;"><div style="text-align:center; border-bottom:2px dashed #000; padding-bottom:10px; margin-bottom:15px;"><img src="https://iili.io/nuUTLcN.md.png" style="width:60px; height:60px; margin-bottom:5px;"><h3 style="margin:0;">SDM SUDAGARAN</h3><p style="margin:0; font-size:12px;">${label}</p></div><p style="margin:4px 0;">No PPDB  : ${no_ppdb}</p><p style="margin:4px 0;">Nama     : ${nama_murid}</p><p style="margin:4px 0;">Kasir    : ${kasir||'Admin'}</p><h2 style="text-align:center; border:2px dashed #000; padding:10px; margin:15px 0;">LUNAS <br><span style="font-size:14px">${formatRp(total)}</span></h2>${infoTunai}<p style="text-align:center; font-size:10px; margin-top:20px;">Simpan struk ini sebagai bukti pembayaran yang sah.</p><script>window.onload=()=>setTimeout(()=>window.print(), 500);</`+`script></body></html>`); w.document.close();
+        
+        w.document.write(`
+        <!DOCTYPE html><html><head><title>Struk Thermal</title><style>
+            @page { size: 72mm auto; margin: 0; }
+            body { font-family: 'Courier New', Courier, monospace; font-size: 12px; width: 72mm; margin: 0; padding: 5px; color: #000; }
+            .text-center { text-align: center; }
+            .text-right { text-align: right; }
+            .flex-row { display: flex; justify-content: space-between; }
+            .divider { border-bottom: 1px dashed #000; margin: 8px 0; }
+            h3 { font-size: 16px; margin: 5px 0 0 0; }
+            p { margin: 2px 0; }
+        </style></head><body>
+            <div class="text-center">
+                <img src="https://iili.io/nuUTLcN.md.png" style="width:45px; height:45px;">
+                <h3>SDM SUDAGARAN</h3>
+                <p>Jl. Sudagaran, Wonosobo</p>
+                <div class="divider"></div>
+                <p style="font-weight:bold;">${label}</p>
+                <p>${nowStr}</p>
+            </div>
+            <div class="divider"></div>
+            <p>Kasir : ${kasir || 'Admin'}</p>
+            <p>No.Reg: ${no_ppdb}</p>
+            <p>Siswa : ${nama_murid}</p>
+            <div class="divider"></div>
+            <div class="flex-row" style="font-weight:bold;">
+                <span>TOTAL</span>
+                <span>${formatRp(total)}</span>
+            </div>
+            ${uang_tunai > 0 ? `
+            <div class="flex-row" style="margin-top:5px;">
+                <span>TUNAI</span>
+                <span>${formatRp(uang_tunai)}</span>
+            </div>
+            <div class="flex-row">
+                <span>KEMBALI</span>
+                <span>${formatRp(kembalian)}</span>
+            </div>
+            ` : `<div class="flex-row" style="margin-top:5px;"><span>METODE</span><span>TRANSFER</span></div>`}
+            <div class="divider"></div>
+            <div class="text-center">
+                <p>Terima Kasih</p>
+                <p style="font-size:10px;">Simpan struk ini sebagai bukti<br>pembayaran yang sah.</p>
+            </div>
+            <script>window.onload=()=>setTimeout(()=>window.print(), 500);<\/script>
+        </body></html>
+        `);
+        w.document.close();
     }
 
     function cetakLaporanDinamis() {
@@ -1432,10 +1793,13 @@
 
     function bukaModalPerlengkapan(no_ppdb) {
         const sPerkap = perkapData.find(x => x.no_ppdb === no_ppdb) || {}; const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {}; document.getElementById('perkap-id').value = no_ppdb; 
-        const lunasPend = sUang.konfirmasi_pendaftaran === true; const lunasDU = sUang.konfirmasi === true;
+        const lunasPend = sUang.konf_pendaftaran === true; 
+        const lunasDU = sUang.konf_daftar_ulang === true;
+        
         const chkSouv = document.getElementById('chk-souvenir'); chkSouv.checked = sPerkap.ambil_souvenir || false; chkSouv.disabled = !lunasPend; document.getElementById('lbl-souvenir').style.opacity = lunasPend ? '1' : '0.5'; document.getElementById('badge-lock-souvenir').classList.toggle('hidden', lunasPend);
         let ac = true; for(let i=1; i<=13; i++) { const k = document.getElementById(`chk-s${i}`); if(k) { k.checked = sPerkap[`s${i}`]||false; k.disabled = !lunasDU; k.parentElement.style.opacity = lunasDU ? '1' : '0.5'; if(!k.checked) ac = false; } }
         const chkAll = document.getElementById('chk-all-seragam'); chkAll.checked = ac; chkAll.disabled = !lunasDU; document.getElementById('lbl-all-seragam').style.opacity = lunasDU ? '1' : '0.5'; document.getElementById('badge-lock-seragam').classList.toggle('hidden', lunasDU);
+        
         document.getElementById('modal-perlengkapan').classList.replace('hidden', 'flex');
     }
     
@@ -1446,6 +1810,7 @@
         const btn = document.getElementById('btn-simpan-perkap'); btn.disabled = true; btn.innerHTML = 'Processing...';
         try { const exists = perkapData.find(x => x.no_ppdb === no_ppdb); if (exists && exists.id) { await apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl); } else { pl.no_ppdb = no_ppdb; const sMaster = masterData.find(x => x.no_ppdb === no_ppdb) || {}; pl.nama_murid = sMaster.nama_murid || null; await apiRequest(`${SUPABASE_URL}perlengkapan`, 'POST', pl); } showToast("Checklist Disimpan"); closeModal('modal-perlengkapan'); loadData(); } catch(e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Checklist';
     }
+    
     function bukaModalDetailPerlengkapan(no_ppdb, nama_murid) {
         document.getElementById('dp-nama').innerText = nama_murid; const sPerkap = perkapData.find(x => x.no_ppdb === no_ppdb) || {}; const labels = ['Souvenir', 'Merah Putih', 'Batik IPM', 'Bawahan IPM', 'Identitas Biru', 'Identitas Abu', 'Hizbul Wathan (HW)', 'Olah Raga', 'Rompi', 'Topi', 'Sabuk', 'Dasi', 'Hasduk', 'Kolong']; const values = [sPerkap.ambil_souvenir, sPerkap.s1, sPerkap.s2, sPerkap.s3, sPerkap.s4, sPerkap.s5, sPerkap.s6, sPerkap.s7, sPerkap.s8, sPerkap.s9, sPerkap.s10, sPerkap.s11, sPerkap.s12, sPerkap.s13];
         let htmlContent = '<div class="grid grid-cols-2 gap-2 text-sm">'; labels.forEach((lbl, idx) => { const hasIt = values[idx] || false; htmlContent += `<div class="flex items-center gap-2 p-2 border rounded-lg ${hasIt ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}"><i class="ph-bold ${hasIt ? 'ph-check text-green-600' : 'ph-x text-red-500'}"></i> <span class="${hasIt ? 'text-green-800 font-medium' : 'text-red-700'} text-xs">${lbl}</span></div>`; }); htmlContent += '</div>';
@@ -1455,13 +1820,24 @@
     function renderStaf() { const tbody = document.getElementById('tbody-staf'); if(!tbody) return; tbody.innerHTML = staffAccounts.map(s => `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4 font-bold text-brand-navy">${s.username}</td><td class="py-3 px-4 text-[10px] uppercase font-medium text-brand-muted">${(s.role||[]).join(', ')}</td><td class="py-3 px-4 text-center"><button onclick="bukaModalStaf(${s.id})" class="text-blue-500 bg-blue-50 hover:bg-blue-100 p-1.5 rounded border border-blue-200 mr-1"><i class="ph-bold ph-pencil-simple text-lg"></i></button>${s.username !== 'admin' ? `<button onclick="hapusStaf(${s.id})" class="text-red-500 bg-red-50 hover:bg-red-100 p-1.5 rounded border border-red-200"><i class="ph-bold ph-trash text-lg"></i></button>` : ''}</td></tr>`).join(''); }
     function bukaModalStaf(id = null) { document.querySelectorAll('.chk-role').forEach(c => c.checked = false); document.getElementById('modal-staf-title').innerText = id ? 'Edit Akun Staf' : 'Tambah Akun Staf'; if(id) { const s = staffAccounts.find(x => x.id == id); document.getElementById('staf-id').value = id; document.getElementById('staf-username').value = s.username; document.getElementById('staf-password').value = s.password; document.querySelectorAll('.chk-role').forEach(c => { if((s.role||[]).includes(c.value)) c.checked = true; }); } else { document.getElementById('staf-id').value = ''; document.getElementById('staf-username').value = ''; document.getElementById('staf-password').value = 'berkah'; } document.getElementById('modal-staf').classList.replace('hidden', 'flex'); }
     async function simpanStaf() { const id = document.getElementById('staf-id').value; const u = document.getElementById('staf-username').value.trim(); const p = document.getElementById('staf-password').value.trim(); const r = Array.from(document.querySelectorAll('.chk-role:checked')).map(c => c.value); if(!u || !p) return showToast("User & Pass wajib diisi!", true); if(r.length === 0) return showToast("Pilih min 1 role!", true); const pl = { username: u, password: p, role: r }; try { if(id) { await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'PATCH', pl); } else { await apiRequest(`${SUPABASE_URL}kelola_akses`, 'POST', pl); } showToast("Akun Disimpan"); closeModal('modal-staf'); await fetchStaffAccounts(); renderStaf(); } catch(e) { showToast(e.message, true); } }
-    async function hapusStaf(id) { if(!confirm("Hapus akun staf?")) return; try { await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'DELETE'); showToast("Akun Dihapus"); await fetchStaffAccounts(); renderStaf(); } catch(e) { showToast(e.message, true); } }
+    
+    function hapusStaf(id) { 
+        askConfirm("Hapus akun staf secara permanen?", async () => {
+            try { await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'DELETE'); showToast("Akun Dihapus"); await fetchStaffAccounts(); renderStaf(); } catch(e) { showToast(e.message, true); } 
+        });
+    }
 
     function renderMenuApp() { const tbody = document.getElementById('tbody-menu-app'); if(!tbody) return; tbody.innerHTML = menuAppData.map(m => `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4 font-semibold text-brand-navy"><i class="ph-bold ${m.icon} mr-1 text-brand-gold"></i> ${m.nama_menu}</td><td class="py-3 px-4 text-xs font-medium text-brand-muted">${m.role_akses}</td><td class="py-3 px-4 text-xs font-mono text-blue-600">${m.letak || '-'}</td><td class="py-3 px-4"><span class="${m.aktif ? 'bg-green-100 text-green-700 border-green-200' : 'bg-red-100 text-red-700 border-red-200'} px-2 py-1 rounded text-[10px] font-bold border">${m.aktif ? 'AKTIF' : 'SEMBUNYI'}</span></td><td class="py-3 px-4 text-center"><button onclick="bukaModalMenu('${m.id}')" class="text-blue-500 bg-blue-50 p-1.5 rounded hover:bg-blue-100 mr-1"><i class="ph-bold ph-pencil-simple text-lg"></i></button><button onclick="hapusMenu('${m.id}')" class="text-red-500 bg-red-50 p-1.5 rounded hover:bg-red-100"><i class="ph-bold ph-trash text-lg"></i></button></td></tr>`).join(''); }
     function bukaModalMenu(id = null) { document.getElementById('modal-menu-title').innerText = id ? "Edit Menu" : "Tambah Menu"; document.getElementById('menu-id').value = id || ''; if (id) { const m = menuAppData.find(x => String(x.id) === String(id)); document.getElementById('menu-nama').value = m?.nama_menu || ''; document.getElementById('menu-role').value = m?.role_akses || 'Semua Role'; document.getElementById('menu-letak').value = m?.letak || ''; document.getElementById('menu-icon').value = m?.icon || 'ph-squares-four'; document.getElementById('menu-aktif').checked = m?.aktif !== false; } else { document.getElementById('menu-nama').value = ''; document.getElementById('menu-role').value = 'Semua Role'; document.getElementById('menu-letak').value = ''; document.getElementById('menu-icon').value = 'ph-squares-four'; document.getElementById('menu-aktif').checked = true; } document.getElementById('modal-menu-app').classList.replace('hidden', 'flex'); }
     async function simpanMenuApp() { const id = document.getElementById('menu-id').value; const nama = document.getElementById('menu-nama').value; const letak = document.getElementById('menu-letak').value; const role = document.getElementById('menu-role').value; const icon = document.getElementById('menu-icon').value; const aktif = document.getElementById('menu-aktif').checked; if (!nama) return showToast("Nama Menu Wajib Diisi", true); const pl = { nama_menu: nama, role_akses: role, letak: letak, icon: icon, aktif: aktif }; try { if (id) { await apiRequest(`${SUPABASE_URL}menu_aplikasi?id=eq.${id}`, 'PATCH', pl); } else { await apiRequest(`${SUPABASE_URL}menu_aplikasi`, 'POST', pl); } showToast("Menu Tersimpan"); closeModal('modal-menu-app'); loadData(); } catch(e) { showToast(e.message, true); } }
-    async function hapusMenu(id) { if(!confirm("Hapus menu ini secara permanen?")) return; try { await apiRequest(`${SUPABASE_URL}menu_aplikasi?id=eq.${id}`, 'DELETE'); showToast("Menu Dihapus"); loadData(); } catch(e) { showToast(e.message, true); } }
+    
+    function hapusMenu(id) { 
+        askConfirm("Hapus menu ini secara permanen?", async () => {
+            try { await apiRequest(`${SUPABASE_URL}menu_aplikasi?id=eq.${id}`, 'DELETE'); showToast("Menu Dihapus"); loadData(); } catch(e) { showToast(e.message, true); } 
+        });
+    }
 
+    // Trigger Initial Fetch
     fetchStaffAccounts();
 </script>
 </body>
