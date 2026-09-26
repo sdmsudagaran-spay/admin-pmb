@@ -1356,7 +1356,7 @@ function debounceRender(fungsiRender, delay = 400) {
     }
 
     function getKeuanganInfo(sUang) {
-        let res = { isLunas: false, hasTransfer: false, tagihan: 0, bukti: null, tahapan: [] };
+        let res = { isLunas: false, hasTransfer: false, tagihan: 0, bukti: null, tahapan: [], isTransfer: false };
         if(!sUang) return res;
 
         if (activeKatBendahara === 'pendaftaran') {
@@ -1364,12 +1364,14 @@ function debounceRender(fungsiRender, delay = 400) {
             res.isLunas = sUang.konf_pendaftaran === true;
             res.bukti = sUang.bukti_tf_pendaftaran;
             res.hasTransfer = !!res.bukti && !res.isLunas;
+            res.isTransfer = res.isLunas && !!res.bukti;
         }
         else if (activeKatBendahara === 'daftarulang') {
             res.tagihan = sUang.daftar_ulang || 0;
             res.isLunas = sUang.konf_daftar_ulang === true;
             res.bukti = sUang.bukti_tf_daftar_ulang;
             res.hasTransfer = !!res.bukti && !res.isLunas;
+            res.isTransfer = res.isLunas && !!res.bukti;
         }
         else if (activeKatBendahara === 'bopd') {
             const totalBopd = parseInt(sUang.bopd) || 0;
@@ -1389,11 +1391,14 @@ function debounceRender(fungsiRender, delay = 400) {
                     { tahap: 3, tagihan: b3, lunas: sUang.konf_bopd3, bukti: sUang.bukti_tf_bopd3 }
                 ];
                 res.tagihan = totalBopd - (eb+aum+bea);
+                res.isTransfer = (sUang.konf_bopd1 && !!sUang.bukti_tf_bopd1) || (sUang.konf_bopd2 && !!sUang.bukti_tf_bopd2) || (sUang.konf_bopd3 && !!sUang.bukti_tf_bopd3);
+                res.bukti = sUang.bukti_tf_bopd3 || sUang.bukti_tf_bopd2 || sUang.bukti_tf_bopd1;
             } else {
                 res.tagihan = totalBopd - (eb+aum+bea);
                 res.isLunas = sUang.konfirmasi_bopd === true; 
                 res.bukti = sUang.bukti_transfer;
                 res.hasTransfer = !!res.bukti && !res.isLunas;
+                res.isTransfer = res.isLunas && !!res.bukti;
             }
         }
         return res;
@@ -1407,9 +1412,9 @@ function debounceRender(fungsiRender, delay = 400) {
         
         if(activeSubBendahara === 'tunai') { thead.innerHTML = `<tr><th class="py-3 px-4">Nama Siswa</th><th class="py-3 px-4 text-center">Nominal Tagihan</th><th class="py-3 px-4 text-center">Aksi Kasir</th></tr>`; } 
         else if (activeSubBendahara === 'transfer') { thead.innerHTML = `<tr><th class="py-3 px-4">Nama Siswa</th><th class="py-3 px-4 text-center">Menunggu Validasi</th><th class="py-3 px-4 text-center">Cek Bukti</th></tr>`; } 
-        else { thead.innerHTML = `<tr><th class="py-3 px-4">Nama Siswa</th><th class="py-3 px-4 text-center">Nominal Lunas</th><th class="py-3 px-4 text-center">Info</th></tr>`; }
+        else { thead.innerHTML = `<tr><th class="py-3 px-4">Nama Siswa</th><th class="py-3 px-4 text-center">Nominal Lunas</th><th class="py-3 px-4 text-center">Metode</th><th class="py-3 px-4 text-center">Aksi</th></tr>`; }
 
-        const data = masterData.filter(s => {
+        let data = masterData.filter(s => {
             if(q && !s.nama_murid?.toLowerCase().includes(q)) return false;
             const sUang = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
             const info = getKeuanganInfo(sUang);
@@ -1418,6 +1423,9 @@ function debounceRender(fungsiRender, delay = 400) {
             if (activeSubBendahara === 'riwayat') return info.isLunas;
             return false;
         });
+
+        // 2. OTOMATIS SORTIR A-Z
+        data.sort((a, b) => (a.nama_murid || '').localeCompare(b.nama_murid || ''));
 
         tbody.innerHTML = data.map(s => {
             const sUang = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
@@ -1430,13 +1438,56 @@ function debounceRender(fungsiRender, delay = 400) {
                 if(activeKatBendahara === 'bopd' && info.tahapan.length > 0) { const t = info.tahapan.find(x => !x.lunas && !!x.bukti); if(t) amountToValidate = t.tagihan; }
                 return `<tr class="border-b bg-orange-50"><td class="py-3 px-4 font-bold text-brand-navy">${s.nama_murid||'-'}<br><span class="text-xs text-brand-muted font-normal">${s.no_ppdb}</span></td><td class="py-3 px-4 text-center font-mono font-bold text-orange-600">${formatRp(amountToValidate)}</td><td class="py-3 px-4 text-center"><button onclick="bukaCekTransfer('${s.no_ppdb}')" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-colors"><i class="ph-bold ph-eye"></i> Cek Transfer</button></td></tr>`;
             } else {
-                return `<tr class="border-b"><td class="py-3 px-4 font-bold text-brand-navy">${s.nama_murid||'-'}<br><span class="text-xs text-brand-muted font-normal">${s.no_ppdb}</span></td><td class="py-3 px-4 text-center font-mono font-bold text-green-600">${formatRp(info.tagihan)}</td><td class="py-3 px-4 text-center"><span class="text-xs text-green-600 font-bold bg-green-50 px-2 py-1 rounded-full"><i class="ph-bold ph-check-circle"></i> LUNAS</span></td></tr>`;
+                // 4. KETERANGAN METODE & TOMBOL STRUK / BUKTI DI RIWAYAT
+                const ketMetode = info.isTransfer ? `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-bold border border-blue-200">Transfer</span>` : `<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold border border-green-200">Tunai</span>`;
+                const btnBukti = info.isTransfer && info.bukti ? `<button onclick="bukaZoomBuktiKhusus('${info.bukti}')" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-2 py-1.5 rounded text-[10px] font-bold transition-colors border border-blue-200" title="Lihat Bukti Transfer"><i class="ph-bold ph-image"></i></button>` : '';
+                const btnStruk = `<button onclick="cetakStrukBendahara('${s.no_ppdb}')" class="bg-gray-800 text-white hover:bg-gray-700 px-2 py-1.5 rounded text-[10px] font-bold transition-colors" title="Cetak Struk POS"><i class="ph-bold ph-printer"></i></button>`;
+
+                return `<tr class="border-b"><td class="py-3 px-4 font-bold text-brand-navy">${s.nama_murid||'-'}<br><span class="text-xs text-brand-muted font-normal">${s.no_ppdb}</span></td><td class="py-3 px-4 text-center font-mono font-bold text-green-600">${formatRp(info.tagihan)}</td><td class="py-3 px-4 text-center">${ketMetode}</td><td class="py-3 px-4 text-center flex justify-center gap-1">${btnStruk}${btnBukti}</td></tr>`;
             }
         }).join('');
-        if(data.length === 0) tbody.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-gray-500 text-sm">Tidak ada data siswa untuk kategori ini.</td></tr>`;
+        if(data.length === 0) tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500 text-sm">Tidak ada data siswa untuk kategori ini.</td></tr>`;
+    }
+
+    function bukaZoomBuktiKhusus(url) {
+        if(!url) return;
+        document.getElementById('zoom-img-bukti').src = url;
+        document.getElementById('modal-zoom-bukti').classList.replace('hidden', 'flex');
+    }
+
+    function cetakStrukBendahara(no_ppdb) {
+        const sMaster = masterData.find(x => x.no_ppdb === no_ppdb);
+        const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb);
+        if(!sMaster || !sUang) return showToast("Data tidak valid", true);
+
+        const info = getKeuanganInfo(sUang);
+        let title = activeKatBendahara === 'pendaftaran' ? "PEMBAYARAN PENDAFTARAN" : activeKatBendahara === 'daftarulang' ? "PEMBAYARAN DAFTAR ULANG" : "PEMBAYARAN BOPD";
+        const metode = info.isTransfer ? "TRANSFER" : "TUNAI";
+        const tgl = new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
+        
+        const html = `<!DOCTYPE html><html><head><title>Struk - ${sMaster.nama_murid}</title><style>
+            @page { margin: 0; } body { font-family: 'Courier New', Courier, monospace; width: 58mm; margin: 0 auto; padding: 10px; font-size: 12px; color: #000; background: #fff; } .text-center { text-align: center; } .text-right { text-align: right; } .bold { font-weight: bold; } .divider { border-top: 1px dashed #000; margin: 6px 0; } @media print { .no-print { display: none !important; } body { width: 100%; padding: 0; } }
+        </style></head><body>
+            <div class="text-center bold" style="font-size:14px; margin-bottom:4px;">SD MUH. SUDAGARAN</div>
+            <div class="text-center" style="font-size:10px; margin-bottom:10px;">Jl. Sudagaran, Wonosobo</div>
+            <div class="divider"></div>
+            <div style="font-size:10px; margin-bottom:5px;">Tgl : ${tgl}<br>Opr : ${currentUsername.toUpperCase()}<br>No  : ${no_ppdb}</div>
+            <div class="divider"></div>
+            <div style="margin-bottom:5px; font-size:11px;">Nama: <span class="bold">${sMaster.nama_murid}</span></div>
+            <div class="bold text-center" style="margin-top:8px; margin-bottom:8px; font-size:11px;">${title}</div>
+            <div class="divider"></div>
+            <table style="width:100%; font-size:11px; margin-bottom:5px;"><tr><td>Nominal</td><td class="text-right bold">${formatRp(info.tagihan)}</td></tr><tr><td>Metode</td><td class="text-right bold">${metode}</td></tr><tr><td>Status</td><td class="text-right bold">LUNAS</td></tr></table>
+            <div class="divider"></div>
+            <div class="text-center" style="margin-top:10px; font-size:9px;">Terima kasih.<br>Simpan struk ini sebagai bukti.</div>
+            <button class="no-print" style="margin-top:20px; width:100%; padding:10px; cursor:pointer; background:#000; color:#fff; border:none; border-radius:4px; font-weight:bold;" onclick="window.print()">🖨️ Cetak Struk</button>
+        </body></html>`;
+
+        const w = window.open('', '_blank', 'width=300,height=500'); if(!w) return showToast("Izinkan pop-up browser!", true); w.document.write(html); w.document.close();
+        setTimeout(() => { w.print(); }, 500);
     }
 
     function updateBendaharaBadges() {
+        // 3. NOTIFIKASI OTOMATIS BERDASARKAN TAGIHAN MASUK
         let waitDaftar = 0, waitDU = 0, waitBOPD = 0;
         keuanganData.forEach(su => {
             if(su.bukti_tf_pendaftaran && !su.konf_pendaftaran) waitDaftar++;
@@ -1495,18 +1546,69 @@ function debounceRender(fungsiRender, delay = 400) {
     }
     
     function cetakLaporanBendahara() {
+        // 5. UPDATE LAPORAN RINCI BERDASARKAN KASIR
         const tglAwal = document.getElementById('filter-tgl-awal')?.value || '-';
         const tglAkhir = document.getElementById('filter-tgl-akhir')?.value || '-';
-        const elTunai = document.getElementById('rekap-tunai')?.innerText || 'Rp 0';
-        const elTransfer = document.getElementById('rekap-transfer')?.innerText || 'Rp 0';
-        const elTotal = document.getElementById('rekap-total')?.innerText || 'Rp 0';
         
-        const html = `<!DOCTYPE html><html><head><title>Laporan Keuangan</title><style>@page { size: A4 portrait; margin: 1.5cm; } body { font-family: Arial, sans-serif; font-size: 12px; } table { width: 100%; border-collapse: collapse; margin-top: 20px; } th, td { border: 1px solid #000; padding: 8px; } th { background-color: #f3f4f6; } .text-center { text-align: center; } .text-right { text-align: right; } .header { text-align: center; margin-bottom: 20px; } @media print { .no-print { display: none !important; } } .print-btn { position: fixed; bottom: 30px; right: 30px; background: #0F2747; color: white; padding: 15px 25px; border-radius: 12px; cursor: pointer; border: none; font-size: 16px; font-weight: bold; }</style></head><body><button class="no-print print-btn" onclick="window.print()">🖨️ Cetak Laporan</button><div class="header"><h2>LAPORAN REKAPITULASI PEMBAYARAN PMB</h2><h3>SD MUHAMMADIYAH SUDAGARAN</h3><p>Berdasarkan Tanggal Pendaftaran: ${tglAwal} s.d ${tglAkhir}</p></div><table><thead><tr><th>Kategori Pendapatan</th><th class="text-right">Total Nominal</th></tr></thead><tbody><tr><td>Total Penerimaan TUNAI (Cash)</td><td class="text-right"><strong>${elTunai}</strong></td></tr><tr><td>Total Penerimaan TRANSFER</td><td class="text-right"><strong>${elTransfer}</strong></td></tr><tr style="background-color: #e5e7eb;"><td class="text-right"><strong>TOTAL KESELURUHAN PENDAPATAN</strong></td><td class="text-right"><strong>${elTotal}</strong></td></tr></tbody></table><p style="margin-top: 30px; text-align: right;">Wonosobo, ${new Date().toLocaleDateString('id-ID', {year:'numeric', month:'long', day:'numeric'})}<br><br><br><br><strong>Bendahara PMB</strong></p></body></html>`;
+        let listTunai = []; let listTransfer = [];
+        let totalTunai = 0; let totalTransfer = 0;
+        let judulLaporan = activeKatBendahara === 'pendaftaran' ? 'PENDAFTARAN' : activeKatBendahara === 'daftarulang' ? 'DAFTAR ULANG' : 'BOPD';
+
+        masterData.forEach(s => {
+            if(tglAwal && tglAwal !== '-' && s.tgl_pendaftaran && s.tgl_pendaftaran < tglAwal) return;
+            if(tglAkhir && tglAkhir !== '-' && s.tgl_pendaftaran && s.tgl_pendaftaran > tglAkhir) return;
+
+            const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb);
+            if(!su) return;
+            const info = getKeuanganInfo(su);
+            
+            if (info.isLunas && info.tagihan > 0) {
+                const item = { tgl: s.tgl_pendaftaran || '-', nama: s.nama_murid, nominal: info.tagihan, ket: judulLaporan };
+                if (info.isTransfer) { listTransfer.push(item); totalTransfer += info.tagihan; } 
+                else { listTunai.push(item); totalTunai += info.tagihan; }
+            }
+        });
+
+        const renderRows = (arr) => arr.map((x, i) => `<tr><td class="text-center">${i+1}</td><td class="text-center">${x.tgl}</td><td>${x.nama}</td><td class="text-right">${formatRp(x.nominal)}</td><td class="text-center uppercase font-bold">${currentUsername}</td><td class="text-center text-xs">${x.ket}</td></tr>`).join('');
+        const emptyRow = `<tr><td colspan="6" class="text-center text-gray-500 py-4">Tidak ada data transaksi pada rentang tanggal ini.</td></tr>`;
+
+        const html = `<!DOCTYPE html><html><head><title>Laporan Keuangan - ${judulLaporan}</title><style>@page { size: A4 portrait; margin: 1.5cm; } body { font-family: Arial, sans-serif; font-size: 12px; } table { width: 100%; border-collapse: collapse; margin-bottom: 20px; } th, td { border: 1px solid #000; padding: 6px; } th { background-color: #f3f4f6; } .text-center { text-align: center; } .text-right { text-align: right; } .header { text-align: center; margin-bottom: 20px; } @media print { .no-print { display: none !important; } } .print-btn { position: fixed; bottom: 30px; right: 30px; background: #0F2747; color: white; padding: 15px 25px; border-radius: 12px; cursor: pointer; border: none; font-size: 16px; font-weight: bold; }</style></head><body><button class="no-print print-btn" onclick="window.print()">🖨️ Cetak Laporan</button>
+        <div class="header"><h2>LAPORAN REKAPITULASI PEMBAYARAN ${judulLaporan}</h2><h3>SD MUHAMMADIYAH SUDAGARAN</h3><p>Periode: ${tglAwal} s.d ${tglAkhir}</p></div>
+        
+        <h4>A. Transaksi TUNAI (Cash)</h4>
+        <table><thead><tr><th width="5%">No</th><th width="15%">Hari Tanggal</th><th width="30%">Nama Murid</th><th width="20%">Nominal</th><th width="15%">Kasir</th><th width="15%">Ket</th></tr></thead>
+        <tbody>${listTunai.length > 0 ? renderRows(listTunai) : emptyRow}</tbody>
+        <tfoot><tr><th colspan="3" class="text-right">TOTAL TUNAI</th><th class="text-right">${formatRp(totalTunai)}</th><th colspan="2"></th></tr></tfoot></table>
+
+        <h4>B. Transaksi TRANSFER</h4>
+        <table><thead><tr><th width="5%">No</th><th width="15%">Hari Tanggal</th><th width="30%">Nama Murid</th><th width="20%">Nominal</th><th width="15%">Kasir</th><th width="15%">Ket</th></tr></thead>
+        <tbody>${listTransfer.length > 0 ? renderRows(listTransfer) : emptyRow}</tbody>
+        <tfoot><tr><th colspan="3" class="text-right">TOTAL TRANSFER</th><th class="text-right">${formatRp(totalTransfer)}</th><th colspan="2"></th></tr></tfoot></table>
+
+        <table style="width: 50%; margin-left: auto; margin-top: 30px; border: none;">
+            <tr style="border: none;"><td style="border: none; text-align: center; font-weight: bold; font-size: 14px; background: #e5e7eb; padding: 10px; border-radius: 8px;">GRAND TOTAL KESELURUHAN:<br>${formatRp(totalTunai + totalTransfer)}</td></tr>
+        </table>
+
+        <div style="margin-top: 40px; float: right; text-align: center; width: 250px;">
+            <p>Wonosobo, ${new Date().toLocaleDateString('id-ID', {year:'numeric', month:'long', day:'numeric'})}</p>
+            <p style="margin-top: 60px; font-weight: bold; text-decoration: underline;">${currentUsername.toUpperCase()}</p>
+            <p style="margin-top: -10px;">Kasir / Bendahara PMB</p>
+        </div>
+        <div style="clear: both;"></div>
+        </body></html>`;
         
         const w = window.open('','_blank'); w.document.write(html); w.document.close();
     }
 
-    function setRealtimeDate() {}
+    function setRealtimeDate() {
+        // 1. OTOMATIS SET TANGGAL HARI INI SAAT HALAMAN DIMUAT
+        const tglSekarang = new Date().toISOString().split('T')[0];
+        const fAwal = document.getElementById('filter-tgl-awal');
+        const fAkhir = document.getElementById('filter-tgl-akhir');
+        if(fAwal && !fAwal.value) fAwal.value = tglSekarang;
+        if(fAkhir && !fAkhir.value) fAkhir.value = tglSekarang;
+        hitungRekapBendahara();
+    }
 
     function bukaKasir(no_ppdb) {
         const s = masterData.find(x => x.no_ppdb === no_ppdb); const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {}; if(!s) return;
