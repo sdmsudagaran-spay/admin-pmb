@@ -347,18 +347,22 @@
                             <button onclick="cetakLaporanBendahara()" class="bg-brand-navy hover:bg-brand-gold text-white px-4 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 shadow-sm transition-colors"><i class="ph-bold ph-printer"></i> Unduh Laporan</button>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                         <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
                             <p class="text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-1">Total Tunai</p>
-                            <p id="rekap-tunai" class="text-2xl font-bold text-brand-navy">Rp 0</p>
+                            <p id="rekap-tunai" class="text-xl sm:text-2xl font-bold text-brand-navy">Rp 0</p>
                         </div>
                         <div class="bg-orange-50 p-4 rounded-xl border border-orange-100">
-                            <p class="text-[10px] font-bold text-orange-500 uppercase tracking-wider mb-1">Total Transfer (Valid)</p>
-                            <p id="rekap-transfer" class="text-2xl font-bold text-brand-navy">Rp 0</p>
+                            <p class="text-[10px] font-bold text-orange-500 uppercase tracking-wider mb-1">Total Transfer</p>
+                            <p id="rekap-transfer" class="text-xl sm:text-2xl font-bold text-brand-navy">Rp 0</p>
                         </div>
                         <div class="bg-green-50 p-4 rounded-xl border border-green-100">
                             <p class="text-[10px] font-bold text-green-600 uppercase tracking-wider mb-1">Total Keseluruhan</p>
-                            <p id="rekap-total" class="text-2xl font-bold text-brand-navy">Rp 0</p>
+                            <p id="rekap-total" class="text-xl sm:text-2xl font-bold text-brand-navy">Rp 0</p>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 shadow-inner">
+                            <p class="text-[10px] font-bold text-purple-600 uppercase tracking-wider mb-1">Lunas Hari Ini</p>
+                            <p id="rekap-hari-ini" class="text-xl sm:text-2xl font-bold text-brand-navy">Rp 0</p>
                         </div>
                     </div>
                 </div>
@@ -381,7 +385,18 @@
                         </div>
                     </div>
 
-                    <div class="relative w-full max-w-md mb-4">
+                    <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                        <div class="relative flex-1 max-w-md">
+                            <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="filter-cari-bendahara" onkeyup="debounceRender('renderTableBendahara')" class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-brand-gold shadow-sm" placeholder="Ketik nama siswa untuk mencari...">
+                        </div>
+                        <!-- FILTER METODE PEMBAYARAN (Otomatis muncul di tab Riwayat Lunas) -->
+                        <select id="filter-metode-riwayat" onchange="renderTableBendahara()" class="hidden border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-gold bg-brand-bg font-semibold cursor-pointer w-full sm:w-auto shadow-sm">
+                            <option value="all">Semua Metode (Tunai & Transfer)</option>
+                            <option value="tunai">Hanya Tunai Saja</option>
+                            <option value="transfer">Hanya Transfer Saja</option>
+                        </select>
+                    </div>
                         <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                         <input type="text" id="filter-cari-bendahara" onkeyup="renderTableBendahara()" class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-brand-gold shadow-sm" placeholder="Ketik nama siswa untuk mencari...">
                     </div>
@@ -1352,56 +1367,15 @@ function debounceRender(fungsiRender, delay = 400) {
                 else { b.classList.remove('bg-white', 'shadow-sm', 'text-brand-navy'); b.classList.add('text-brand-muted', 'hover:text-brand-navy'); }
             }
         });
+        
+        // Memunculkan filter dropdown khusus saat di Riwayat Lunas
+        const fMetode = document.getElementById('filter-metode-riwayat');
+        if(fMetode) {
+            if(sub === 'riwayat') fMetode.classList.remove('hidden');
+            else fMetode.classList.add('hidden');
+        }
+        
         renderTableBendahara();
-    }
-
-    function getKeuanganInfo(sUang) {
-        let res = { isLunas: false, hasTransfer: false, tagihan: 0, bukti: null, tahapan: [], isTransfer: false };
-        if(!sUang) return res;
-
-        if (activeKatBendahara === 'pendaftaran') {
-            res.tagihan = 300000;
-            res.isLunas = sUang.konf_pendaftaran === true;
-            res.bukti = sUang.bukti_tf_pendaftaran;
-            res.hasTransfer = !!res.bukti && !res.isLunas;
-            res.isTransfer = res.isLunas && !!res.bukti;
-        }
-        else if (activeKatBendahara === 'daftarulang') {
-            res.tagihan = sUang.daftar_ulang || 0;
-            res.isLunas = sUang.konf_daftar_ulang === true;
-            res.bukti = sUang.bukti_tf_daftar_ulang;
-            res.hasTransfer = !!res.bukti && !res.isLunas;
-            res.isTransfer = res.isLunas && !!res.bukti;
-        }
-        else if (activeKatBendahara === 'bopd') {
-            const totalBopd = parseInt(sUang.bopd) || 0;
-            const eb = parseInt(sUang.early_bird)||0; const aum = parseInt(sUang.kader_aum)||0; const bea = parseInt(sUang.beasiswa_lainnya)||0;
-            const isAngsuran = sUang.jenis_pembayaran_bopd === 'Angsuran';
-
-            if (isAngsuran) {
-                const b1 = sUang.bopd1 != null ? sUang.bopd1 : Math.max(0, (totalBopd * 0.5) - (eb+aum+bea));
-                const b2 = sUang.bopd2 != null ? sUang.bopd2 : (totalBopd * 0.25);
-                const b3 = sUang.bopd3 != null ? sUang.bopd3 : (totalBopd * 0.25);
-                
-                res.isLunas = sUang.konf_bopd1 && sUang.konf_bopd2 && sUang.konf_bopd3;
-                res.hasTransfer = (!sUang.konf_bopd1 && !!sUang.bukti_tf_bopd1) || (!sUang.konf_bopd2 && !!sUang.bukti_tf_bopd2) || (!sUang.konf_bopd3 && !!sUang.bukti_tf_bopd3);
-                res.tahapan = [
-                    { tahap: 1, tagihan: b1, lunas: sUang.konf_bopd1, bukti: sUang.bukti_tf_bopd1 },
-                    { tahap: 2, tagihan: b2, lunas: sUang.konf_bopd2, bukti: sUang.bukti_tf_bopd2 },
-                    { tahap: 3, tagihan: b3, lunas: sUang.konf_bopd3, bukti: sUang.bukti_tf_bopd3 }
-                ];
-                res.tagihan = totalBopd - (eb+aum+bea);
-                res.isTransfer = (sUang.konf_bopd1 && !!sUang.bukti_tf_bopd1) || (sUang.konf_bopd2 && !!sUang.bukti_tf_bopd2) || (sUang.konf_bopd3 && !!sUang.bukti_tf_bopd3);
-                res.bukti = sUang.bukti_tf_bopd3 || sUang.bukti_tf_bopd2 || sUang.bukti_tf_bopd1;
-            } else {
-                res.tagihan = totalBopd - (eb+aum+bea);
-                res.isLunas = sUang.konfirmasi_bopd === true; 
-                res.bukti = sUang.bukti_transfer;
-                res.hasTransfer = !!res.bukti && !res.isLunas;
-                res.isTransfer = res.isLunas && !!res.bukti;
-            }
-        }
-        return res;
     }
 
     function renderTableBendahara() {
@@ -1409,6 +1383,7 @@ function debounceRender(fungsiRender, delay = 400) {
         const tbody = document.getElementById('tbody-bendahara');
         if(!thead || !tbody) return;
         const q = (document.getElementById('filter-cari-bendahara')?.value || '').toLowerCase();
+        const fMetode = document.getElementById('filter-metode-riwayat')?.value || 'all'; // Ambil nilai filter metode
         
         if(activeSubBendahara === 'tunai') { thead.innerHTML = `<tr><th class="py-3 px-4">Nama Siswa</th><th class="py-3 px-4 text-center">Nominal Tagihan</th><th class="py-3 px-4 text-center">Aksi Kasir</th></tr>`; } 
         else if (activeSubBendahara === 'transfer') { thead.innerHTML = `<tr><th class="py-3 px-4">Nama Siswa</th><th class="py-3 px-4 text-center">Menunggu Validasi</th><th class="py-3 px-4 text-center">Cek Bukti</th></tr>`; } 
@@ -1418,13 +1393,20 @@ function debounceRender(fungsiRender, delay = 400) {
             if(q && !s.nama_murid?.toLowerCase().includes(q)) return false;
             const sUang = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
             const info = getKeuanganInfo(sUang);
+            
             if (activeSubBendahara === 'tunai') return !info.isLunas;
             if (activeSubBendahara === 'transfer') return info.hasTransfer;
-            if (activeSubBendahara === 'riwayat') return info.isLunas;
+            if (activeSubBendahara === 'riwayat') {
+                if (!info.isLunas) return false;
+                // Filter logika Tunai / Transfer
+                if (fMetode === 'tunai' && info.isTransfer) return false;
+                if (fMetode === 'transfer' && !info.isTransfer) return false;
+                return true;
+            }
             return false;
         });
 
-        // 2. OTOMATIS SORTIR A-Z
+        // OTOMATIS SORTIR A-Z UNTUK SEMUA SUB-TAB KASIR
         data.sort((a, b) => (a.nama_murid || '').localeCompare(b.nama_murid || ''));
 
         tbody.innerHTML = data.map(s => {
@@ -1438,7 +1420,6 @@ function debounceRender(fungsiRender, delay = 400) {
                 if(activeKatBendahara === 'bopd' && info.tahapan.length > 0) { const t = info.tahapan.find(x => !x.lunas && !!x.bukti); if(t) amountToValidate = t.tagihan; }
                 return `<tr class="border-b bg-orange-50"><td class="py-3 px-4 font-bold text-brand-navy">${s.nama_murid||'-'}<br><span class="text-xs text-brand-muted font-normal">${s.no_ppdb}</span></td><td class="py-3 px-4 text-center font-mono font-bold text-orange-600">${formatRp(amountToValidate)}</td><td class="py-3 px-4 text-center"><button onclick="bukaCekTransfer('${s.no_ppdb}')" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-colors"><i class="ph-bold ph-eye"></i> Cek Transfer</button></td></tr>`;
             } else {
-                // 4. KETERANGAN METODE & TOMBOL STRUK / BUKTI DI RIWAYAT
                 const ketMetode = info.isTransfer ? `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-bold border border-blue-200">Transfer</span>` : `<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold border border-green-200">Tunai</span>`;
                 const btnBukti = info.isTransfer && info.bukti ? `<button onclick="bukaZoomBuktiKhusus('${info.bukti}')" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-2 py-1.5 rounded text-[10px] font-bold transition-colors border border-blue-200" title="Lihat Bukti Transfer"><i class="ph-bold ph-image"></i></button>` : '';
                 const btnStruk = `<button onclick="cetakStrukBendahara('${s.no_ppdb}')" class="bg-gray-800 text-white hover:bg-gray-700 px-2 py-1.5 rounded text-[10px] font-bold transition-colors" title="Cetak Struk POS"><i class="ph-bold ph-printer"></i></button>`;
@@ -1449,45 +1430,7 @@ function debounceRender(fungsiRender, delay = 400) {
         if(data.length === 0) tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500 text-sm">Tidak ada data siswa untuk kategori ini.</td></tr>`;
     }
 
-    function bukaZoomBuktiKhusus(url) {
-        if(!url) return;
-        document.getElementById('zoom-img-bukti').src = url;
-        document.getElementById('modal-zoom-bukti').classList.replace('hidden', 'flex');
-    }
-
-    function cetakStrukBendahara(no_ppdb) {
-        const sMaster = masterData.find(x => x.no_ppdb === no_ppdb);
-        const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb);
-        if(!sMaster || !sUang) return showToast("Data tidak valid", true);
-
-        const info = getKeuanganInfo(sUang);
-        let title = activeKatBendahara === 'pendaftaran' ? "PEMBAYARAN PENDAFTARAN" : activeKatBendahara === 'daftarulang' ? "PEMBAYARAN DAFTAR ULANG" : "PEMBAYARAN BOPD";
-        const metode = info.isTransfer ? "TRANSFER" : "TUNAI";
-        const tgl = new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
-        
-        const html = `<!DOCTYPE html><html><head><title>Struk - ${sMaster.nama_murid}</title><style>
-            @page { margin: 0; } body { font-family: 'Courier New', Courier, monospace; width: 58mm; margin: 0 auto; padding: 10px; font-size: 12px; color: #000; background: #fff; } .text-center { text-align: center; } .text-right { text-align: right; } .bold { font-weight: bold; } .divider { border-top: 1px dashed #000; margin: 6px 0; } @media print { .no-print { display: none !important; } body { width: 100%; padding: 0; } }
-        </style></head><body>
-            <div class="text-center bold" style="font-size:14px; margin-bottom:4px;">SD MUH. SUDAGARAN</div>
-            <div class="text-center" style="font-size:10px; margin-bottom:10px;">Jl. Sudagaran, Wonosobo</div>
-            <div class="divider"></div>
-            <div style="font-size:10px; margin-bottom:5px;">Tgl : ${tgl}<br>Opr : ${currentUsername.toUpperCase()}<br>No  : ${no_ppdb}</div>
-            <div class="divider"></div>
-            <div style="margin-bottom:5px; font-size:11px;">Nama: <span class="bold">${sMaster.nama_murid}</span></div>
-            <div class="bold text-center" style="margin-top:8px; margin-bottom:8px; font-size:11px;">${title}</div>
-            <div class="divider"></div>
-            <table style="width:100%; font-size:11px; margin-bottom:5px;"><tr><td>Nominal</td><td class="text-right bold">${formatRp(info.tagihan)}</td></tr><tr><td>Metode</td><td class="text-right bold">${metode}</td></tr><tr><td>Status</td><td class="text-right bold">LUNAS</td></tr></table>
-            <div class="divider"></div>
-            <div class="text-center" style="margin-top:10px; font-size:9px;">Terima kasih.<br>Simpan struk ini sebagai bukti.</div>
-            <button class="no-print" style="margin-top:20px; width:100%; padding:10px; cursor:pointer; background:#000; color:#fff; border:none; border-radius:4px; font-weight:bold;" onclick="window.print()">🖨️ Cetak Struk</button>
-        </body></html>`;
-
-        const w = window.open('', '_blank', 'width=300,height=500'); if(!w) return showToast("Izinkan pop-up browser!", true); w.document.write(html); w.document.close();
-        setTimeout(() => { w.print(); }, 500);
-    }
-
     function updateBendaharaBadges() {
-        // 3. NOTIFIKASI OTOMATIS BERDASARKAN TAGIHAN MASUK
         let waitDaftar = 0, waitDU = 0, waitBOPD = 0;
         keuanganData.forEach(su => {
             if(su.bukti_tf_pendaftaran && !su.konf_pendaftaran) waitDaftar++;
@@ -1505,44 +1448,42 @@ function debounceRender(fungsiRender, delay = 400) {
         if(bBOPD) { bBOPD.innerText = waitBOPD; waitBOPD > 0 ? bBOPD.classList.remove('hidden') : bBOPD.classList.add('hidden'); }
         if(bSubTf) { let curWait = activeKatBendahara === 'pendaftaran' ? waitDaftar : activeKatBendahara === 'daftarulang' ? waitDU : waitBOPD; bSubTf.innerText = curWait; curWait > 0 ? bSubTf.classList.remove('hidden') : bSubTf.classList.add('hidden'); }
     }
-    
+
     function hitungRekapBendahara() {
         const tglAwal = document.getElementById('filter-tgl-awal')?.value;
         const tglAkhir = document.getElementById('filter-tgl-akhir')?.value;
+        const tglHariIni = new Date().toISOString().split('T')[0];
 
-        let totalTunai = 0; let totalTransfer = 0;
+        let totalTunai = 0; let totalTransfer = 0; let lunasHariIni = 0;
 
         masterData.forEach(s => {
-            if(tglAwal && s.tgl_pendaftaran && s.tgl_pendaftaran < tglAwal) return;
-            if(tglAkhir && s.tgl_pendaftaran && s.tgl_pendaftaran > tglAkhir) return;
+            if(tglAwal && tglAwal !== '-' && s.tgl_pendaftaran && s.tgl_pendaftaran < tglAwal) return;
+            if(tglAkhir && tglAkhir !== '-' && s.tgl_pendaftaran && s.tgl_pendaftaran > tglAkhir) return;
 
             const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb);
             if(!su) return;
 
-            if (su.konf_pendaftaran) { if(su.bukti_tf_pendaftaran) totalTransfer += 300000; else totalTunai += 300000; }
-            if (su.konf_daftar_ulang && su.daftar_ulang) { if(su.bukti_tf_daftar_ulang) totalTransfer += parseInt(su.daftar_ulang); else totalTunai += parseInt(su.daftar_ulang); }
-
-            const eb = parseInt(su.early_bird)||0; const aum = parseInt(su.kader_aum)||0; const bea = parseInt(su.beasiswa_lainnya)||0;
-            const totalBopd = parseInt(su.bopd) || 0;
-            const bopdBersih = Math.max(0, totalBopd - (eb+aum+bea));
-
-            if (su.jenis_pembayaran_bopd === 'Angsuran') {
-                const b1 = su.bopd1 != null ? su.bopd1 : Math.max(0, (totalBopd * 0.5) - (eb+aum+bea));
-                const b2 = su.bopd2 != null ? su.bopd2 : (totalBopd * 0.25);
-                const b3 = su.bopd3 != null ? su.bopd3 : (totalBopd * 0.25);
-
-                if(su.konf_bopd1) { if(su.bukti_tf_bopd1) totalTransfer += b1; else totalTunai += b1; }
-                if(su.konf_bopd2) { if(su.bukti_tf_bopd2) totalTransfer += b2; else totalTunai += b2; }
-                if(su.konf_bopd3) { if(su.bukti_tf_bopd3) totalTransfer += b3; else totalTunai += b3; }
-            } else {
-                if (su.konfirmasi_bopd) { if(su.bukti_transfer) totalTransfer += bopdBersih; else totalTunai += bopdBersih; }
+            // Menggunakan getKeuanganInfo yang otomatis membaca Jendela/Kategori yang sedang aktif!
+            const info = getKeuanganInfo(su);
+            
+            if (info.isLunas && info.tagihan > 0) {
+                if (info.isTransfer) totalTransfer += info.tagihan;
+                else totalTunai += info.tagihan;
+                
+                // Cek data lunas hari ini berdasarkan tanggal transaksi
+                if (s.tgl_pendaftaran === tglHariIni) lunasHariIni += info.tagihan;
             }
         });
 
-        const elTunai = document.getElementById('rekap-tunai'); const elTransfer = document.getElementById('rekap-transfer'); const elTotal = document.getElementById('rekap-total');
+        const elTunai = document.getElementById('rekap-tunai'); 
+        const elTransfer = document.getElementById('rekap-transfer'); 
+        const elTotal = document.getElementById('rekap-total');
+        const elHariIni = document.getElementById('rekap-hari-ini');
+        
         if(elTunai) elTunai.innerText = formatRp(totalTunai);
         if(elTransfer) elTransfer.innerText = formatRp(totalTransfer);
         if(elTotal) elTotal.innerText = formatRp(totalTunai + totalTransfer);
+        if(elHariIni) elHariIni.innerText = formatRp(lunasHariIni);
     }
     
     function cetakLaporanBendahara() {
