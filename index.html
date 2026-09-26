@@ -1677,112 +1677,118 @@
     }
 
     function cetakHasilWawancara(no_ppdb) {
-        const sMaster = masterData.find(x => x.no_ppdb === no_ppdb);
-        const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {};
-        if(!sMaster) return showToast("Data tidak ditemukan", true);
+    const sMaster = masterData.find(x => x.no_ppdb === no_ppdb);
+    const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {};
+    if(!sMaster) return showToast("Data tidak ditemukan", true);
 
-        const du = parseInt(sUang.daftar_ulang) || 0;
-        const bopd = parseInt(sUang.bopd) || 0;
-        const eb = parseInt(sUang.early_bird) || 0;
-        const aum = parseInt(sUang.kader_aum) || 0;
-        const bea = parseInt(sUang.beasiswa_lainnya) || 0;
-        const totalDiskon = eb + aum + bea;
-        
-        let tglDaftar = new Date();
-        if (sMaster.tgl_pendaftaran) {
-            let parsedDate = new Date(sMaster.tgl_pendaftaran);
-            if (!isNaN(parsedDate.getTime())) tglDaftar = parsedDate;
-        }
+    const du = parseInt(sUang.daftar_ulang) || 0;
+    const bopd = parseInt(sUang.bopd) || 0;
+    const eb = parseInt(sUang.early_bird) || 0;
+    const aum = parseInt(sUang.kader_aum) || 0;
+    const bea = parseInt(sUang.beasiswa_lainnya) || 0;
+    const totalDiskon = eb + aum + bea;
+    
+    let tglDaftar = new Date();
+    if (sMaster.tgl_pendaftaran) {
+        let parsedDate = new Date(sMaster.tgl_pendaftaran);
+        if (!isNaN(parsedDate.getTime())) tglDaftar = parsedDate;
+    }
 
-        let dDU = new Date(tglDaftar); dDU.setDate(dDU.getDate() + 7);
-        let d1 = new Date(tglDaftar); d1.setMonth(d1.getMonth() + 2);
-        let d2 = new Date(tglDaftar); d2.setMonth(d2.getMonth() + 4);
-        let d3 = new Date(tglDaftar); d3.setMonth(d3.getMonth() + 6);
-        
-        const opt = { year: 'numeric', month: 'long', day: 'numeric' };
-        const strDU = dDU.toLocaleDateString('id-ID', opt);
-        const tglSekarang = new Date().toLocaleDateString('id-ID', opt);
-        
-        const isAngsuran = sUang.jenis_pembayaran_bopd === 'Angsuran';
-        const isLunas = sUang.jenis_pembayaran_bopd === 'Lunas';
-        
-        const bopdBersih = Math.max(0, bopd - totalDiskon);
-        const valBopd1 = sUang.bopd1 != null ? sUang.bopd1 : (isAngsuran ? Math.max(0, (bopd * 0.5) - totalDiskon) : 0);
-        const valBopd2 = sUang.bopd2 != null ? sUang.bopd2 : (isAngsuran ? (bopd * 0.25) : 0);
-        const valBopd3 = sUang.bopd3 != null ? sUang.bopd3 : (isAngsuran ? (bopd * 0.25) : 0);
-        const totalKeseluruhan = du + bopdBersih;
+    const opt = { year: 'numeric', month: 'long', day: 'numeric' };
+    
+    // Daftar Ulang: Batas maksimal 1 minggu dari pendaftaran
+    let dDU = new Date(tglDaftar); 
+    dDU.setDate(dDU.getDate() + 7);
+    const strDU = dDU.toLocaleDateString('id-ID', opt);
+    
+    // LOGIKA BARU ANGSURAN: Dihitung berjenjang +2 bulan dimulai dari Hari Ini
+    const tglSekarangRaw = new Date(); 
+    const tglSekarang = tglSekarangRaw.toLocaleDateString('id-ID', opt);
+    
+    let d1 = new Date(tglSekarangRaw); d1.setMonth(d1.getMonth() + 2); // Tahap 1: +2 Bulan dari Hari Ini
+    let d2 = new Date(d1); d2.setMonth(d2.getMonth() + 2);             // Tahap 2: +2 Bulan dari Tahap 1
+    let d3 = new Date(d2); d3.setMonth(d3.getMonth() + 2);             // Tahap 3: +2 Bulan dari Tahap 2
+    
+    const isAngsuran = sUang.jenis_pembayaran_bopd === 'Angsuran';
+    const isLunas = sUang.jenis_pembayaran_bopd === 'Lunas';
+    
+    const bopdBersih = Math.max(0, bopd - totalDiskon);
+    const valBopd1 = sUang.bopd1 != null ? sUang.bopd1 : (isAngsuran ? Math.max(0, (bopd * 0.5) - totalDiskon) : 0);
+    const valBopd2 = sUang.bopd2 != null ? sUang.bopd2 : (isAngsuran ? (bopd * 0.25) : 0);
+    const valBopd3 = sUang.bopd3 != null ? sUang.bopd3 : (isAngsuran ? (bopd * 0.25) : 0);
+    const totalKeseluruhan = du + bopdBersih;
 
-        let ketBopd = '';
-        if (isAngsuran) {
-            ketBopd = '(Diangsur 3x)';
-        } else if (isLunas) {
-            ketBopd = '(Lunas)';
-            if (sUang.tgl_lunas_bopd) {
-                let tglLunasRaw = new Date(sUang.tgl_lunas_bopd);
-                if (!isNaN(tglLunasRaw.getTime())) {
-                    ketBopd = `(Lunas, Rencana Pelunasan: ${tglLunasRaw.toLocaleDateString('id-ID', opt)})`;
-                }
+    let ketBopd = '';
+    if (isAngsuran) {
+        ketBopd = '(Diangsur 3x)';
+    } else if (isLunas) {
+        ketBopd = '(Lunas)';
+        if (sUang.tgl_lunas_bopd) {
+            let tglLunasRaw = new Date(sUang.tgl_lunas_bopd);
+            if (!isNaN(tglLunasRaw.getTime())) {
+                ketBopd = `(Lunas, Rencana Pelunasan: ${tglLunasRaw.toLocaleDateString('id-ID', opt)})`;
             }
         }
+    }
 
-        const w = window.open('', '_blank'); if(!w) return showToast("Izinkan pop-up!", true);
+    const w = window.open('', '_blank'); if(!w) return showToast("Izinkan pop-up!", true);
 
-        let ebRow = eb > 0 ? `<tr><td>Diskon Early Bird <small><i>(Mengurangi Angsuran 1 BOPD)</i></small></td><td class="text-right text-red-600">- ${formatRp(eb)}</td></tr>` : '';
-        let aumRow = aum > 0 ? `<tr><td>Potongan Kader AUM <small><i>(Mengurangi Angsuran 1 BOPD)</i></small></td><td class="text-right text-red-600">- ${formatRp(aum)}</td></tr>` : '';
-        let beaRow = bea > 0 ? `<tr><td>Beasiswa Lainnya <small><i>(Mengurangi Angsuran 1 BOPD)</i></small></td><td class="text-right text-red-600">- ${formatRp(bea)}</td></tr>` : '';
+    let ebRow = eb > 0 ? `<tr><td>Diskon Early Bird <small><i>(Mengurangi Angsuran 1 BOPD)</i></small></td><td class="text-right text-red-600">- ${formatRp(eb)}</td></tr>` : '';
+    let aumRow = aum > 0 ? `<tr><td>Potongan Kader AUM <small><i>(Mengurangi Angsuran 1 BOPD)</i></small></td><td class="text-right text-red-600">- ${formatRp(aum)}</td></tr>` : '';
+    let beaRow = bea > 0 ? `<tr><td>Beasiswa Lainnya <small><i>(Mengurangi Angsuran 1 BOPD)</i></small></td><td class="text-right text-red-600">- ${formatRp(bea)}</td></tr>` : '';
 
-        let angsuranHtml = '';
-        if (isAngsuran && bopd > 0) {
-            angsuranHtml = `<h4 style="margin-top:15px; margin-bottom:8px; font-size: 14px;">Skema Angsuran BOPD (Setelah dikurangi potongan)</h4>
+    let angsuranHtml = '';
+    if (isAngsuran && bopd > 0) {
+        angsuranHtml = `<h4 style="margin-top:15px; margin-bottom:8px; font-size: 14px;">Skema Angsuran BOPD (Setelah dikurangi potongan)</h4>
+        <table class="financial-table">
+            <tr><th>Tahap 1 (50% BOPD - Potongan)</th><td class="text-right">${formatRp(valBopd1)}</td><td>Jatuh Tempo: ${d1.toLocaleDateString('id-ID', opt)}</td></tr>
+            <tr><th>Tahap 2 (25%)</th><td class="text-right">${formatRp(valBopd2)}</td><td>Jatuh Tempo: ${d2.toLocaleDateString('id-ID', opt)}</td></tr>
+            <tr><th>Tahap 3 (25%)</th><td class="text-right">${formatRp(valBopd3)}</td><td>Jatuh Tempo: ${d3.toLocaleDateString('id-ID', opt)}</td></tr>
+        </table>`;
+    }
+
+    const html = `<!DOCTYPE html><html><head><title>Kesepakatan Biaya - ${sMaster.nama_murid}</title><style>
+        @page { size: 215.9mm 330.2mm; margin: 0; } 
+        body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 13px; background: white; margin: 0; } 
+        .page-container { width: 215.9mm; min-height: 330.2mm; padding: 4.5cm 1cm 4cm 1cm; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; margin: auto; } 
+        .header-title { text-align: center; font-size: 18px; font-weight: bold; text-decoration: underline; margin-bottom: 20px; text-transform: uppercase; } 
+        .info-table { width: 100%; margin-bottom: 15px; } 
+        .info-table td { padding: 4px; vertical-align: top; } 
+        .info-table td:first-child { width: 200px; font-weight: bold; } 
+        .financial-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; } 
+        .financial-table th, .financial-table td { border: 1px solid #000; padding: 6px; } 
+        .financial-table th { background-color: #f3f4f6; text-align: left; } 
+        .text-right { text-align: right; } 
+        .signature-area { width: 100%; display: flex; justify-content: space-between; margin-top: 15px; }
+        .sig-box { width: 220px; text-align: center; }
+        .sig-name { font-weight: bold; text-decoration: underline; margin-top: 80px; }
+        .print-btn { position: fixed; bottom: 30px; right: 30px; background: #16a34a; color: white; padding: 15px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; border: none; font-size: 16px; z-index: 1000; }
+        @media print { body { background: white; } .page-container { margin: 0; width: 100%; height: 330.2mm; } .no-print { display: none !important; } } 
+    </style></head><body><button class="no-print print-btn" onclick="window.print()">🖨️ Cetak</button>
+    <div class="page-container">
+        <div>
+            <div class="header-title">Kesepakatan Pembiayaan Pendidikan</div>
+            <table class="info-table"><tr><td>Nama Calon Peserta Didik</td><td>: ${sMaster.nama_murid || '-'}</td></tr><tr><td>No. Pendaftaran</td><td>: ${sMaster.no_ppdb || '-'}</td></tr><tr><td>Nama Orang Tua/Wali</td><td>: ${sMaster.ayah || sMaster.ibu || '-'}</td></tr></table>
+            <p style="text-align: justify; margin-bottom: 10px; text-indent: 1.25cm; line-height: 1.25;">Berdasarkan hasil wawancara, disepakati rincian pembiayaan pendidikan sebagai berikut:</p>
             <table class="financial-table">
-                <tr><th>Tahap 1 (50% BOPD - Potongan)</th><td class="text-right">${formatRp(valBopd1)}</td><td>Jatuh Tempo: ${tgl1.toLocaleDateString('id-ID', optFormat)}</td></tr>
-                <tr><th>Tahap 2 (25%)</th><td class="text-right">${formatRp(valBopd2)}</td><td>Jatuh Tempo: ${tgl2.toLocaleDateString('id-ID', optFormat)}</td></tr>
-                <tr><th>Tahap 3 (25%)</th><td class="text-right">${formatRp(valBopd3)}</td><td>Jatuh Tempo: ${tgl3.toLocaleDateString('id-ID', optFormat)}</td></tr>
-            </table>`;
-        }
-
-        const html = `<!DOCTYPE html><html><head><title>Kesepakatan Biaya - ${sMaster.nama_murid}</title><style>
-            @page { size: 215.9mm 330.2mm; margin: 0; } 
-            body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 13px; background: white; margin: 0; } 
-            .page-container { width: 215.9mm; min-height: 330.2mm; padding: 4.5cm 1cm 4cm 1cm; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; margin: auto; } 
-            .header-title { text-align: center; font-size: 18px; font-weight: bold; text-decoration: underline; margin-bottom: 20px; text-transform: uppercase; } 
-            .info-table { width: 100%; margin-bottom: 15px; } 
-            .info-table td { padding: 4px; vertical-align: top; } 
-            .info-table td:first-child { width: 200px; font-weight: bold; } 
-            .financial-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; } 
-            .financial-table th, .financial-table td { border: 1px solid #000; padding: 6px; } 
-            .financial-table th { background-color: #f3f4f6; text-align: left; } 
-            .text-right { text-align: right; } 
-            .signature-area { width: 100%; display: flex; justify-content: space-between; margin-top: 15px; }
-            .sig-box { width: 220px; text-align: center; }
-            .sig-name { font-weight: bold; text-decoration: underline; margin-top: 80px; }
-            .print-btn { position: fixed; bottom: 30px; right: 30px; background: #16a34a; color: white; padding: 15px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; border: none; font-size: 16px; z-index: 1000; }
-            @media print { body { background: white; } .page-container { margin: 0; width: 100%; height: 330.2mm; } .no-print { display: none !important; } } 
-        </style></head><body><button class="no-print print-btn" onclick="window.print()">🖨️ Cetak</button>
-        <div class="page-container">
-            <div>
-                <div class="header-title">Kesepakatan Pembiayaan Pendidikan</div>
-                <table class="info-table"><tr><td>Nama Calon Peserta Didik</td><td>: ${sMaster.nama_murid || '-'}</td></tr><tr><td>No. Pendaftaran</td><td>: ${sMaster.no_ppdb || '-'}</td></tr><tr><td>Nama Orang Tua/Wali</td><td>: ${sMaster.ayah || sMaster.ibu || '-'}</td></tr></table>
-                <p style="text-align: justify; margin-bottom: 10px; text-indent: 1.25cm; line-height: 1.25;">Berdasarkan hasil wawancara, disepakati rincian pembiayaan pendidikan sebagai berikut:</p>
-                <table class="financial-table">
-                    <thead><tr><th>Uraian Pembiayaan</th><th class="text-right">Nominal</th></tr></thead>
-                    <tbody><tr><td>1. Daftar Ulang <br><small><i>(Maks. Pelunasan: ${strDU})</i></small></td><td class="text-right">${formatRp(du)}</td></tr><tr><td>2. BOPD <br><small><i>${ketBopd}</i></small></td><td class="text-right">${formatRp(bopd)}</td></tr>${ebRow}${aumRow}${beaRow}</tbody>
-                    <tfoot><tr><th class="text-right">Total Tagihan Bersih</th><th class="text-right">${formatRp(totalKeseluruhan)}</th></tr></tfoot>
-                </table>
-                ${angsuranHtml}
-                <p style="margin-top:15px; text-align: justify; text-indent: 1.25cm; line-height: 1.25;">Demikian kesepakatan ini dibuat dengan sebenar-benarnya untuk dipergunakan sebagaimana mestinya.</p>
-            </div>
-            <div>
-                <div style="text-align: right; margin-bottom: 5px;">Wonosobo, ${tglSekarang}</div>
-                <div class="signature-area">
-                    <div class="sig-box"><div>Pewawancara</div><div class="sig-name">${sUang.pewawancara || currentUsername || '..........................'}</div></div>
-                    <div class="sig-box"><div>Wali Murid</div><div class="sig-name">${sMaster.ayah || sMaster.ibu || '..........................'}</div></div>
-                </div>
+                <thead><tr><th>Uraian Pembiayaan</th><th class="text-right">Nominal</th></tr></thead>
+                <tbody><tr><td>1. Daftar Ulang <br><small><i>(Maks. Pelunasan: ${strDU})</i></small></td><td class="text-right">${formatRp(du)}</td></tr><tr><td>2. BOPD <br><small><i>${ketBopd}</i></small></td><td class="text-right">${formatRp(bopd)}</td></tr>${ebRow}${aumRow}${beaRow}</tbody>
+                <tfoot><tr><th class="text-right">Total Tagihan Bersih</th><th class="text-right">${formatRp(totalKeseluruhan)}</th></tr></tfoot>
+            </table>
+            ${angsuranHtml}
+            <p style="margin-top:15px; text-align: justify; text-indent: 1.25cm; line-height: 1.25;">Demikian kesepakatan ini dibuat dengan sebenar-benarnya untuk dipergunakan sebagaimana mestinya.</p>
+        </div>
+        <div>
+            <div style="text-align: right; margin-bottom: 5px;">Wonosobo, ${tglSekarang}</div>
+            <div class="signature-area">
+                <div class="sig-box"><div>Wali Murid</div><div class="sig-name">${sMaster.ayah || sMaster.ibu || '..........................'}</div></div>
+                <div class="sig-box"><div>Pewawancara</div><div class="sig-name">${sUang.pewawancara || currentUsername || '..........................'}</div></div>
             </div>
         </div>
-        </body></html>`;
-        w.document.write(html); w.document.close();
-    }
+    </div>
+    </body></html>`;
+    w.document.write(html); w.document.close();
+}
 
     function cetakLaporanAnalisisPDF() {
         const fltRuang = document.getElementById('filter-ruang-analisis')?.value || 'all'; const statusFlt = document.getElementById('filter-status-analisis')?.value || 'all';
