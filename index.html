@@ -357,7 +357,7 @@
                             <p id="rekap-transfer" class="text-xl sm:text-2xl font-bold text-brand-navy">Rp 0</p>
                         </div>
                         <div class="bg-green-50 p-4 rounded-xl border border-green-100">
-                            <p class="text-[10px] font-bold text-green-600 uppercase tracking-wider mb-1">Total Keseluruhan</p>
+                            <p class="text-[10px] font-bold text-green-600 uppercase tracking-wider mb-1">Total Kes</p>
                             <p id="rekap-total" class="text-xl sm:text-2xl font-bold text-brand-navy">Rp 0</p>
                         </div>
                         <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 shadow-inner">
@@ -390,15 +390,11 @@
                             <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                             <input type="text" id="filter-cari-bendahara" onkeyup="debounceRender('renderTableBendahara')" class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-brand-gold shadow-sm" placeholder="Ketik nama siswa untuk mencari...">
                         </div>
-                        <!-- FILTER METODE PEMBAYARAN (Otomatis muncul di tab Riwayat Lunas) -->
                         <select id="filter-metode-riwayat" onchange="renderTableBendahara()" class="hidden border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-gold bg-brand-bg font-semibold cursor-pointer w-full sm:w-auto shadow-sm">
                             <option value="all">Semua Metode (Tunai & Transfer)</option>
                             <option value="tunai">Hanya Tunai Saja</option>
                             <option value="transfer">Hanya Transfer Saja</option>
                         </select>
-                    </div>
-                        <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" id="filter-cari-bendahara" onkeyup="renderTableBendahara()" class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-brand-gold shadow-sm" placeholder="Ketik nama siswa untuk mencari...">
                     </div>
                     
                     <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
@@ -407,10 +403,8 @@
                             <tbody id="tbody-bendahara" class="divide-y divide-gray-100 bg-white"></tbody>
                         </table>
                     </div>
-                    
                 </div>
             </div>
-
             <div id="panel-perlengkapan" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
