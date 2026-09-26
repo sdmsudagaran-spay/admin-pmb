@@ -1735,9 +1735,9 @@
         if (isAngsuran && bopd > 0) {
             angsuranHtml = `<h4 style="margin-top:15px; margin-bottom:8px; font-size: 14px;">Skema Angsuran BOPD (Setelah dikurangi potongan)</h4>
             <table class="financial-table">
-                <tr><th>Tahap 1 (50% BOPD - Potongan)</th><td class="text-right">${formatRp(valBopd1)}</td><td>Jatuh Tempo: \${tglSekarang}</td></tr>
-                <tr><th>Tahap 2 (25%)</th><td class="text-right">${formatRp(valBopd2)}</td><td>Jatuh Tempo: \${tglSekarang}</td></tr>
-                <tr><th>Tahap 3 (25%)</th><td class="text-right">${formatRp(valBopd3)}</td><td>Jatuh Tempo: \${tglSekarang}</td></tr>
+                <tr><th>Tahap 1 (50% BOPD - Potongan)</th><td class="text-right">${formatRp(valBopd1)}</td><td>Jatuh Tempo: ${tglSekarang}</td></tr>
+                <tr><th>Tahap 2 (25%)</th><td class="text-right">${formatRp(valBopd2)}</td><td>Jatuh Tempo: ${tglSekarang}</td></tr>
+                <tr><th>Tahap 3 (25%)</th><td class="text-right">${formatRp(valBopd3)}</td><td>Jatuh Tempo: ${tglSekarang}</td></tr>
             </table>`;
         }
 
