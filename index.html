@@ -1476,13 +1476,18 @@
         if (bayar < currentDataKasir.totalTagihanActive) return showToast("Uang tunai kurang!", true);
 
         const pl = {};
-        if(activeKatBendahara === 'pendaftaran') { pl.konf_pendaftaran = true; pl.pendaftaran = 300000; }
-        else if(activeKatBendahara === 'daftarulang') { pl.konf_daftar_ulang = true; }
-        else if(activeKatBendahara === 'bopd') {
-            if(currentDataKasir.isAngsuran) { document.querySelectorAll('.chk-kasir-dyn:not(:disabled)').forEach(c => { if(c.checked) { const thp = c.getAttribute('data-tahap'); pl[`konf_bopd${thp}`] = true; } }); } 
-            else { pl.konfirmasi_bopd = true; }
-        }
-
+        if(activeKatBendahara === 'pendaftaran') { 
+    pl.konf_pendaftaran = true; 
+    pl.pendaftaran = 300000; 
+    pl.daftar_ulang = 0; 
+    pl.bopd = 0; 
+    pl.early_bird = 0; 
+    pl.kader_aum = 0; 
+    pl.beasiswa_lainnya = 0; 
+    pl.bopd1 = 0; 
+    pl.bopd2 = 0; 
+    pl.bopd3 = 0; 
+}
         const btn = document.getElementById('btn-bayar-dyn'); btn.disabled = true; btn.innerHTML = 'Memproses...';
         try {
             const no = currentDataKasir.no_ppdb; const ex = keuanganData.find(x => x.no_ppdb === no);
