@@ -816,6 +816,14 @@
     const SUPABASE_URL = 'https://ckbarwrfpktcdoydbjzy.supabase.co/rest/v1/';
     const SUPABASE_KEY = 'sb_publishable_jBXJV3WzlzbTlRkpEqGebA_BOlcBWoO';
 
+    // --- SISTEM OPTIMASI CPU ---
+let debounceTimer;
+function debounceRender(fungsiRender, delay = 400) {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        window[fungsiRender]();
+    }, delay);
+}
     let masterData = []; let keuanganData = []; let analisisData = []; let perkapData = []; let menuAppData = []; let staffAccounts = []; 
     let currentUserRoleArr = []; let currentUsername = ''; let selectedIdsForMassAction = [];
     let chartInstanceAdmin = null; 
