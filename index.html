@@ -1371,7 +1371,54 @@ function debounceRender(fungsiRender, delay = 400) {
         
         renderTableBendahara();
     }
+function getKeuanganInfo(sUang) {
+        let res = { isLunas: false, hasTransfer: false, tagihan: 0, bukti: null, tahapan: [], isTransfer: false };
+        if(!sUang) return res;
 
+        if (activeKatBendahara === 'pendaftaran') {
+            res.tagihan = 300000;
+            res.isLunas = sUang.konf_pendaftaran === true;
+            res.bukti = sUang.bukti_tf_pendaftaran;
+            res.hasTransfer = !!res.bukti && !res.isLunas;
+            res.isTransfer = res.isLunas && !!res.bukti;
+        }
+        else if (activeKatBendahara === 'daftarulang') {
+            res.tagihan = sUang.daftar_ulang || 0;
+            res.isLunas = sUang.konf_daftar_ulang === true;
+            res.bukti = sUang.bukti_tf_daftar_ulang;
+            res.hasTransfer = !!res.bukti && !res.isLunas;
+            res.isTransfer = res.isLunas && !!res.bukti;
+        }
+        else if (activeKatBendahara === 'bopd') {
+            const totalBopd = parseInt(sUang.bopd) || 0;
+            const eb = parseInt(sUang.early_bird)||0; const aum = parseInt(sUang.kader_aum)||0; const bea = parseInt(sUang.beasiswa_lainnya)||0;
+            const isAngsuran = sUang.jenis_pembayaran_bopd === 'Angsuran';
+
+            if (isAngsuran) {
+                const b1 = sUang.bopd1 != null ? sUang.bopd1 : Math.max(0, (totalBopd * 0.5) - (eb+aum+bea));
+                const b2 = sUang.bopd2 != null ? sUang.bopd2 : (totalBopd * 0.25);
+                const b3 = sUang.bopd3 != null ? sUang.bopd3 : (totalBopd * 0.25);
+                
+                res.isLunas = sUang.konf_bopd1 && sUang.konf_bopd2 && sUang.konf_bopd3;
+                res.hasTransfer = (!sUang.konf_bopd1 && !!sUang.bukti_tf_bopd1) || (!sUang.konf_bopd2 && !!sUang.bukti_tf_bopd2) || (!sUang.konf_bopd3 && !!sUang.bukti_tf_bopd3);
+                res.tahapan = [
+                    { tahap: 1, tagihan: b1, lunas: sUang.konf_bopd1, bukti: sUang.bukti_tf_bopd1 },
+                    { tahap: 2, tagihan: b2, lunas: sUang.konf_bopd2, bukti: sUang.bukti_tf_bopd2 },
+                    { tahap: 3, tagihan: b3, lunas: sUang.konf_bopd3, bukti: sUang.bukti_tf_bopd3 }
+                ];
+                res.tagihan = totalBopd - (eb+aum+bea);
+                res.isTransfer = (sUang.konf_bopd1 && !!sUang.bukti_tf_bopd1) || (sUang.konf_bopd2 && !!sUang.bukti_tf_bopd2) || (sUang.konf_bopd3 && !!sUang.bukti_tf_bopd3);
+                res.bukti = sUang.bukti_tf_bopd3 || sUang.bukti_tf_bopd2 || sUang.bukti_tf_bopd1;
+            } else {
+                res.tagihan = totalBopd - (eb+aum+bea);
+                res.isLunas = sUang.konfirmasi_bopd === true; 
+                res.bukti = sUang.bukti_transfer;
+                res.hasTransfer = !!res.bukti && !res.isLunas;
+                res.isTransfer = res.isLunas && !!res.bukti;
+            }
+        }
+        return res;
+    }
     function renderTableBendahara() {
         const thead = document.getElementById('thead-bendahara');
         const tbody = document.getElementById('tbody-bendahara');
