@@ -217,27 +217,36 @@
 
             <div id="panel-sekretaris" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-4">
-                        <div>
-                            <h2 class="font-heading font-semibold text-lg text-brand-navy">Master Siswa</h2>
-                            <p class="text-xs text-brand-muted mt-1">Data utama siswa, pendaftaran, dan sinkronisasi.</p>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                            <select id="filter-master-siswa" onchange="renderSekretaris()" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand-gold bg-brand-bg w-full sm:w-auto font-semibold">
-                                <option value="all">Semua Siswa</option>
-                                <option value="lengkap">Sudah Lengkap (Nilai Diinput)</option>
-                                <option value="belum">Belum Lengkap</option>
-                            </select>
-                            <button onclick="bukaModalFormSiswa()" class="btn-press bg-brand-navy text-white px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-md hover:bg-opacity-90 w-full sm:w-auto justify-center">
+                    <!-- HEADER BARU: Terintegrasi dengan Search & Filter -->
+                    <div class="flex flex-col mb-4 gap-4 border-b border-gray-100 pb-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h2 class="font-heading font-semibold text-lg text-brand-navy">Master Siswa</h2>
+                                <p class="text-xs text-brand-muted mt-1">Data utama siswa, pendaftaran, dan sinkronisasi.</p>
+                            </div>
+                            <button onclick="bukaModalFormSiswa()" class="btn-press bg-brand-navy text-white px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-md hover:bg-opacity-90">
                                 <i class="ph ph-plus font-bold"></i> Tambah Siswa
                             </button>
                         </div>
+                        <div class="flex flex-wrap items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                            <div class="relative flex-1 min-w-[200px]">
+                                <i class="ph-bold ph-magnifying-glass absolute left-3 top-2.5 text-gray-400"></i>
+                                <input type="text" id="search-master" oninput="renderSekretaris()" placeholder="Ketik nama atau No PPDB..." class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-brand-gold focus:ring-1 focus:ring-brand-gold outline-none">
+                            </div>
+                            <select id="filter-abjad-master" onchange="renderSekretaris()" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-brand-gold outline-none cursor-pointer">
+                                <option value="">Semua Abjad</option>
+                                <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option><option value="I">I</option><option value="J">J</option><option value="K">K</option><option value="L">L</option><option value="M">M</option><option value="N">N</option><option value="O">O</option><option value="P">P</option><option value="Q">Q</option><option value="R">R</option><option value="S">S</option><option value="T">T</option><option value="U">U</option><option value="V">V</option><option value="W">W</option><option value="X">X</option><option value="Y">Y</option><option value="Z">Z</option>
+                            </select>
+                            <select id="filter-master-siswa" onchange="renderSekretaris()" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-brand-gold outline-none font-semibold cursor-pointer">
+                                <option value="all">Semua Status</option>
+                                <option value="lengkap">Sudah Lengkap</option>
+                                <option value="belum">Belum Lengkap</option>
+                            </select>
+                        </div>
                     </div>
+                    <!-- BATAS HEADER BARU -->
+                    
                     <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
-                        <table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100"><tr><th class="py-3.5 px-4">No PPDB</th><th class="py-3.5 px-4">Password (No)</th><th class="py-3.5 px-4">Nama Lengkap</th><th class="py-3.5 px-4 text-center">Aksi Pantau & Edit</th></tr></thead><tbody id="tbody-sekretaris" class="divide-y divide-gray-100 bg-white"></tbody></table>
-                    </div>
-                </div>
-            </div>
 
             <div id="panel-penganalisis" class="panel-view hidden space-y-6">
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
@@ -932,14 +941,28 @@
 
     function renderSekretaris() {
         const tbody = document.getElementById('tbody-sekretaris'); if(!tbody) return;
+        
+        // Tarik parameter filter
         const flt = document.getElementById('filter-master-siswa')?.value || 'all';
+        const query = (document.getElementById('search-master')?.value || '').trim().toLowerCase();
+        const abjad = (document.getElementById('filter-abjad-master')?.value || '').toLowerCase();
 
+        // Filter 3 Lapis: Status, Pencarian Teks, dan Abjad
         const filteredData = masterData.filter(s => {
             const sAna = analisisData.find(x => x.no_ppdb === s.no_ppdb) || {};
             const isLengkap = sAna.mengenal_huruf != null && sAna.mengenal_bilangan != null; 
-            if (flt === 'lengkap') return isLengkap;
-            if (flt === 'belum') return !isLengkap;
-            return true;
+            
+            let matchStatus = true;
+            if (flt === 'lengkap') matchStatus = isLengkap;
+            if (flt === 'belum') matchStatus = !isLengkap;
+
+            const nama = (s.nama_murid || '').toLowerCase();
+            const no = (s.no_ppdb || '').toLowerCase();
+            
+            const matchQuery = query === '' || nama.includes(query) || no.includes(query);
+            const matchAbjad = abjad === '' || nama.startsWith(abjad);
+
+            return matchStatus && matchQuery && matchAbjad;
         });
 
         tbody.innerHTML = filteredData.map(s => {
@@ -952,6 +975,10 @@
 
             return `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4 font-mono text-xs font-medium">${s.no_ppdb||'-'}</td><td class="py-3 px-4 font-bold text-blue-600">${s.password||'-'}</td><td class="py-3 px-4 font-semibold text-brand-navy">${s.nama_murid||'-'}</td><td class="py-3 px-4 text-center flex justify-center gap-1">${btnAnalisis}${btnWawancara}<button onclick="bukaModalFormSiswa('${s.id}')" title="Edit Siswa" class="text-blue-500 bg-blue-50 hover:bg-blue-100 p-1.5 rounded border border-blue-100 ml-1"><i class="ph-bold ph-pencil-simple text-lg"></i></button><button onclick="hapusSiswa('${s.id}', '${s.no_ppdb}')" title="Hapus Siswa" class="text-red-500 bg-red-50 hover:bg-red-100 p-1.5 rounded border border-red-100"><i class="ph-bold ph-trash text-lg"></i></button></td></tr>`;
         }).join('');
+
+        if (filteredData.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500 text-sm">Tidak ada data siswa yang cocok dengan pencarian.</td></tr>`;
+        }
     }
 
     function autoGenerateAkses() { const nm = document.getElementById('fs-nama').value.trim(); if(nm.length > 0 && !document.getElementById('fs-id').value) { document.getElementById('fs-no').value = 'sdm-' + Math.floor(100 + Math.random() * 900); } }
