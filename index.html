@@ -427,15 +427,19 @@
                             <p class="text-xs text-brand-muted mt-1">Klik nama siswa untuk melihat preview perlengkapan.</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                            <div class="relative w-full sm:w-48">
-                                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                                <input type="text" id="filter-cari-perlengkapan" onkeyup="renderPerlengkapan()" class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-brand-gold bg-brand-bg" placeholder="Cari nama siswa...">
-                            </div>
-                            <select id="filter-perlengkapan" onchange="renderPerlengkapan()" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-gold bg-brand-bg w-full sm:w-auto font-semibold">
-                                <option value="all">Semua Siswa</option>
+                            <select id="sort-abjad-perlengkapan" onchange="renderPerlengkapan()" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-gold bg-brand-bg font-semibold cursor-pointer w-full sm:w-auto">
+                                <option value="az">Urutkan: A - Z</option>
+                                <option value="za">Urutkan: Z - A</option>
+                            </select>
+                            <select id="filter-perlengkapan" onchange="renderPerlengkapan()" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-gold bg-brand-bg w-full sm:w-auto font-semibold cursor-pointer">
+                                <option value="all">Semua Status</option>
                                 <option value="lengkap">Sudah Lengkap</option>
                                 <option value="belum">Belum Lengkap</option>
                             </select>
+                            <div class="relative w-full sm:w-48">
+                                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="filter-cari-perlengkapan" onkeyup="debounceRender('renderPerlengkapan')" class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-brand-gold bg-brand-bg" placeholder="Cari nama siswa...">
+                            </div>
                         </div>
                     </div>
                     <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
@@ -1979,13 +1983,23 @@
 
     function renderPerlengkapan() {
         const tbody = document.getElementById('tbody-perlengkapan'); if(!tbody) return;
-        const q = (document.getElementById('filter-cari-perlengkapan')?.value || '').toLowerCase(); const flt = document.getElementById('filter-perlengkapan')?.value || 'all';
+        const q = (document.getElementById('filter-cari-perlengkapan')?.value || '').toLowerCase(); 
+        const flt = document.getElementById('filter-perlengkapan')?.value || 'all';
+        const sortOrder = document.getElementById('sort-abjad-perlengkapan')?.value || 'az';
 
-        const d = masterData.filter(sMaster => {
+        let d = masterData.filter(sMaster => {
             const matchName = !q || sMaster.nama_murid?.toLowerCase().includes(q);
             const p = perkapData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
             const isLengkap = p.ambil_souvenir && p.s_merah_putih && p.s_batik_ipm && p.s_bawahan_ipm && p.s_identitas_biru && p.s_identitas_abu && p.s_hw && p.s_olahraga && p.s_rompi && p.s_topi && p.s_sabuk && p.s_dasi && p.s_hasduk && p.s_kolong;
             let matchStatus = true; if (flt === 'lengkap') matchStatus = isLengkap; if (flt === 'belum') matchStatus = !isLengkap; return matchName && matchStatus;
+        });
+
+        d.sort((a, b) => {
+            const nameA = (a.nama_murid || '').toUpperCase();
+            const nameB = (b.nama_murid || '').toUpperCase();
+            if (sortOrder === 'az') return nameA.localeCompare(nameB);
+            if (sortOrder === 'za') return nameB.localeCompare(nameA);
+            return 0;
         });
 
         tbody.innerHTML = d.map(sMaster => {
