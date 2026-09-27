@@ -1502,7 +1502,8 @@ function debounceRender(fungsiRender, delay = 400) {
         const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); const day = String(d.getDate()).padStart(2,'0');
         const strHariIni = `${y}-${m}-${day}`;
 
-        let totalTunai = 0; let totalTransfer = 0; let lunasHariIni = 0; let trxFrequency = 0;
+        let totalTunai = 0; let totalTransfer = 0; 
+        let hariIniTunai = 0; let hariIniTransfer = 0; // Variabel baru pelacak jumlah murid/transaksi
 
         masterData.forEach(s => {
             const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb);
@@ -1515,13 +1516,15 @@ function debounceRender(fungsiRender, delay = 400) {
 
             if (activeKatBendahara === 'pendaftaran' && su.konf_pendaftaran) {
                 let tag = 300000;
-                if (masukRentang) { if (isTf(su.bukti_tf_pendaftaran)) totalTransfer += tag; else totalTunai += tag; }
-                if (tglTrx === strHariIni) { lunasHariIni += tag; trxFrequency++; }
+                let isTrf = isTf(su.bukti_tf_pendaftaran);
+                if (masukRentang) { if (isTrf) totalTransfer += tag; else totalTunai += tag; }
+                if (tglTrx === strHariIni) { if (isTrf) hariIniTransfer++; else hariIniTunai++; }
             }
             else if (activeKatBendahara === 'daftarulang' && su.konf_daftar_ulang) {
                 let tag = parseInt(su.daftar_ulang) || 0;
-                if (masukRentang) { if (isTf(su.bukti_tf_daftar_ulang)) totalTransfer += tag; else totalTunai += tag; }
-                if (tglTrx === strHariIni) { lunasHariIni += tag; trxFrequency++; }
+                let isTrf = isTf(su.bukti_tf_daftar_ulang);
+                if (masukRentang) { if (isTrf) totalTransfer += tag; else totalTunai += tag; }
+                if (tglTrx === strHariIni) { if (isTrf) hariIniTransfer++; else hariIniTunai++; }
             }
             else if (activeKatBendahara === 'bopd') {
                 const totalBopd = parseInt(su.bopd) || 0;
@@ -1532,21 +1535,25 @@ function debounceRender(fungsiRender, delay = 400) {
                     const b2 = su.bopd2 != null ? su.bopd2 : (totalBopd * 0.25);
                     const b3 = su.bopd3 != null ? su.bopd3 : (totalBopd * 0.25);
                     if (su.konf_bopd1) {
-                        if (masukRentang) { if (isTf(su.bukti_tf_bopd1)) totalTransfer += b1; else totalTunai += b1; }
-                        if (tglTrx === strHariIni) { lunasHariIni += b1; trxFrequency++; }
+                        let isTrf = isTf(su.bukti_tf_bopd1);
+                        if (masukRentang) { if (isTrf) totalTransfer += b1; else totalTunai += b1; }
+                        if (tglTrx === strHariIni) { if(isTrf) hariIniTransfer++; else hariIniTunai++; }
                     }
                     if (su.konf_bopd2) {
-                        if (masukRentang) { if (isTf(su.bukti_tf_bopd2)) totalTransfer += b2; else totalTunai += b2; }
-                        if (tglTrx === strHariIni) { lunasHariIni += b2; trxFrequency++; }
+                        let isTrf = isTf(su.bukti_tf_bopd2);
+                        if (masukRentang) { if (isTrf) totalTransfer += b2; else totalTunai += b2; }
+                        if (tglTrx === strHariIni) { if(isTrf) hariIniTransfer++; else hariIniTunai++; }
                     }
                     if (su.konf_bopd3) {
-                        if (masukRentang) { if (isTf(su.bukti_tf_bopd3)) totalTransfer += b3; else totalTunai += b3; }
-                        if (tglTrx === strHariIni) { lunasHariIni += b3; trxFrequency++; }
+                        let isTrf = isTf(su.bukti_tf_bopd3);
+                        if (masukRentang) { if (isTrf) totalTransfer += b3; else totalTunai += b3; }
+                        if (tglTrx === strHariIni) { if(isTrf) hariIniTransfer++; else hariIniTunai++; }
                     }
                 } else if (su.konfirmasi_bopd) {
                     let tag = Math.max(0, totalBopd - (eb+aum+bea));
-                    if (masukRentang) { if (isTf(su.bukti_transfer)) totalTransfer += tag; else totalTunai += tag; }
-                    if (tglTrx === strHariIni) { lunasHariIni += tag; trxFrequency++; }
+                    let isTrf = isTf(su.bukti_transfer);
+                    if (masukRentang) { if (isTrf) totalTransfer += tag; else totalTunai += tag; }
+                    if (tglTrx === strHariIni) { if(isTrf) hariIniTransfer++; else hariIniTunai++; }
                 }
             }
         });
@@ -1554,9 +1561,14 @@ function debounceRender(fungsiRender, delay = 400) {
         const elTunai = document.getElementById('rekap-tunai'); if(elTunai) elTunai.innerText = formatRp(totalTunai);
         const elTransfer = document.getElementById('rekap-transfer'); if(elTransfer) elTransfer.innerText = formatRp(totalTransfer);
         const elTotal = document.getElementById('rekap-total'); if(elTotal) elTotal.innerText = formatRp(totalTunai + totalTransfer);
-        const elHariIni = document.getElementById('rekap-hari-ini'); if(elHariIni) elHariIni.innerText = `${trxFrequency} Trx = ${formatRp(lunasHariIni)}`;
+        
+        const elHariIni = document.getElementById('rekap-hari-ini'); 
+        if(elHariIni) {
+            // Penyesuaian ukuran font dinamis agar teks muat dalam kartu dashboard
+            elHariIni.className = "text-sm sm:text-base font-bold text-brand-navy mt-1";
+            elHariIni.innerHTML = `<span class="text-green-600">${hariIniTunai} Tunai</span> &bull; <span class="text-blue-600">${hariIniTransfer} Transfer</span>`;
+        }
     }
-
     function cetakLaporanBendahara() {
         const tglAwal = document.getElementById('filter-tgl-awal')?.value || '-';
         const tglAkhir = document.getElementById('filter-tgl-akhir')?.value || '-';
