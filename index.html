@@ -1371,7 +1371,12 @@ function debounceRender(fungsiRender, delay = 400) {
         
         renderTableBendahara();
     }
-function getKeuanganInfo(sUang) {
+// Fungsi cerdas untuk mendeteksi apakah pembayaran menggunakan Transfer atau Tunai
+    function isTf(bukti) {
+        return !!bukti && String(bukti).trim().toUpperCase() !== 'TUNAI' && String(bukti).trim() !== '';
+    }
+
+    function getKeuanganInfo(sUang) {
         let res = { isLunas: false, hasTransfer: false, tagihan: 0, bukti: null, tahapan: [], isTransfer: false };
         if(!sUang) return res;
 
@@ -1379,15 +1384,15 @@ function getKeuanganInfo(sUang) {
             res.tagihan = 300000;
             res.isLunas = sUang.konf_pendaftaran === true;
             res.bukti = sUang.bukti_tf_pendaftaran;
-            res.isTransfer = res.isLunas && !!res.bukti && String(res.bukti).includes('http');
-            res.hasTransfer = !!res.bukti && !res.isLunas && String(res.bukti).includes('http');
+            res.isTransfer = res.isLunas && isTf(res.bukti);
+            res.hasTransfer = !res.isLunas && isTf(res.bukti);
         }
         else if (activeKatBendahara === 'daftarulang') {
             res.tagihan = sUang.daftar_ulang || 0;
             res.isLunas = sUang.konf_daftar_ulang === true;
             res.bukti = sUang.bukti_tf_daftar_ulang;
-            res.isTransfer = res.isLunas && !!res.bukti && String(res.bukti).includes('http');
-            res.hasTransfer = !!res.bukti && !res.isLunas && String(res.bukti).includes('http');
+            res.isTransfer = res.isLunas && isTf(res.bukti);
+            res.hasTransfer = !res.isLunas && isTf(res.bukti);
         }
         else if (activeKatBendahara === 'bopd') {
             const totalBopd = parseInt(sUang.bopd) || 0;
@@ -1400,25 +1405,21 @@ function getKeuanganInfo(sUang) {
                 const b3 = sUang.bopd3 != null ? sUang.bopd3 : (totalBopd * 0.25);
                 
                 res.isLunas = sUang.konf_bopd1 && sUang.konf_bopd2 && sUang.konf_bopd3;
-                const tr1 = sUang.konf_bopd1 && !!sUang.bukti_tf_bopd1 && String(sUang.bukti_tf_bopd1).includes('http');
-                const tr2 = sUang.konf_bopd2 && !!sUang.bukti_tf_bopd2 && String(sUang.bukti_tf_bopd2).includes('http');
-                const tr3 = sUang.konf_bopd3 && !!sUang.bukti_tf_bopd3 && String(sUang.bukti_tf_bopd3).includes('http');
-
-                res.hasTransfer = (!sUang.konf_bopd1 && !!sUang.bukti_tf_bopd1) || (!sUang.konf_bopd2 && !!sUang.bukti_tf_bopd2) || (!sUang.konf_bopd3 && !!sUang.bukti_tf_bopd3);
                 res.tahapan = [
                     { tahap: 1, tagihan: b1, lunas: sUang.konf_bopd1, bukti: sUang.bukti_tf_bopd1 },
                     { tahap: 2, tagihan: b2, lunas: sUang.konf_bopd2, bukti: sUang.bukti_tf_bopd2 },
                     { tahap: 3, tagihan: b3, lunas: sUang.konf_bopd3, bukti: sUang.bukti_tf_bopd3 }
                 ];
                 res.tagihan = totalBopd - (eb+aum+bea);
-                res.isTransfer = tr1 || tr2 || tr3;
+                res.isTransfer = (sUang.konf_bopd1 && isTf(sUang.bukti_tf_bopd1)) || (sUang.konf_bopd2 && isTf(sUang.bukti_tf_bopd2)) || (sUang.konf_bopd3 && isTf(sUang.bukti_tf_bopd3));
+                res.hasTransfer = (!sUang.konf_bopd1 && isTf(sUang.bukti_tf_bopd1)) || (!sUang.konf_bopd2 && isTf(sUang.bukti_tf_bopd2)) || (!sUang.konf_bopd3 && isTf(sUang.bukti_tf_bopd3));
                 res.bukti = sUang.bukti_tf_bopd3 || sUang.bukti_tf_bopd2 || sUang.bukti_tf_bopd1;
             } else {
                 res.tagihan = totalBopd - (eb+aum+bea);
                 res.isLunas = sUang.konfirmasi_bopd === true; 
                 res.bukti = sUang.bukti_transfer;
-                res.isTransfer = res.isLunas && !!res.bukti && String(res.bukti).includes('http');
-                res.hasTransfer = !!res.bukti && !res.isLunas && String(res.bukti).includes('http');
+                res.isTransfer = res.isLunas && isTf(res.bukti);
+                res.hasTransfer = !res.isLunas && isTf(res.bukti);
             }
         }
         return res;
@@ -1501,25 +1502,51 @@ function getKeuanganInfo(sUang) {
         const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); const day = String(d.getDate()).padStart(2,'0');
         const strHariIni = `${y}-${m}-${day}`;
 
-        let totalTunai = 0; let totalTransfer = 0; let lunasHariIni = 0;
+        let totalTunai = 0; let totalTransfer = 0; let lunasHariIni = 0; let trxFrequency = 0;
 
         masterData.forEach(s => {
             const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb);
             if(!su) return;
-            const info = getKeuanganInfo(su);
             
-            if (info.isLunas && info.tagihan > 0) {
-                let tglTrx = s.tgl_pendaftaran ? String(s.tgl_pendaftaran).split('T')[0] : '';
+            let tglTrx = s.tgl_pendaftaran ? String(s.tgl_pendaftaran).split('T')[0] : '';
+            let masukRentang = true;
+            if (tglAwal && tglAwal !== '-' && tglTrx && tglTrx < tglAwal) masukRentang = false;
+            if (tglAkhir && tglAkhir !== '-' && tglTrx && tglTrx > tglAkhir) masukRentang = false;
+
+            if (activeKatBendahara === 'pendaftaran' && su.konf_pendaftaran) {
+                let tag = 300000;
+                if (masukRentang) { if (isTf(su.bukti_tf_pendaftaran)) totalTransfer += tag; else totalTunai += tag; }
+                if (tglTrx === strHariIni) { lunasHariIni += tag; trxFrequency++; }
+            }
+            else if (activeKatBendahara === 'daftarulang' && su.konf_daftar_ulang) {
+                let tag = parseInt(su.daftar_ulang) || 0;
+                if (masukRentang) { if (isTf(su.bukti_tf_daftar_ulang)) totalTransfer += tag; else totalTunai += tag; }
+                if (tglTrx === strHariIni) { lunasHariIni += tag; trxFrequency++; }
+            }
+            else if (activeKatBendahara === 'bopd') {
+                const totalBopd = parseInt(su.bopd) || 0;
+                const eb = parseInt(su.early_bird)||0; const aum = parseInt(su.kader_aum)||0; const bea = parseInt(su.beasiswa_lainnya)||0;
                 
-                if (tglTrx === strHariIni) { lunasHariIni += info.tagihan; }
-
-                let masukRentang = true;
-                if (tglAwal && tglTrx && tglTrx < tglAwal) masukRentang = false;
-                if (tglAkhir && tglTrx && tglTrx > tglAkhir) masukRentang = false;
-
-                if (masukRentang) {
-                    if (info.isTransfer) totalTransfer += info.tagihan;
-                    else totalTunai += info.tagihan;
+                if (su.jenis_pembayaran_bopd === 'Angsuran') {
+                    const b1 = su.bopd1 != null ? su.bopd1 : Math.max(0, (totalBopd * 0.5) - (eb+aum+bea));
+                    const b2 = su.bopd2 != null ? su.bopd2 : (totalBopd * 0.25);
+                    const b3 = su.bopd3 != null ? su.bopd3 : (totalBopd * 0.25);
+                    if (su.konf_bopd1) {
+                        if (masukRentang) { if (isTf(su.bukti_tf_bopd1)) totalTransfer += b1; else totalTunai += b1; }
+                        if (tglTrx === strHariIni) { lunasHariIni += b1; trxFrequency++; }
+                    }
+                    if (su.konf_bopd2) {
+                        if (masukRentang) { if (isTf(su.bukti_tf_bopd2)) totalTransfer += b2; else totalTunai += b2; }
+                        if (tglTrx === strHariIni) { lunasHariIni += b2; trxFrequency++; }
+                    }
+                    if (su.konf_bopd3) {
+                        if (masukRentang) { if (isTf(su.bukti_tf_bopd3)) totalTransfer += b3; else totalTunai += b3; }
+                        if (tglTrx === strHariIni) { lunasHariIni += b3; trxFrequency++; }
+                    }
+                } else if (su.konfirmasi_bopd) {
+                    let tag = Math.max(0, totalBopd - (eb+aum+bea));
+                    if (masukRentang) { if (isTf(su.bukti_transfer)) totalTransfer += tag; else totalTunai += tag; }
+                    if (tglTrx === strHariIni) { lunasHariIni += tag; trxFrequency++; }
                 }
             }
         });
@@ -1527,12 +1554,12 @@ function getKeuanganInfo(sUang) {
         const elTunai = document.getElementById('rekap-tunai'); if(elTunai) elTunai.innerText = formatRp(totalTunai);
         const elTransfer = document.getElementById('rekap-transfer'); if(elTransfer) elTransfer.innerText = formatRp(totalTransfer);
         const elTotal = document.getElementById('rekap-total'); if(elTotal) elTotal.innerText = formatRp(totalTunai + totalTransfer);
-        const elHariIni = document.getElementById('rekap-hari-ini'); if(elHariIni) elHariIni.innerText = formatRp(lunasHariIni);
+        const elHariIni = document.getElementById('rekap-hari-ini'); if(elHariIni) elHariIni.innerText = `${trxFrequency} Trx = ${formatRp(lunasHariIni)}`;
     }
 
     function cetakLaporanBendahara() {
-        const tglAwal = document.getElementById('filter-tgl-awal')?.value || '';
-        const tglAkhir = document.getElementById('filter-tgl-akhir')?.value || '';
+        const tglAwal = document.getElementById('filter-tgl-awal')?.value || '-';
+        const tglAkhir = document.getElementById('filter-tgl-akhir')?.value || '-';
         
         let listTunai = []; let listTransfer = [];
         let totalTunai = 0; let totalTransfer = 0;
@@ -1540,21 +1567,42 @@ function getKeuanganInfo(sUang) {
 
         masterData.forEach(s => {
             let tglTrx = s.tgl_pendaftaran ? String(s.tgl_pendaftaran).split('T')[0] : '';
-            if(tglAwal && tglTrx && tglTrx < tglAwal) return;
-            if(tglAkhir && tglTrx && tglTrx > tglAkhir) return;
+            if(tglAwal && tglAwal !== '-' && tglTrx && tglTrx < tglAwal) return;
+            if(tglAkhir && tglAkhir !== '-' && tglTrx && tglTrx > tglAkhir) return;
 
             const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb);
             if(!su) return;
-            const info = getKeuanganInfo(su);
             
-            if (info.isLunas && info.tagihan > 0) {
-                const item = { tgl: tglTrx || '-', nama: s.nama_murid, nominal: info.tagihan, ket: judulLaporan };
-                if (info.isTransfer) { listTransfer.push(item); totalTransfer += info.tagihan; } 
-                else { listTunai.push(item); totalTunai += info.tagihan; }
+            const addItem = (tagihan, validTf) => {
+                if (tagihan <= 0) return;
+                const item = { tgl: tglTrx || '-', nama: s.nama_murid, nominal: tagihan, ket: validTf ? 'TRANSFER' : 'TUNAI' };
+                if (validTf) { listTransfer.push(item); totalTransfer += tagihan; } 
+                else { listTunai.push(item); totalTunai += tagihan; }
+            };
+
+            if (activeKatBendahara === 'pendaftaran' && su.konf_pendaftaran) {
+                addItem(300000, isTf(su.bukti_tf_pendaftaran));
+            }
+            else if (activeKatBendahara === 'daftarulang' && su.konf_daftar_ulang) {
+                addItem(parseInt(su.daftar_ulang) || 0, isTf(su.bukti_tf_daftar_ulang));
+            }
+            else if (activeKatBendahara === 'bopd') {
+                const totalBopd = parseInt(su.bopd) || 0;
+                const eb = parseInt(su.early_bird)||0; const aum = parseInt(su.kader_aum)||0; const bea = parseInt(su.beasiswa_lainnya)||0;
+                if (su.jenis_pembayaran_bopd === 'Angsuran') {
+                    const b1 = su.bopd1 != null ? su.bopd1 : Math.max(0, (totalBopd * 0.5) - (eb+aum+bea));
+                    const b2 = su.bopd2 != null ? su.bopd2 : (totalBopd * 0.25);
+                    const b3 = su.bopd3 != null ? su.bopd3 : (totalBopd * 0.25);
+                    if (su.konf_bopd1) addItem(b1, isTf(su.bukti_tf_bopd1));
+                    if (su.konf_bopd2) addItem(b2, isTf(su.bukti_tf_bopd2));
+                    if (su.konf_bopd3) addItem(b3, isTf(su.bukti_tf_bopd3));
+                } else if (su.konfirmasi_bopd) {
+                    addItem(Math.max(0, totalBopd - (eb+aum+bea)), isTf(su.bukti_transfer));
+                }
             }
         });
 
-        const renderRows = (arr) => arr.map((x, i) => `<tr><td class="text-center">${i+1}</td><td class="text-center">${x.tgl}</td><td>${x.nama}</td><td class="text-right">${formatRp(x.nominal)}</td><td class="text-center uppercase font-bold">${currentUsername}</td><td class="text-center text-xs">${x.ket}</td></tr>`).join('');
+        const renderRows = (arr) => arr.map((x, i) => `<tr><td class="text-center">${i+1}</td><td class="text-center">${x.tgl}</td><td>${x.nama}</td><td class="text-right">${formatRp(x.nominal)}</td><td class="text-center uppercase font-bold">${currentUsername}</td><td class="text-center text-xs font-bold ${x.ket==='TRANSFER'?'text-blue-600':'text-green-600'}">${x.ket}</td></tr>`).join('');
         const emptyRow = `<tr><td colspan="6" class="text-center text-gray-500 py-4">Tidak ada data transaksi pada rentang tanggal ini.</td></tr>`;
 
         const html = `<!DOCTYPE html><html><head><title>Laporan Keuangan - ${judulLaporan}</title><style>@page { size: A4 portrait; margin: 1.5cm; } body { font-family: Arial, sans-serif; font-size: 12px; } table { width: 100%; border-collapse: collapse; margin-bottom: 20px; } th, td { border: 1px solid #000; padding: 6px; } th { background-color: #f3f4f6; } .text-center { text-align: center; } .text-right { text-align: right; } .header { text-align: center; margin-bottom: 20px; } @media print { .no-print { display: none !important; } } .print-btn { position: fixed; bottom: 30px; right: 30px; background: #0F2747; color: white; padding: 15px 25px; border-radius: 12px; cursor: pointer; border: none; font-size: 16px; font-weight: bold; }</style></head><body><button class="no-print print-btn" onclick="window.print()">🖨️ Cetak Laporan</button>
@@ -1619,10 +1667,10 @@ function getKeuanganInfo(sUang) {
             <style>
                 @page { size: 80mm auto; margin: 0; }
                 body { font-family: 'Courier New', Courier, monospace; font-size: 12px; line-height: 1.4; color: #000; background-color: #fff; padding: 4mm; width: 72mm; margin: 0 auto; -webkit-print-color-adjust: exact; }
-                .text-center { text-align: center; } .text-right { text-align: right; } .bold { font-weight: bold; }
+                .text-center { text-align: center; } .text-right { text-align: right; } .text-left { text-align: left; } .bold { font-weight: bold; }
                 .line-double { border-bottom: 2px dashed #000; margin: 5px 0; } .line-single { border-bottom: 1px dashed #000; margin: 5px 0; }
                 .shop-name { font-size: 16px; font-weight: bold; text-transform: uppercase; margin-top: 5px; } .shop-detail { font-size: 11px; margin-bottom: 2px; }
-                .meta-table { width: 100%; font-size: 11px; margin: 8px 0; text-align: left; } .meta-table td { padding: 1px 0; }
+                .meta-table { width: 100%; font-size: 11px; margin: 8px 0; border-collapse: collapse; } .meta-table td { padding: 1px 0; vertical-align: top; text-align: left;}
                 .totals-table { width: 100%; margin-top: 5px; font-size: 11px; } .totals-table td { padding: 2px 0; } .grand-total { font-size: 14px; font-weight: bold; }
                 .footer { margin-top: 15px; font-size: 11px; }
                 .no-print { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin: 20px auto; display: block; }
@@ -1638,21 +1686,25 @@ function getKeuanganInfo(sUang) {
                 <div class="shop-detail">Smart PMB Tahun Ajaran 2027/2028</div>
             </div>
             <div class="line-double"></div>
+            
             <table class="meta-table">
-                <tr><td style="width: 25%;">No. Nota</td><td>: ${noInvoice}</td></tr>
-                <tr><td>Tanggal</td><td>: ${tgl}</td></tr>
-                <tr><td>Kasir</td><td>: ${currentUsername.toUpperCase()}</td></tr>
-                <tr><td>Siswa</td><td class="bold">: ${sMaster.nama_murid.substring(0, 18)}</td></tr>
+                <tr><td style="width: 25%;">No. Nota</td><td style="width: 5%;">:</td><td>${noInvoice}</td></tr>
+                <tr><td>Tanggal</td><td>:</td><td>${tgl}</td></tr>
+                <tr><td>Kasir</td><td>:</td><td>${currentUsername.toUpperCase()}</td></tr>
+                <tr><td>Siswa</td><td>:</td><td class="bold">${sMaster.nama_murid}</td></tr>
             </table>
+
             <div class="line-single"></div>
             <div style="font-weight: bold; text-align: center; margin: 5px 0;">PEMBAYARAN ${title}</div>
             <div class="line-single"></div>
+            
             <table class="totals-table">
                 <tr><td>Metode Bayar</td><td class="text-right col-total bold">${metode}</td></tr>
                 <tr><td>Status</td><td class="text-right col-total bold">LUNAS</td></tr>
                 <tr><td colspan="2"><div class="line-single" style="margin: 2px 0;"></div></td></tr>
                 <tr class="grand-total"><td>GRAND TOTAL</td><td class="text-right col-total">${formatRp(info.tagihan)}</td></tr>
             </table>
+            
             <div class="line-double"></div>
             <div class="text-center footer">
                 <div class="bold">Terima Kasih</div>
@@ -1666,11 +1718,12 @@ function getKeuanganInfo(sUang) {
     }
 
     function setRealtimeDate() {
+        // Mengosongkan tanggal awal agar Dashboard memuat TOTAL SEMUA DATA dari hari pertama
+        // Dan hanya membatasi sampai batas tanggal hari ini
         const tglSekarang = new Date().toISOString().split('T')[0];
         const fAwal = document.getElementById('filter-tgl-awal');
         const fAkhir = document.getElementById('filter-tgl-akhir');
         
-        // Sengaja Dikosongkan agar Dashboard menampilkan seluruh data (awal mula sampai hari ini) secara default
         if(fAwal) fAwal.value = ''; 
         if(fAkhir) fAkhir.value = tglSekarang;
         
