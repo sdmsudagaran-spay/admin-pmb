@@ -209,7 +209,7 @@
                             <i class="ph ph-plus font-bold"></i> Tambah Akun
                         </button>
                     </div>
-                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+                    <div class="overflow-y-auto overflow-x-auto max-h-[50vh] rounded-xl border border-gray-100 shadow-sm no-scrollbar">
                         <table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100"><tr><th class="py-3.5 px-4">Username</th><th class="py-3.5 px-4">Role Akses</th><th class="py-3.5 px-4 text-center">Edit / Hapus</th></tr></thead><tbody id="tbody-staf" class="divide-y divide-gray-100 bg-white"></tbody></table>
                     </div>
                 </div>
@@ -360,9 +360,9 @@
                             <p class="text-[10px] font-bold text-green-600 uppercase tracking-wider mb-1">Total Kes</p>
                             <p id="rekap-total" class="text-xl sm:text-2xl font-bold text-brand-navy">Rp 0</p>
                         </div>
-                        <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 shadow-inner">
-                            <p class="text-[10px] font-bold text-purple-600 uppercase tracking-wider mb-1">Lunas Hari Ini</p>
-                            <p id="rekap-hari-ini" class="text-xl sm:text-2xl font-bold text-brand-navy">Rp 0</p>
+                       <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 shadow-inner flex flex-col justify-center">
+                            <p class="text-[10px] font-bold text-purple-600 uppercase tracking-wider mb-1">Rekap Transaksi</p>
+                            <div id="rekap-hari-ini" class="font-bold text-brand-navy">0</div>
                         </div>
                     </div>
                 </div>
@@ -1523,16 +1523,14 @@
         const tglAwal = document.getElementById('filter-tgl-awal')?.value;
         const tglAkhir = document.getElementById('filter-tgl-akhir')?.value;
         
-        const strHariIni = getLocalYYYYMMDD(new Date());
-
         let totalTunai = 0; let totalTransfer = 0; 
-        let hariIniTunai = 0; let hariIniTransfer = 0;
+        let countTunai = 0; let countTransfer = 0; // Pelacak jumlah transaksi (Count)
 
         masterData.forEach(s => {
             const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb);
             if(!su) return;
             
-            let tglTrx = getLocalYYYYMMDD(s.tgl_pendaftaran);
+            let tglTrx = s.tgl_pendaftaran ? String(s.tgl_pendaftaran).split('T')[0] : '';
             let masukRentang = true;
             if (tglAwal && tglAwal !== '-' && tglTrx && tglTrx < tglAwal) masukRentang = false;
             if (tglAkhir && tglAkhir !== '-' && tglTrx && tglTrx > tglAkhir) masukRentang = false;
@@ -1540,14 +1538,12 @@
             if (activeKatBendahara === 'pendaftaran' && isTrue(su.konf_pendaftaran)) {
                 let tag = 300000;
                 let trf = isTf(su.bukti_tf_pendaftaran);
-                if (masukRentang) { if (trf) totalTransfer += tag; else totalTunai += tag; }
-                if (tglTrx === strHariIni) { if (trf) hariIniTransfer++; else hariIniTunai++; }
+                if (masukRentang) { if (trf) { totalTransfer += tag; countTransfer++; } else { totalTunai += tag; countTunai++; } }
             }
             else if (activeKatBendahara === 'daftarulang' && isTrue(su.konf_daftar_ulang)) {
                 let tag = parseInt(su.daftar_ulang) || 0;
                 let trf = isTf(su.bukti_tf_daftar_ulang);
-                if (masukRentang) { if (trf) totalTransfer += tag; else totalTunai += tag; }
-                if (tglTrx === strHariIni) { if (trf) hariIniTransfer++; else hariIniTunai++; }
+                if (masukRentang) { if (trf) { totalTransfer += tag; countTransfer++; } else { totalTunai += tag; countTunai++; } }
             }
             else if (activeKatBendahara === 'bopd') {
                 const totalBopd = parseInt(su.bopd) || 0;
@@ -1560,24 +1556,20 @@
                     
                     if (isTrue(su.konf_bopd1)) {
                         let trf = isTf(su.bukti_tf_bopd1);
-                        if (masukRentang) { if (trf) totalTransfer += b1; else totalTunai += b1; }
-                        if (tglTrx === strHariIni) { if(trf) hariIniTransfer++; else hariIniTunai++; }
+                        if (masukRentang) { if (trf) { totalTransfer += b1; countTransfer++; } else { totalTunai += b1; countTunai++; } }
                     }
                     if (isTrue(su.konf_bopd2)) {
                         let trf = isTf(su.bukti_tf_bopd2);
-                        if (masukRentang) { if (trf) totalTransfer += b2; else totalTunai += b2; }
-                        if (tglTrx === strHariIni) { if(trf) hariIniTransfer++; else hariIniTunai++; }
+                        if (masukRentang) { if (trf) { totalTransfer += b2; countTransfer++; } else { totalTunai += b2; countTunai++; } }
                     }
                     if (isTrue(su.konf_bopd3)) {
                         let trf = isTf(su.bukti_tf_bopd3);
-                        if (masukRentang) { if (trf) totalTransfer += b3; else totalTunai += b3; }
-                        if (tglTrx === strHariIni) { if(trf) hariIniTransfer++; else hariIniTunai++; }
+                        if (masukRentang) { if (trf) { totalTransfer += b3; countTransfer++; } else { totalTunai += b3; countTunai++; } }
                     }
                 } else if (isTrue(su.konfirmasi_bopd)) {
                     let tag = Math.max(0, totalBopd - (eb+aum+bea));
                     let trf = isTf(su.bukti_transfer);
-                    if (masukRentang) { if (trf) totalTransfer += tag; else totalTunai += tag; }
-                    if (tglTrx === strHariIni) { if(trf) hariIniTransfer++; else hariIniTunai++; }
+                    if (masukRentang) { if (trf) { totalTransfer += tag; countTransfer++; } else { totalTunai += tag; countTunai++; } }
                 }
             }
         });
@@ -1588,8 +1580,8 @@
         
         const elHariIni = document.getElementById('rekap-hari-ini'); 
         if(elHariIni) {
-            elHariIni.className = "text-sm sm:text-base font-bold text-brand-navy mt-1";
-            elHariIni.innerHTML = `<span class="text-green-600">${hariIniTunai} Tunai</span> &bull; <span class="text-blue-600">${hariIniTransfer} Transfer</span>`;
+            elHariIni.className = "text-xs sm:text-sm mt-1";
+            elHariIni.innerHTML = `<div class="flex flex-col gap-1"><span class="text-green-700 bg-green-100 px-2 py-0.5 rounded font-bold">${countTunai} Trx Tunai</span><span class="text-blue-700 bg-blue-100 px-2 py-0.5 rounded font-bold">${countTransfer} Trx Transfer</span></div>`;
         }
     }
 
@@ -1602,16 +1594,19 @@
         let judulLaporan = activeKatBendahara === 'pendaftaran' ? 'PENDAFTARAN' : activeKatBendahara === 'daftarulang' ? 'DAFTAR ULANG' : 'BOPD';
 
         masterData.forEach(s => {
-            let tglTrx = getLocalYYYYMMDD(s.tgl_pendaftaran);
+            let tglTrx = s.tgl_pendaftaran ? String(s.tgl_pendaftaran).split('T')[0] : '';
             if(tglAwal && tglAwal !== '-' && tglTrx && tglTrx < tglAwal) return;
             if(tglAkhir && tglAkhir !== '-' && tglTrx && tglTrx > tglAkhir) return;
 
             const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb);
             if(!su) return;
             
+            // Mengambil nama kasir historis dari database. Fallback ke admin jika kosong.
+            const namaKasirDiDb = su.kasir || su.pewawancara || su.petugas || 'Admin';
+            
             const addItem = (tagihan, validTf) => {
                 if (tagihan <= 0) return;
-                const item = { tgl: tglTrx || '-', nama: s.nama_murid, nominal: tagihan, ket: validTf ? 'TRANSFER' : 'TUNAI' };
+                const item = { tgl: tglTrx || '-', nama: s.nama_murid, nominal: tagihan, ket: validTf ? 'TRANSFER' : 'TUNAI', kasir: namaKasirDiDb };
                 if (validTf) { listTransfer.push(item); totalTransfer += tagihan; } 
                 else { listTunai.push(item); totalTunai += tagihan; }
             };
@@ -1638,7 +1633,7 @@
             }
         });
 
-        const renderRows = (arr) => arr.map((x, i) => `<tr><td class="text-center">${i+1}</td><td class="text-center">${x.tgl}</td><td>${x.nama}</td><td class="text-right">${formatRp(x.nominal)}</td><td class="text-center uppercase font-bold">${currentUsername}</td><td class="text-center text-xs font-bold ${x.ket==='TRANSFER'?'text-blue-600':'text-green-600'}">${x.ket}</td></tr>`).join('');
+        const renderRows = (arr) => arr.map((x, i) => `<tr><td class="text-center">${i+1}</td><td class="text-center">${x.tgl}</td><td>${x.nama}</td><td class="text-right">${formatRp(x.nominal)}</td><td class="text-center uppercase font-bold">${x.kasir}</td><td class="text-center text-xs font-bold ${x.ket==='TRANSFER'?'text-blue-600':'text-green-600'}">${x.ket}</td></tr>`).join('');
         const emptyRow = `<tr><td colspan="6" class="text-center text-gray-500 py-4">Tidak ada data transaksi pada rentang tanggal ini.</td></tr>`;
 
         const html = `<!DOCTYPE html><html><head><title>Laporan Keuangan - ${judulLaporan}</title><style>@page { size: A4 portrait; margin: 1.5cm; } body { font-family: Arial, sans-serif; font-size: 12px; } table { width: 100%; border-collapse: collapse; margin-bottom: 20px; } th, td { border: 1px solid #000; padding: 6px; } th { background-color: #f3f4f6; } .text-center { text-align: center; } .text-right { text-align: right; } .header { text-align: center; margin-bottom: 20px; } @media print { .no-print { display: none !important; } } .print-btn { position: fixed; bottom: 30px; right: 30px; background: #0F2747; color: white; padding: 15px 25px; border-radius: 12px; cursor: pointer; border: none; font-size: 16px; font-weight: bold; }</style></head><body><button class="no-print print-btn" onclick="window.print()">🖨️ Cetak Laporan</button>
@@ -1661,7 +1656,7 @@
         <div style="margin-top: 40px; float: right; text-align: center; width: 250px;">
             <p>Wonosobo, ${new Date().toLocaleDateString('id-ID', {year:'numeric', month:'long', day:'numeric'})}</p>
             <p style="margin-top: 60px; font-weight: bold; text-decoration: underline;">${currentUsername.toUpperCase()}</p>
-            <p style="margin-top: -10px;">Kasir / Bendahara PMB</p>
+            <p style="margin-top: -10px;">Bendahara PMB</p>
         </div>
         <div style="clear: both;"></div>
         </body></html>`;
