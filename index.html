@@ -1401,9 +1401,21 @@ function debounceRender(fungsiRender, delay = 400) {
         renderTableBendahara();
     }
 // --- HELPER UNTUK BENDAHARA ---
+    // --- HELPER UNTUK BENDAHARA ---
+    function getLocalYYYYMMDD(val) {
+        if(!val) return '';
+        const d = new Date(val);
+        if(isNaN(d.getTime())) return '';
+        const y = d.getFullYear(); 
+        const m = String(d.getMonth()+1).padStart(2,'0'); 
+        const day = String(d.getDate()).padStart(2,'0');
+        return `${y}-${m}-${day}`;
+    }
+
     function isTrue(val) {
         return val === true || String(val).toLowerCase() === 'true' || val === 1 || String(val) === '1';
     }
+
     function isTf(bukti) {
         if (!bukti) return false;
         const str = String(bukti).trim().toLowerCase();
@@ -1796,17 +1808,27 @@ function debounceRender(fungsiRender, delay = 400) {
 
         const pl = {};
         if(activeKatBendahara === 'pendaftaran') { 
-    pl.konf_pendaftaran = true; 
-    pl.pendaftaran = 300000; 
-    pl.daftar_ulang = 0; 
-    pl.bopd = 0; 
-    pl.early_bird = 0; 
-    pl.kader_aum = 0; 
-    pl.beasiswa_lainnya = 0; 
-    pl.bopd1 = 0; 
-    pl.bopd2 = 0; 
-    pl.bopd3 = 0; 
-}
+            pl.konf_pendaftaran = true; 
+            pl.pendaftaran = 300000; 
+            pl.daftar_ulang = 0; 
+            pl.bopd = 0; 
+            pl.early_bird = 0; 
+            pl.kader_aum = 0; 
+            pl.beasiswa_lainnya = 0; 
+            pl.bopd1 = 0; 
+            pl.bopd2 = 0; 
+            pl.bopd3 = 0; 
+        }
+        else if(activeKatBendahara === 'daftarulang') { pl.konf_daftar_ulang = true; }
+        else if(activeKatBendahara === 'bopd') {
+            if(currentDataKasir.isAngsuran) { 
+                document.querySelectorAll('.chk-kasir-dyn:not(:disabled)').forEach(c => { 
+                    if(c.checked) { const thp = c.getAttribute('data-tahap'); pl[`konf_bopd${thp}`] = true; } 
+                }); 
+            } 
+            else { pl.konfirmasi_bopd = true; }
+        }
+        
         const btn = document.getElementById('btn-bayar-dyn'); btn.disabled = true; btn.innerHTML = 'Memproses...';
         try {
             const no = currentDataKasir.no_ppdb; const ex = keuanganData.find(x => x.no_ppdb === no);
