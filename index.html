@@ -1400,12 +1400,7 @@ function debounceRender(fungsiRender, delay = 400) {
         
         renderTableBendahara();
     }
-// Fungsi cerdas untuk mendeteksi apakah pembayaran menggunakan Transfer atau Tunai
-    function isTf(bukti) {
-        return !!bukti && String(bukti).trim().toUpperCase() !== 'TUNAI' && String(bukti).trim() !== '';
-    }
-
-    // --- HELPER UNTUK BENDAHARA ---
+// --- HELPER UNTUK BENDAHARA ---
     function isTrue(val) {
         return val === true || String(val).toLowerCase() === 'true' || val === 1 || String(val) === '1';
     }
@@ -1712,62 +1707,68 @@ function debounceRender(fungsiRender, delay = 400) {
         const info = getKeuanganInfo(sUang);
         let title = activeKatBendahara === 'pendaftaran' ? "PENDAFTARAN" : activeKatBendahara === 'daftarulang' ? "DAFTAR ULANG" : "BIAYA BOPD";
         const metode = info.isTransfer ? "TRANSFER" : "TUNAI";
-        const tgl = new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
         
-        const ymd = new Date().toISOString().split('T')[0].replace(/-/g, '');
-        const noInvoice = `INV/${ymd}/${no_ppdb}`;
+        const d = new Date();
+        const tgl = String(d.getDate()).padStart(2,'0') + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + d.getFullYear() + ', ' + String(d.getHours()).padStart(2,'0') + '.' + String(d.getMinutes()).padStart(2,'0');
+        
+        const ymd = d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+        const rdm = String(sMaster.id || Math.floor(Math.random()*100)).padStart(2,'0');
+        const noInvoice = `INV/${ymd}/${rdm}/PMB-${activeKatBendahara.charAt(0).toUpperCase()}`;
 
         const html = `<!DOCTYPE html>
         <html lang="id">
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Struk - ${sMaster.nama_murid}</title>
+            <title>Struk Belanja 80mm</title>
             <style>
                 @page { size: 80mm auto; margin: 0; }
                 body { font-family: 'Courier New', Courier, monospace; font-size: 12px; line-height: 1.4; color: #000; background-color: #fff; padding: 4mm; width: 72mm; margin: 0 auto; -webkit-print-color-adjust: exact; }
-                .text-center { text-align: center; } .text-right { text-align: right; } .text-left { text-align: left; } .bold { font-weight: bold; }
+                .text-center { text-align: center; } .text-right { text-align: right; } .bold { font-weight: bold; }
                 .line-double { border-bottom: 2px dashed #000; margin: 5px 0; } .line-single { border-bottom: 1px dashed #000; margin: 5px 0; }
-                .shop-name { font-size: 16px; font-weight: bold; text-transform: uppercase; margin-top: 5px; } .shop-detail { font-size: 11px; margin-bottom: 2px; }
-                .meta-table { width: 100%; font-size: 11px; margin: 8px 0; border-collapse: collapse; } .meta-table td { padding: 1px 0; vertical-align: top; text-align: left;}
+                .shop-name { font-size: 16px; font-weight: bold; text-transform: uppercase; margin-top:5px; } .shop-detail { font-size: 11px; margin-bottom: 2px; }
+                .meta-table { width: 100%; font-size: 11px; margin: 8px 0; text-align: left; } .meta-table td { padding: 1px 0; vertical-align: top; }
+                .receipt-table { width: 100%; border-collapse: collapse; margin-top:5px; margin-bottom:5px; } .receipt-table th { font-weight: bold; padding: 4px 0; border-bottom:1px dashed #000; border-top:1px dashed #000; text-align:left;} .receipt-table td { padding: 3px 0; vertical-align: top; }
+                .col-desc  { width: 45%; text-align: left; } .col-qty   { width: 10%; text-align: center; } .col-price { width: 20%; text-align: right; } .col-total { width: 25%; text-align: right; }
                 .totals-table { width: 100%; margin-top: 5px; font-size: 11px; } .totals-table td { padding: 2px 0; } .grand-total { font-size: 14px; font-weight: bold; }
                 .footer { margin-top: 15px; font-size: 11px; }
-                .no-print { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin: 20px auto; display: block; }
+                .no-print { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-family: sans-serif; margin: 20px auto; display: block; }
                 @media print { .no-print { display: none; } }
             </style>
         </head>
         <body>
-            <button class="no-print" onclick="window.print()">🖨️ Cetak Struk 80mm</button>
+            <button class="no-print" onclick="window.print()">Cetak Struk</button>
             <div class="text-center">
-                <img src="https://iili.io/nuUTLcN.md.png" alt="Logo SDM" style="width: 50px; height: auto; margin: 0 auto;">
+                <img src="https://iili.io/nuUTLcN.md.png" alt="Logo" style="width: 50px; height: auto; margin: 0 auto;">
                 <div class="shop-name">SD MUH. SUDAGARAN</div>
                 <div class="shop-detail">Jl. Sudagaran No. 1, Wonosobo</div>
                 <div class="shop-detail">Smart PMB Tahun Ajaran 2027/2028</div>
             </div>
             <div class="line-double"></div>
-            
             <table class="meta-table">
-                <tr><td style="width: 25%;">No. Nota</td><td style="width: 5%;">:</td><td>${noInvoice}</td></tr>
+                <tr><td style="width:25%;">No. Nota</td><td style="width:5%;">:</td><td>${noInvoice}</td></tr>
                 <tr><td>Tanggal</td><td>:</td><td>${tgl}</td></tr>
                 <tr><td>Kasir</td><td>:</td><td>${currentUsername.toUpperCase()}</td></tr>
                 <tr><td>Siswa</td><td>:</td><td class="bold">${sMaster.nama_murid}</td></tr>
             </table>
-
             <div class="line-single"></div>
-            <div style="font-weight: bold; text-align: center; margin: 5px 0;">PEMBAYARAN ${title}</div>
-            <div class="line-single"></div>
-            
-            <table class="totals-table">
-                <tr><td>Metode Bayar</td><td class="text-right col-total bold">${metode}</td></tr>
-                <tr><td>Status</td><td class="text-right col-total bold">LUNAS</td></tr>
-                <tr><td colspan="2"><div class="line-single" style="margin: 2px 0;"></div></td></tr>
-                <tr class="grand-total"><td>GRAND TOTAL</td><td class="text-right col-total">${formatRp(info.tagihan)}</td></tr>
+            <table class="receipt-table">
+                <thead><tr><th class="col-desc">Uraian</th><th class="col-qty">Qty</th><th class="col-price">Harga</th><th class="col-total">Total</th></tr></thead>
+                <tbody>
+                    <tr><td class="col-desc">Pembayaran ${title}</td><td class="col-qty">1</td><td class="col-price">${formatRp(info.tagihan).replace('Rp','').trim()}</td><td class="col-total">${formatRp(info.tagihan).replace('Rp','').trim()}</td></tr>
+                </tbody>
             </table>
-            
+            <table class="totals-table">
+                <tr class="grand-total"><td style="width:40%;"></td><td class="text-right" style="width:30%;">GRAND TOTAL</td><td class="text-right col-total">${formatRp(info.tagihan).replace('Rp','').trim()}</td></tr>
+                <div class="line-single" style="margin: 2px 0;"></div>
+                <tr><td></td><td class="text-right">Metode</td><td class="text-right col-total bold">${metode}</td></tr>
+                <tr><td></td><td class="text-right">Status</td><td class="text-right col-total bold">LUNAS</td></tr>
+            </table>
             <div class="line-double"></div>
             <div class="text-center footer">
+                <div>Metode Pembayaran: <span class="bold">${metode}</span></div><br>
                 <div class="bold">Terima Kasih</div>
-                <div>Simpan struk ini sebagai bukti pembayaran.</div>
+                <div>Simpan struk ini sebagai bukti pembayaran yang sah.</div>
             </div>
         </body>
         </html>`;
@@ -1777,8 +1778,6 @@ function debounceRender(fungsiRender, delay = 400) {
     }
 
     function setRealtimeDate() {
-        // Mengosongkan tanggal awal agar Dashboard memuat TOTAL SEMUA DATA dari hari pertama
-        // Dan hanya membatasi sampai batas tanggal hari ini
         const tglSekarang = new Date().toISOString().split('T')[0];
         const fAwal = document.getElementById('filter-tgl-awal');
         const fAkhir = document.getElementById('filter-tgl-akhir');
