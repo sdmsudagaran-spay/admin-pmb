@@ -1600,9 +1600,9 @@ function debounceRender(fungsiRender, delay = 400) {
             }
         });
 
-        const elTunai = document.getElementById('rekap-tunai'); if(elTunai) elTunai.innerText = formatRp(totalTunai);
-        const elTransfer = document.getElementById('rekap-transfer'); if(elTransfer) elTransfer.innerText = formatRp(totalTransfer);
-        const elTotal = document.getElementById('rekap-total'); if(elTotal) elTotal.innerText = formatRp(totalTunai + totalTransfer);
+        const elTunai = document.getElementById('rekap-tunai');
+        const elTransfer = document.getElementById('rekap-transfer');
+        const elTotal = document.getElementById('rekap-total');
         
         const elHariIni = document.getElementById('rekap-hari-ini'); 
         if(elHariIni) {
