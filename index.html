@@ -1405,20 +1405,30 @@ function debounceRender(fungsiRender, delay = 400) {
         return !!bukti && String(bukti).trim().toUpperCase() !== 'TUNAI' && String(bukti).trim() !== '';
     }
 
+    // --- HELPER UNTUK BENDAHARA ---
+    function isTrue(val) {
+        return val === true || String(val).toLowerCase() === 'true' || val === 1 || String(val) === '1';
+    }
+    function isTf(bukti) {
+        if (!bukti) return false;
+        const str = String(bukti).trim().toLowerCase();
+        return str !== '' && str !== 'null' && str !== 'tunai' && str !== 'false';
+    }
+
     function getKeuanganInfo(sUang) {
         let res = { isLunas: false, hasTransfer: false, tagihan: 0, bukti: null, tahapan: [], isTransfer: false };
         if(!sUang) return res;
 
         if (activeKatBendahara === 'pendaftaran') {
             res.tagihan = 300000;
-            res.isLunas = sUang.konf_pendaftaran === true;
+            res.isLunas = isTrue(sUang.konf_pendaftaran);
             res.bukti = sUang.bukti_tf_pendaftaran;
             res.isTransfer = res.isLunas && isTf(res.bukti);
             res.hasTransfer = !res.isLunas && isTf(res.bukti);
         }
         else if (activeKatBendahara === 'daftarulang') {
-            res.tagihan = sUang.daftar_ulang || 0;
-            res.isLunas = sUang.konf_daftar_ulang === true;
+            res.tagihan = parseInt(sUang.daftar_ulang) || 0;
+            res.isLunas = isTrue(sUang.konf_daftar_ulang);
             res.bukti = sUang.bukti_tf_daftar_ulang;
             res.isTransfer = res.isLunas && isTf(res.bukti);
             res.hasTransfer = !res.isLunas && isTf(res.bukti);
@@ -1426,26 +1436,33 @@ function debounceRender(fungsiRender, delay = 400) {
         else if (activeKatBendahara === 'bopd') {
             const totalBopd = parseInt(sUang.bopd) || 0;
             const eb = parseInt(sUang.early_bird)||0; const aum = parseInt(sUang.kader_aum)||0; const bea = parseInt(sUang.beasiswa_lainnya)||0;
-            const isAngsuran = sUang.jenis_pembayaran_bopd === 'Angsuran';
+            const isAngsuran = String(sUang.jenis_pembayaran_bopd).toLowerCase() === 'angsuran';
 
             if (isAngsuran) {
                 const b1 = sUang.bopd1 != null ? sUang.bopd1 : Math.max(0, (totalBopd * 0.5) - (eb+aum+bea));
                 const b2 = sUang.bopd2 != null ? sUang.bopd2 : (totalBopd * 0.25);
                 const b3 = sUang.bopd3 != null ? sUang.bopd3 : (totalBopd * 0.25);
                 
-                res.isLunas = sUang.konf_bopd1 && sUang.konf_bopd2 && sUang.konf_bopd3;
+                const l1 = isTrue(sUang.konf_bopd1); const l2 = isTrue(sUang.konf_bopd2); const l3 = isTrue(sUang.konf_bopd3);
+                res.isLunas = l1 && l2 && l3;
+                
                 res.tahapan = [
-                    { tahap: 1, tagihan: b1, lunas: sUang.konf_bopd1, bukti: sUang.bukti_tf_bopd1 },
-                    { tahap: 2, tagihan: b2, lunas: sUang.konf_bopd2, bukti: sUang.bukti_tf_bopd2 },
-                    { tahap: 3, tagihan: b3, lunas: sUang.konf_bopd3, bukti: sUang.bukti_tf_bopd3 }
+                    { tahap: 1, tagihan: b1, lunas: l1, bukti: sUang.bukti_tf_bopd1 },
+                    { tahap: 2, tagihan: b2, lunas: l2, bukti: sUang.bukti_tf_bopd2 },
+                    { tahap: 3, tagihan: b3, lunas: l3, bukti: sUang.bukti_tf_bopd3 }
                 ];
                 res.tagihan = totalBopd - (eb+aum+bea);
-                res.isTransfer = (sUang.konf_bopd1 && isTf(sUang.bukti_tf_bopd1)) || (sUang.konf_bopd2 && isTf(sUang.bukti_tf_bopd2)) || (sUang.konf_bopd3 && isTf(sUang.bukti_tf_bopd3));
-                res.hasTransfer = (!sUang.konf_bopd1 && isTf(sUang.bukti_tf_bopd1)) || (!sUang.konf_bopd2 && isTf(sUang.bukti_tf_bopd2)) || (!sUang.konf_bopd3 && isTf(sUang.bukti_tf_bopd3));
+                
+                const tf1 = l1 && isTf(sUang.bukti_tf_bopd1);
+                const tf2 = l2 && isTf(sUang.bukti_tf_bopd2);
+                const tf3 = l3 && isTf(sUang.bukti_tf_bopd3);
+                res.isTransfer = tf1 || tf2 || tf3;
+                
+                res.hasTransfer = (!l1 && isTf(sUang.bukti_tf_bopd1)) || (!l2 && isTf(sUang.bukti_tf_bopd2)) || (!l3 && isTf(sUang.bukti_tf_bopd3));
                 res.bukti = sUang.bukti_tf_bopd3 || sUang.bukti_tf_bopd2 || sUang.bukti_tf_bopd1;
             } else {
                 res.tagihan = totalBopd - (eb+aum+bea);
-                res.isLunas = sUang.konfirmasi_bopd === true; 
+                res.isLunas = isTrue(sUang.konfirmasi_bopd); 
                 res.bukti = sUang.bukti_transfer;
                 res.isTransfer = res.isLunas && isTf(res.bukti);
                 res.hasTransfer = !res.isLunas && isTf(res.bukti);
@@ -1507,13 +1524,13 @@ function debounceRender(fungsiRender, delay = 400) {
     function updateBendaharaBadges() {
         let waitDaftar = 0, waitDU = 0, waitBOPD = 0;
         keuanganData.forEach(su => {
-            if(su.bukti_tf_pendaftaran && !su.konf_pendaftaran) waitDaftar++;
-            if(su.bukti_tf_daftar_ulang && !su.konf_daftar_ulang) waitDU++;
-            if(su.bukti_transfer && !su.konfirmasi_bopd && su.jenis_pembayaran_bopd !== 'Angsuran') waitBOPD++;
-            if(su.jenis_pembayaran_bopd === 'Angsuran') {
-                if(su.bukti_tf_bopd1 && !su.konf_bopd1) waitBOPD++;
-                else if(su.bukti_tf_bopd2 && !su.konf_bopd2) waitBOPD++;
-                else if(su.bukti_tf_bopd3 && !su.konf_bopd3) waitBOPD++;
+            if(isTf(su.bukti_tf_pendaftaran) && !isTrue(su.konf_pendaftaran)) waitDaftar++;
+            if(isTf(su.bukti_tf_daftar_ulang) && !isTrue(su.konf_daftar_ulang)) waitDU++;
+            if(isTf(su.bukti_transfer) && !isTrue(su.konfirmasi_bopd) && String(su.jenis_pembayaran_bopd).toLowerCase() !== 'angsuran') waitBOPD++;
+            if(String(su.jenis_pembayaran_bopd).toLowerCase() === 'angsuran') {
+                if(isTf(su.bukti_tf_bopd1) && !isTrue(su.konf_bopd1)) waitBOPD++;
+                else if(isTf(su.bukti_tf_bopd2) && !isTrue(su.konf_bopd2)) waitBOPD++;
+                else if(isTf(su.bukti_tf_bopd3) && !isTrue(su.konf_bopd3)) waitBOPD++;
             }
         });
         const bDaftar = document.getElementById('badge-kat-pendaftaran'); const bDU = document.getElementById('badge-kat-daftarulang'); const bBOPD = document.getElementById('badge-kat-bopd'); const bSubTf = document.getElementById('badge-sub-transfer');
@@ -1527,64 +1544,63 @@ function debounceRender(fungsiRender, delay = 400) {
         const tglAwal = document.getElementById('filter-tgl-awal')?.value;
         const tglAkhir = document.getElementById('filter-tgl-akhir')?.value;
         
-        // PERBAIKAN FATAL: Memaksa zona waktu Hari Ini agar setara dengan standar UTC Supabase
-        const strHariIni = new Date().toISOString().split('T')[0];
+        const dNow = new Date();
+        const y = dNow.getFullYear(); const m = String(dNow.getMonth()+1).padStart(2,'0'); const day = String(dNow.getDate()).padStart(2,'0');
+        const strHariIni = `${y}-${m}-${day}`;
 
         let totalTunai = 0; let totalTransfer = 0; 
-        let hariIniTunai = 0; let hariIniTransfer = 0; // Pelacak jumlah murid/transaksi
+        let hariIniTunai = 0; let hariIniTransfer = 0;
 
         masterData.forEach(s => {
             const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb);
             if(!su) return;
             
-            // SANGAT PENTING: Menggunakan split untuk membuang karakter jam T00:00:00
             let tglTrx = s.tgl_pendaftaran ? String(s.tgl_pendaftaran).split('T')[0] : '';
-            
             let masukRentang = true;
             if (tglAwal && tglAwal !== '-' && tglTrx && tglTrx < tglAwal) masukRentang = false;
             if (tglAkhir && tglAkhir !== '-' && tglTrx && tglTrx > tglAkhir) masukRentang = false;
 
-            if (activeKatBendahara === 'pendaftaran' && su.konf_pendaftaran) {
+            if (activeKatBendahara === 'pendaftaran' && isTrue(su.konf_pendaftaran)) {
                 let tag = 300000;
-                let isTrf = isTf(su.bukti_tf_pendaftaran);
-                if (masukRentang) { if (isTrf) totalTransfer += tag; else totalTunai += tag; }
-                if (tglTrx === strHariIni) { if (isTrf) hariIniTransfer++; else hariIniTunai++; }
+                let trf = isTf(su.bukti_tf_pendaftaran);
+                if (masukRentang) { if (trf) totalTransfer += tag; else totalTunai += tag; }
+                if (tglTrx === strHariIni) { if (trf) hariIniTransfer++; else hariIniTunai++; }
             }
-            else if (activeKatBendahara === 'daftarulang' && su.konf_daftar_ulang) {
+            else if (activeKatBendahara === 'daftarulang' && isTrue(su.konf_daftar_ulang)) {
                 let tag = parseInt(su.daftar_ulang) || 0;
-                let isTrf = isTf(su.bukti_tf_daftar_ulang);
-                if (masukRentang) { if (isTrf) totalTransfer += tag; else totalTunai += tag; }
-                if (tglTrx === strHariIni) { if (isTrf) hariIniTransfer++; else hariIniTunai++; }
+                let trf = isTf(su.bukti_tf_daftar_ulang);
+                if (masukRentang) { if (trf) totalTransfer += tag; else totalTunai += tag; }
+                if (tglTrx === strHariIni) { if (trf) hariIniTransfer++; else hariIniTunai++; }
             }
             else if (activeKatBendahara === 'bopd') {
                 const totalBopd = parseInt(su.bopd) || 0;
                 const eb = parseInt(su.early_bird)||0; const aum = parseInt(su.kader_aum)||0; const bea = parseInt(su.beasiswa_lainnya)||0;
                 
-                if (su.jenis_pembayaran_bopd === 'Angsuran') {
+                if (String(su.jenis_pembayaran_bopd).toLowerCase() === 'angsuran') {
                     const b1 = su.bopd1 != null ? su.bopd1 : Math.max(0, (totalBopd * 0.5) - (eb+aum+bea));
                     const b2 = su.bopd2 != null ? su.bopd2 : (totalBopd * 0.25);
                     const b3 = su.bopd3 != null ? su.bopd3 : (totalBopd * 0.25);
                     
-                    if (su.konf_bopd1) {
-                        let isTrf = isTf(su.bukti_tf_bopd1);
-                        if (masukRentang) { if (isTrf) totalTransfer += b1; else totalTunai += b1; }
-                        if (tglTrx === strHariIni) { if(isTrf) hariIniTransfer++; else hariIniTunai++; }
+                    if (isTrue(su.konf_bopd1)) {
+                        let trf = isTf(su.bukti_tf_bopd1);
+                        if (masukRentang) { if (trf) totalTransfer += b1; else totalTunai += b1; }
+                        if (tglTrx === strHariIni) { if(trf) hariIniTransfer++; else hariIniTunai++; }
                     }
-                    if (su.konf_bopd2) {
-                        let isTrf = isTf(su.bukti_tf_bopd2);
-                        if (masukRentang) { if (isTrf) totalTransfer += b2; else totalTunai += b2; }
-                        if (tglTrx === strHariIni) { if(isTrf) hariIniTransfer++; else hariIniTunai++; }
+                    if (isTrue(su.konf_bopd2)) {
+                        let trf = isTf(su.bukti_tf_bopd2);
+                        if (masukRentang) { if (trf) totalTransfer += b2; else totalTunai += b2; }
+                        if (tglTrx === strHariIni) { if(trf) hariIniTransfer++; else hariIniTunai++; }
                     }
-                    if (su.konf_bopd3) {
-                        let isTrf = isTf(su.bukti_tf_bopd3);
-                        if (masukRentang) { if (isTrf) totalTransfer += b3; else totalTunai += b3; }
-                        if (tglTrx === strHariIni) { if(isTrf) hariIniTransfer++; else hariIniTunai++; }
+                    if (isTrue(su.konf_bopd3)) {
+                        let trf = isTf(su.bukti_tf_bopd3);
+                        if (masukRentang) { if (trf) totalTransfer += b3; else totalTunai += b3; }
+                        if (tglTrx === strHariIni) { if(trf) hariIniTransfer++; else hariIniTunai++; }
                     }
-                } else if (su.konfirmasi_bopd) {
+                } else if (isTrue(su.konfirmasi_bopd)) {
                     let tag = Math.max(0, totalBopd - (eb+aum+bea));
-                    let isTrf = isTf(su.bukti_transfer);
-                    if (masukRentang) { if (isTrf) totalTransfer += tag; else totalTunai += tag; }
-                    if (tglTrx === strHariIni) { if(isTrf) hariIniTransfer++; else hariIniTunai++; }
+                    let trf = isTf(su.bukti_transfer);
+                    if (masukRentang) { if (trf) totalTransfer += tag; else totalTunai += tag; }
+                    if (tglTrx === strHariIni) { if(trf) hariIniTransfer++; else hariIniTunai++; }
                 }
             }
         });
@@ -1599,9 +1615,10 @@ function debounceRender(fungsiRender, delay = 400) {
             elHariIni.innerHTML = `<span class="text-green-600">${hariIniTunai} Tunai</span> &bull; <span class="text-blue-600">${hariIniTransfer} Transfer</span>`;
         }
     }
+
     function cetakLaporanBendahara() {
-        const tglAwal = document.getElementById('filter-tgl-awal')?.value || '-';
-        const tglAkhir = document.getElementById('filter-tgl-akhir')?.value || '-';
+        const tglAwal = document.getElementById('filter-tgl-awal')?.value || '';
+        const tglAkhir = document.getElementById('filter-tgl-akhir')?.value || '';
         
         let listTunai = []; let listTransfer = [];
         let totalTunai = 0; let totalTransfer = 0;
@@ -1622,23 +1639,23 @@ function debounceRender(fungsiRender, delay = 400) {
                 else { listTunai.push(item); totalTunai += tagihan; }
             };
 
-            if (activeKatBendahara === 'pendaftaran' && su.konf_pendaftaran) {
+            if (activeKatBendahara === 'pendaftaran' && isTrue(su.konf_pendaftaran)) {
                 addItem(300000, isTf(su.bukti_tf_pendaftaran));
             }
-            else if (activeKatBendahara === 'daftarulang' && su.konf_daftar_ulang) {
+            else if (activeKatBendahara === 'daftarulang' && isTrue(su.konf_daftar_ulang)) {
                 addItem(parseInt(su.daftar_ulang) || 0, isTf(su.bukti_tf_daftar_ulang));
             }
             else if (activeKatBendahara === 'bopd') {
                 const totalBopd = parseInt(su.bopd) || 0;
                 const eb = parseInt(su.early_bird)||0; const aum = parseInt(su.kader_aum)||0; const bea = parseInt(su.beasiswa_lainnya)||0;
-                if (su.jenis_pembayaran_bopd === 'Angsuran') {
+                if (String(su.jenis_pembayaran_bopd).toLowerCase() === 'angsuran') {
                     const b1 = su.bopd1 != null ? su.bopd1 : Math.max(0, (totalBopd * 0.5) - (eb+aum+bea));
                     const b2 = su.bopd2 != null ? su.bopd2 : (totalBopd * 0.25);
                     const b3 = su.bopd3 != null ? su.bopd3 : (totalBopd * 0.25);
-                    if (su.konf_bopd1) addItem(b1, isTf(su.bukti_tf_bopd1));
-                    if (su.konf_bopd2) addItem(b2, isTf(su.bukti_tf_bopd2));
-                    if (su.konf_bopd3) addItem(b3, isTf(su.bukti_tf_bopd3));
-                } else if (su.konfirmasi_bopd) {
+                    if (isTrue(su.konf_bopd1)) addItem(b1, isTf(su.bukti_tf_bopd1));
+                    if (isTrue(su.konf_bopd2)) addItem(b2, isTf(su.bukti_tf_bopd2));
+                    if (isTrue(su.konf_bopd3)) addItem(b3, isTf(su.bukti_tf_bopd3));
+                } else if (isTrue(su.konfirmasi_bopd)) {
                     addItem(Math.max(0, totalBopd - (eb+aum+bea)), isTf(su.bukti_transfer));
                 }
             }
