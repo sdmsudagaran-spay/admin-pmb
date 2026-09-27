@@ -1415,20 +1415,19 @@
     function getValidTransactions(sMaster, sUang, kat) {
         if(!sUang || !sMaster) return [];
         let list = [];
-        
-        // Memaksa seluruh tanggal dari Supabase menjadi Waktu Lokal Indonesia (WIB)
         const fbTgl = getLocalYYYYMMDD(sMaster.tgl_pendaftaran);
-        const fbKasir = sUang.pewawancara || 'Admin';
 
         if (kat === 'pendaftaran' && isTrue(sUang.konf_pendaftaran)) {
-            let tglTrx = sUang.tgl_bayar_pendaftaran ? getLocalYYYYMMDD(sUang.tgl_bayar_pendaftaran) : fbTgl;
-            list.push({ nominal: 300000, isTransfer: isTf(sUang.bukti_tf_pendaftaran), tglTrx: tglTrx, kasir: sUang.kasir_pendaftaran || fbKasir });
+            let isTrf = isTf(sUang.bukti_tf_pendaftaran);
+            let tglTrx = sUang.tgl_bayar_pendaftaran ? String(sUang.tgl_bayar_pendaftaran).split('T')[0] : fbTgl;
+            list.push({ nominal: 300000, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_pendaftaran || (isTrf ? 'Bendahara' : 'Atika Estiary') });
         }
         else if (kat === 'daftarulang' && isTrue(sUang.konf_daftar_ulang)) {
             const nominal = parseInt(sUang.daftar_ulang) || 0;
             if(nominal > 0) {
-                let tglTrx = sUang.tgl_bayar_daftar_ulang ? getLocalYYYYMMDD(sUang.tgl_bayar_daftar_ulang) : fbTgl;
-                list.push({ nominal, isTransfer: isTf(sUang.bukti_tf_daftar_ulang), tglTrx: tglTrx, kasir: sUang.kasir_daftar_ulang || fbKasir });
+                let isTrf = isTf(sUang.bukti_tf_daftar_ulang);
+                let tglTrx = sUang.tgl_bayar_daftar_ulang ? String(sUang.tgl_bayar_daftar_ulang).split('T')[0] : fbTgl;
+                list.push({ nominal, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_daftar_ulang || (isTrf ? 'Bendahara' : 'Atika Estiary') });
             }
         }
         else if (kat === 'bopd') {
@@ -1441,22 +1440,26 @@
                 const b3 = sUang.bopd3 != null ? sUang.bopd3 : (totalBopd * 0.25);
 
                 if(isTrue(sUang.konf_bopd1)) {
-                    let tglTrx = sUang.tgl_bayar_bopd1 ? getLocalYYYYMMDD(sUang.tgl_bayar_bopd1) : fbTgl;
-                    list.push({ nominal: b1, isTransfer: isTf(sUang.bukti_tf_bopd1), tglTrx: tglTrx, kasir: sUang.kasir_bopd1 || fbKasir });
+                    let isTrf = isTf(sUang.bukti_tf_bopd1);
+                    let tglTrx = sUang.tgl_bayar_bopd1 ? String(sUang.tgl_bayar_bopd1).split('T')[0] : fbTgl;
+                    list.push({ nominal: b1, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_bopd1 || (isTrf ? 'Bendahara' : 'Atika Estiary') });
                 }
                 if(isTrue(sUang.konf_bopd2)) {
-                    let tglTrx = sUang.tgl_bayar_bopd2 ? getLocalYYYYMMDD(sUang.tgl_bayar_bopd2) : fbTgl;
-                    list.push({ nominal: b2, isTransfer: isTf(sUang.bukti_tf_bopd2), tglTrx: tglTrx, kasir: sUang.kasir_bopd2 || fbKasir });
+                    let isTrf = isTf(sUang.bukti_tf_bopd2);
+                    let tglTrx = sUang.tgl_bayar_bopd2 ? String(sUang.tgl_bayar_bopd2).split('T')[0] : fbTgl;
+                    list.push({ nominal: b2, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_bopd2 || (isTrf ? 'Bendahara' : 'Atika Estiary') });
                 }
                 if(isTrue(sUang.konf_bopd3)) {
-                    let tglTrx = sUang.tgl_bayar_bopd3 ? getLocalYYYYMMDD(sUang.tgl_bayar_bopd3) : fbTgl;
-                    list.push({ nominal: b3, isTransfer: isTf(sUang.bukti_tf_bopd3), tglTrx: tglTrx, kasir: sUang.kasir_bopd3 || fbKasir });
+                    let isTrf = isTf(sUang.bukti_tf_bopd3);
+                    let tglTrx = sUang.tgl_bayar_bopd3 ? String(sUang.tgl_bayar_bopd3).split('T')[0] : fbTgl;
+                    list.push({ nominal: b3, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_bopd3 || (isTrf ? 'Bendahara' : 'Atika Estiary') });
                 }
             } else if (isTrue(sUang.konfirmasi_bopd)) {
                 const nominal = Math.max(0, totalBopd - (eb+aum+bea));
                 if(nominal > 0) {
-                    let tglTrx = sUang.tgl_bayar_bopd_lunas ? getLocalYYYYMMDD(sUang.tgl_bayar_bopd_lunas) : fbTgl;
-                    list.push({ nominal, isTransfer: isTf(sUang.bukti_transfer), tglTrx: tglTrx, kasir: sUang.kasir_bopd_lunas || fbKasir });
+                    let isTrf = isTf(sUang.bukti_transfer);
+                    let tglTrx = sUang.tgl_bayar_bopd_lunas ? String(sUang.tgl_bayar_bopd_lunas).split('T')[0] : fbTgl;
+                    list.push({ nominal, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_bopd_lunas || (isTrf ? 'Bendahara' : 'Atika Estiary') });
                 }
             }
         }
@@ -1464,7 +1467,7 @@
     }
 
     function getKeuanganInfo(sUang) {
-        let res = { isLunas: false, hasTransfer: false, tagihan: 0, bukti: null, tahapan: [], isTransfer: false };
+        let res = { isLunas: false, hasTransfer: false, tagihan: 0, bukti: null, tahapan: [], isTransfer: false, kasir: '' };
         if(!sUang) return res;
 
         if (activeKatBendahara === 'pendaftaran') {
@@ -1473,6 +1476,7 @@
             res.bukti = sUang.bukti_tf_pendaftaran;
             res.isTransfer = res.isLunas && isTf(res.bukti);
             res.hasTransfer = !res.isLunas && isTf(res.bukti);
+            res.kasir = sUang.kasir_pendaftaran || (res.isTransfer ? 'Bendahara' : 'Atika Estiary');
         }
         else if (activeKatBendahara === 'daftarulang') {
             res.tagihan = parseInt(sUang.daftar_ulang) || 0;
@@ -1480,6 +1484,7 @@
             res.bukti = sUang.bukti_tf_daftar_ulang;
             res.isTransfer = res.isLunas && isTf(res.bukti);
             res.hasTransfer = !res.isLunas && isTf(res.bukti);
+            res.kasir = sUang.kasir_daftar_ulang || (res.isTransfer ? 'Bendahara' : 'Atika Estiary');
         }
         else if (activeKatBendahara === 'bopd') {
             const totalBopd = parseInt(sUang.bopd) || 0;
@@ -1500,15 +1505,22 @@
                     { tahap: 3, tagihan: b3, lunas: l3, bukti: sUang.bukti_tf_bopd3 }
                 ];
                 res.tagihan = totalBopd - (eb+aum+bea);
-                res.isTransfer = (l1 && isTf(sUang.bukti_tf_bopd1)) || (l2 && isTf(sUang.bukti_tf_bopd2)) || (l3 && isTf(sUang.bukti_tf_bopd3));
+                
+                const tf1 = l1 && isTf(sUang.bukti_tf_bopd1);
+                const tf2 = l2 && isTf(sUang.bukti_tf_bopd2);
+                const tf3 = l3 && isTf(sUang.bukti_tf_bopd3);
+                res.isTransfer = tf1 || tf2 || tf3;
+                
                 res.hasTransfer = (!l1 && isTf(sUang.bukti_tf_bopd1)) || (!l2 && isTf(sUang.bukti_tf_bopd2)) || (!l3 && isTf(sUang.bukti_tf_bopd3));
                 res.bukti = sUang.bukti_tf_bopd3 || sUang.bukti_tf_bopd2 || sUang.bukti_tf_bopd1;
+                res.kasir = sUang.kasir_bopd3 || sUang.kasir_bopd2 || sUang.kasir_bopd1 || (res.isTransfer ? 'Bendahara' : 'Atika Estiary');
             } else {
                 res.tagihan = totalBopd - (eb+aum+bea);
                 res.isLunas = isTrue(sUang.konfirmasi_bopd); 
                 res.bukti = sUang.bukti_transfer;
                 res.isTransfer = res.isLunas && isTf(res.bukti);
                 res.hasTransfer = !res.isLunas && isTf(res.bukti);
+                res.kasir = sUang.kasir_bopd_lunas || (res.isTransfer ? 'Bendahara' : 'Atika Estiary');
             }
         }
         return res;
@@ -1526,7 +1538,7 @@
         
         if(activeSubBendahara === 'tunai') { thead.innerHTML = `<tr><th class="py-3 px-4">Nama Siswa</th><th class="py-3 px-4 text-center">Nominal Tagihan</th><th class="py-3 px-4 text-center">Aksi Kasir</th></tr>`; } 
         else if (activeSubBendahara === 'transfer') { thead.innerHTML = `<tr><th class="py-3 px-4">Nama Siswa</th><th class="py-3 px-4 text-center">Menunggu Validasi</th><th class="py-3 px-4 text-center">Cek Bukti</th></tr>`; } 
-        else { thead.innerHTML = `<tr><th class="py-3 px-4">Nama Siswa</th><th class="py-3 px-4 text-center">Nominal Lunas</th><th class="py-3 px-4 text-center">Metode</th><th class="py-3 px-4 text-center">Aksi</th></tr>`; }
+        else { thead.innerHTML = `<tr><th class="py-3 px-4">Nama Siswa</th><th class="py-3 px-4 text-center">Nominal Lunas</th><th class="py-3 px-4 text-center">Kasir</th><th class="py-3 px-4 text-center">Metode</th><th class="py-3 px-4 text-center">Aksi</th></tr>`; }
 
         let data = masterData.filter(s => {
             if(q && !s.nama_murid?.toLowerCase().includes(q)) return false;
@@ -1540,7 +1552,6 @@
                 if (fMetode === 'tunai' && info.isTransfer) return false;
                 if (fMetode === 'transfer' && !info.isTransfer) return false;
                 
-                // Menyelaraskan tabel dengan filter tanggal secara presisi
                 const validTrx = getValidTransactions(s, sUang, activeKatBendahara);
                 return validTrx.some(trx => {
                     let d = trx.tglTrx; 
@@ -1572,7 +1583,7 @@
                 const btnBukti = info.isTransfer && info.bukti ? `<button onclick="bukaZoomBuktiKhusus('${s.no_ppdb}')" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-2 py-1.5 rounded text-[10px] font-bold transition-colors border border-blue-200" title="Lihat Bukti Transfer"><i class="ph-bold ph-image"></i></button>` : '';
                 const btnStruk = `<button onclick="cetakStrukBendahara('${s.no_ppdb}')" class="bg-gray-800 text-white hover:bg-gray-700 px-2 py-1.5 rounded text-[10px] font-bold transition-colors" title="Cetak Struk POS"><i class="ph-bold ph-printer"></i></button>`;
 
-                return `<tr class="border-b"><td class="py-3 px-4 font-bold text-brand-navy">${s.nama_murid||'-'}<br><span class="text-xs text-brand-muted font-normal">${s.no_ppdb}</span></td><td class="py-3 px-4 text-center font-mono font-bold text-green-600">${formatRp(info.tagihan)}</td><td class="py-3 px-4 text-center">${ketMetode}</td><td class="py-3 px-4 text-center flex justify-center gap-1">${btnStruk}${btnBukti}</td></tr>`;
+                return `<tr class="border-b"><td class="py-3 px-4 font-bold text-brand-navy">${s.nama_murid||'-'}<br><span class="text-xs text-brand-muted font-normal">${s.no_ppdb}</span></td><td class="py-3 px-4 text-center font-mono font-bold text-green-600">${formatRp(info.tagihan)}</td><td class="py-3 px-4 text-center text-xs font-bold text-gray-600">${info.kasir||'-'}</td><td class="py-3 px-4 text-center">${ketMetode}</td><td class="py-3 px-4 text-center flex justify-center gap-1">${btnStruk}${btnBukti}</td></tr>`;
             }
         }).join('');
         if(data.length === 0) tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500 text-sm">Tidak ada data siswa untuk kategori ini.</td></tr>`;
