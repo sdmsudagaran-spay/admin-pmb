@@ -1824,22 +1824,39 @@
         if (bayar < currentDataKasir.totalTagihanActive) return showToast("Uang tunai kurang!", true);
 
         const pl = {};
+        // Gunakan Waktu Lokal untuk pencatatan agar akurat di filter tanggal
+        const d = new Date();
+        const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); const day = String(d.getDate()).padStart(2,'0');
+        const nowLocalStr = `${y}-${m}-${day}`; 
+
         if(activeKatBendahara === 'pendaftaran') { 
             pl.konf_pendaftaran = true; 
             pl.pendaftaran = 300000; 
-            pl.daftar_ulang = 0; 
-            pl.bopd = 0; 
-            pl.early_bird = 0; 
-            pl.kader_aum = 0; 
-            pl.beasiswa_lainnya = 0; 
-            pl.bopd1 = 0; 
-            pl.bopd2 = 0; 
-            pl.bopd3 = 0; 
+            pl.tgl_bayar_pendaftaran = nowLocalStr;
+            pl.kasir_pendaftaran = currentUsername;
+            pl.daftar_ulang = 0; pl.bopd = 0; pl.early_bird = 0; pl.kader_aum = 0; pl.beasiswa_lainnya = 0; pl.bopd1 = 0; pl.bopd2 = 0; pl.bopd3 = 0; 
         }
-        else if(activeKatBendahara === 'daftarulang') { pl.konf_daftar_ulang = true; }
+        else if(activeKatBendahara === 'daftarulang') { 
+            pl.konf_daftar_ulang = true; 
+            pl.tgl_bayar_daftar_ulang = nowLocalStr;
+            pl.kasir_daftar_ulang = currentUsername;
+        }
         else if(activeKatBendahara === 'bopd') {
-            if(currentDataKasir.isAngsuran) { document.querySelectorAll('.chk-kasir-dyn:not(:disabled)').forEach(c => { if(c.checked) { const thp = c.getAttribute('data-tahap'); pl[`konf_bopd${thp}`] = true; } }); } 
-            else { pl.konfirmasi_bopd = true; }
+            if(currentDataKasir.isAngsuran) { 
+                document.querySelectorAll('.chk-kasir-dyn:not(:disabled)').forEach(c => { 
+                    if(c.checked) { 
+                        const thp = c.getAttribute('data-tahap'); 
+                        pl[`konf_bopd${thp}`] = true; 
+                        pl[`tgl_bayar_bopd${thp}`] = nowLocalStr;
+                        pl[`kasir_bopd${thp}`] = currentUsername;
+                    } 
+                }); 
+            } 
+            else { 
+                pl.konfirmasi_bopd = true; 
+                pl.tgl_bayar_bopd_lunas = nowLocalStr;
+                pl.kasir_bopd_lunas = currentUsername;
+            }
         }
         
         const btn = document.getElementById('btn-bayar-dyn'); btn.disabled = true; btn.innerHTML = 'Memproses...';
@@ -1870,11 +1887,32 @@
 
     async function prosesTransfer(isLunas) {
         const no = currentDataKasir.no_ppdb; const pl = {};
-        if(activeKatBendahara === 'pendaftaran') { pl.konf_pendaftaran = isLunas; if(!isLunas) pl.bukti_tf_pendaftaran = null; if(isLunas) pl.pendaftaran = 300000; }
-        else if(activeKatBendahara === 'daftarulang') { pl.konf_daftar_ulang = isLunas; if(!isLunas) pl.bukti_tf_daftar_ulang = null; }
+        
+        const d = new Date();
+        const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); const day = String(d.getDate()).padStart(2,'0');
+        const nowLocalStr = `${y}-${m}-${day}`;
+
+        if(activeKatBendahara === 'pendaftaran') { 
+            pl.konf_pendaftaran = isLunas; 
+            if(!isLunas) pl.bukti_tf_pendaftaran = null; 
+            if(isLunas) { pl.pendaftaran = 300000; pl.tgl_bayar_pendaftaran = nowLocalStr; pl.kasir_pendaftaran = currentUsername; } 
+        }
+        else if(activeKatBendahara === 'daftarulang') { 
+            pl.konf_daftar_ulang = isLunas; 
+            if(!isLunas) pl.bukti_tf_daftar_ulang = null; 
+            if(isLunas) { pl.tgl_bayar_daftar_ulang = nowLocalStr; pl.kasir_daftar_ulang = currentUsername; }
+        }
         else if(activeKatBendahara === 'bopd') {
-            if(currentDataKasir.targetTahap) { pl[`konf_bopd${currentDataKasir.targetTahap}`] = isLunas; if(!isLunas) pl[`bukti_tf_bopd${currentDataKasir.targetTahap}`] = null; } 
-            else { pl.konfirmasi_bopd = isLunas; if(!isLunas) pl.bukti_transfer = null; }
+            if(currentDataKasir.targetTahap) { 
+                pl[`konf_bopd${currentDataKasir.targetTahap}`] = isLunas; 
+                if(!isLunas) pl[`bukti_tf_bopd${currentDataKasir.targetTahap}`] = null; 
+                if(isLunas) { pl[`tgl_bayar_bopd${currentDataKasir.targetTahap}`] = nowLocalStr; pl[`kasir_bopd${currentDataKasir.targetTahap}`] = currentUsername; }
+            } 
+            else { 
+                pl.konfirmasi_bopd = isLunas; 
+                if(!isLunas) pl.bukti_transfer = null; 
+                if(isLunas) { pl.tgl_bayar_bopd_lunas = nowLocalStr; pl.kasir_bopd_lunas = currentUsername; }
+            }
         }
 
         try { await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no}`, 'PATCH', pl); showToast(isLunas ? "Transfer Divalidasi" : "Bukti Ditolak", !isLunas); closeModal('modal-cek-transfer'); loadData(); } catch(e) { showToast(e.message, true); }
