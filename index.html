@@ -56,12 +56,12 @@
             <div class="w-20 h-20 bg-brand-bg rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-brand-gold p-2 shadow-sm">
                 <img src="https://iili.io/nuUTLcN.md.png" alt="Logo SDM" class="w-full h-full object-contain">
             </div>
-            <h1 class="font-heading font-bold text-2xl text-brand-navy">Admin Portal</h1>
+            <h1 class="font-heading font-bold text-2xl text-brand-navy">Admin</h1>
             <p class="text-sm text-brand-muted mt-1">Smart PMB Sudagaran</p>
         </div>
         <div class="space-y-4">
             <div>
-                <label class="block text-sm font-medium text-brand-navy mb-1">Username Staf</label>
+                <label class="block text-sm font-medium text-brand-navy mb-1">Username</label>
                 <select id="login-username" class="w-full bg-brand-bg border border-gray-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-brand-gold transition-colors cursor-pointer appearance-none font-semibold text-brand-navy">
                     <option value="">Memuat data staf...</option>
                 </select>
@@ -804,19 +804,20 @@
     const SUPABASE_KEY = 'sb_publishable_jBXJV3WzlzbTlRkpEqGebA_BOlcBWoO';
 
     // --- SISTEM OPTIMASI CPU ---
-let debounceTimer;
-function debounceRender(fungsiRender, delay = 400) {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
-        window[fungsiRender]();
-    }, delay);
-}
+    let debounceTimer;
+    function debounceRender(fungsiRender, delay = 400) {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            window[fungsiRender]();
+        }, delay);
+    }
+
     let masterData = []; let keuanganData = []; let analisisData = []; let perkapData = []; let menuAppData = []; let staffAccounts = []; 
     let currentUserRoleArr = []; let currentUsername = ''; let selectedIdsForMassAction = [];
     let chartInstanceAdmin = null; 
     
-    let activeKatBendahara = 'pendaftaran'; // pendaftaran, daftarulang, bopd
-    let activeSubBendahara = 'tunai';       // tunai, transfer, riwayat
+    let activeKatBendahara = 'pendaftaran'; 
+    let activeSubBendahara = 'tunai';       
     let currentDataKasir = null;            
 
     const allPanelsDef = [
@@ -983,7 +984,6 @@ function debounceRender(fungsiRender, delay = 400) {
         const query = (document.getElementById('search-master')?.value || '').trim().toLowerCase();
         const sortOrder = document.getElementById('sort-abjad-master')?.value || 'az';
 
-        // 1. FILTERING DATA
         let processedData = masterData.filter(s => {
             const sAna = analisisData.find(x => x.no_ppdb === s.no_ppdb) || {};
             const isLengkap = sAna.mengenal_huruf != null && sAna.mengenal_bilangan != null; 
@@ -1000,7 +1000,6 @@ function debounceRender(fungsiRender, delay = 400) {
             return matchStatus && matchQuery;
         });
 
-        // 2. SORTING DATA (Mengurutkan A-Z atau Z-A)
         processedData.sort((a, b) => {
             const nameA = (a.nama_murid || '').toUpperCase();
             const nameB = (b.nama_murid || '').toUpperCase();
@@ -1009,7 +1008,6 @@ function debounceRender(fungsiRender, delay = 400) {
             return 0;
         });
 
-        // 3. RENDER DATA KE TABEL HTML
         tbody.innerHTML = processedData.map(s => {
             const sAna = analisisData.find(x => x.no_ppdb === s.no_ppdb) || {}; const sUang = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
             const isAnaLengkap = (sAna.mengenal_huruf != null && sAna.mengenal_bilangan != null && sAna.menggunting_dan_menempel_puzzel != null && sAna.menyanyi_lagu_nasional != null && sAna.melafalkan_surat_pendek_doa_harian != null && sAna.interview != null);
@@ -1127,29 +1125,6 @@ function debounceRender(fungsiRender, delay = 400) {
         }).join('');
     }
 
-        // LOGIKA SORTING A-Z
-        dataFlt.sort((a, b) => {
-            const nameA = (a.nama_murid || '').toUpperCase();
-            const nameB = (b.nama_murid || '').toUpperCase();
-            if (sortOrder === 'az') return nameA.localeCompare(nameB);
-            if (sortOrder === 'za') return nameB.localeCompare(nameA);
-            return 0;
-        });
-        
-        tbody.innerHTML = dataFlt.map(sMaster => {
-            const sAna = analisisData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
-            const arr = [parseInt(sAna.mengenal_huruf)||0, parseInt(sAna.mengenal_bilangan)||0, parseInt(sAna.menggunting_dan_menempel_puzzel)||0, parseInt(sAna.menyanyi_lagu_nasional)||0, parseInt(sAna.melafalkan_surat_pendek_doa_harian)||0, parseInt(sAna.interview)||0];
-            const r = Math.round(arr.reduce((a, b) => a + b, 0) / 6);
-            const getC = (v) => v === 0 ? 'text-gray-300' : v <= 40 ? 'text-red-500 font-bold' : v <= 80 ? 'text-green-600 font-bold' : 'text-blue-600 font-bold';
-            const isComplete = (sAna.mengenal_huruf != null && sAna.mengenal_bilangan != null && sAna.menggunting_dan_menempel_puzzel != null && sAna.menyanyi_lagu_nasional != null && sAna.melafalkan_surat_pendek_doa_harian != null && sAna.interview != null);
-
-            const btnGrafik = isComplete ? `<button onclick="bukaModalGrafik('${sMaster.no_ppdb}')" class="flex-1 text-purple-600 bg-purple-50 border border-purple-100 hover:bg-purple-100 px-2 py-1.5 rounded-lg text-xs font-bold transition-colors"><i class="ph-bold ph-chart-polar"></i> Grafik</button>` : `<button disabled class="flex-1 text-gray-400 bg-gray-100 border border-gray-200 px-2 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed"><i class="ph-bold ph-chart-polar"></i> Grafik</button>`;
-            const btnPreview = isComplete ? `<button onclick="cetakAnalisis('${sMaster.no_ppdb}')" class="bg-green-50 text-green-700 border border-green-200 w-full max-w-[180px] px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-green-100 transition-colors shadow-sm"><i class="ph-bold ph-eye"></i> Preview (F4)</button>` : `<button disabled class="bg-gray-100 text-gray-400 border border-gray-200 w-full max-w-[180px] px-3 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed shadow-sm"><i class="ph-bold ph-eye"></i> Preview (F4)</button>`;
-
-            return `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4 font-semibold text-brand-navy">${sMaster.nama_murid || '-'}</td><td class="py-3 px-4 text-center text-xs font-medium text-brand-muted">${sMaster.ruang || '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.mengenal_huruf != null ? arr[0] : 0)}">${sAna.mengenal_huruf != null ? arr[0] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.mengenal_bilangan != null ? arr[1] : 0)}">${sAna.mengenal_bilangan != null ? arr[1] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.menggunting_dan_menempel_puzzel != null ? arr[2] : 0)}">${sAna.menggunting_dan_menempel_puzzel != null ? arr[2] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.menyanyi_lagu_nasional != null ? arr[3] : 0)}">${sAna.menyanyi_lagu_nasional != null ? arr[3] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.melafalkan_surat_pendek_doa_harian != null ? arr[4] : 0)}">${sAna.melafalkan_surat_pendek_doa_harian != null ? arr[4] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.interview != null ? arr[5] : 0)}">${sAna.interview != null ? arr[5] : '-'}</td><td class="py-3 px-4 text-center"><span class="bg-gray-100 px-3 py-1 rounded-lg font-bold ${r<=40?'text-red-500':r<=80?'text-green-600':'text-blue-600'}">${isComplete ? r : '-'}</span></td><td class="py-3 px-4 text-center flex flex-col gap-1 items-center justify-center"><div class="flex gap-1 w-full max-w-[180px]">${btnGrafik}<button onclick="bukaModalAnalisis('${sMaster.no_ppdb}', '${sMaster.nama_murid}')" class="flex-1 bg-blue-50 text-blue-600 border border-blue-100 px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors"><i class="ph-bold ph-pencil-simple"></i> Input</button></div>${btnPreview}</td></tr>`;
-        }).join('');
-    }
-
     function autoDes(id, label) {
         const selVal = parseInt(document.getElementById(`val-${id}`).value) || 0;
         if(selVal === 0) { document.getElementById(`ket-${id}`).value = ''; return; }
@@ -1233,12 +1208,12 @@ function debounceRender(fungsiRender, delay = 400) {
             const sUang = keuanganData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
             const isSudah = !!sUang.pewawancara || (sUang.daftar_ulang != null && sUang.daftar_ulang > 0);
             
-            // LOGIKA WARNA NAMA: Jika SUDAH DIISI ubah biru, jika belum tetap navy
             const namaColor = isSudah ? 'text-blue-600' : 'text-brand-navy';
 
             return `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4"><a href="javascript:void(0)" onclick="bukaModalBiodata('${sMaster.id}')" class="font-bold ${namaColor} hover:text-brand-gold underline block">${sMaster.nama_murid || '-'}</a></td><td class="py-3 px-4 text-center font-mono text-sm">${formatRp(sUang.daftar_ulang || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm">${formatRp(sUang.bopd || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm text-red-500">- ${formatRp(sUang.early_bird || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm text-red-500">- ${formatRp(sUang.kader_aum || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm text-pink-600">- ${formatRp(sUang.beasiswa_lainnya || 0)}</td><td class="py-3 px-4 text-center text-xs font-semibold text-gray-500">${sUang.pewawancara || '-'}</td></tr>`;
         }).join('');
     }
+
     function toggleCustomBOPD() { 
         const sel = document.getElementById('pewa-bopd'); const cust = document.getElementById('pewa-bopd-custom'); 
         if(sel.value === 'custom') { cust.classList.remove('hidden'); } else { cust.classList.add('hidden'); } 
@@ -1254,7 +1229,6 @@ function debounceRender(fungsiRender, delay = 400) {
         const bea = unformatRibuan(document.getElementById('pewa-beasiswa').value);
         const totalDiskon = eb + aum + bea;
 
-        // Diskon mengurangi Tahap 1 saja
         const valBopd1 = Math.max(0, (bopdTotal * 0.5) - totalDiskon);
         const valBopd2 = bopdTotal * 0.25;
         const valBopd3 = bopdTotal * 0.25;
@@ -1390,7 +1364,6 @@ function debounceRender(fungsiRender, delay = 400) {
             }
         });
         
-        // Memunculkan filter dropdown khusus saat di Riwayat Lunas
         const fMetode = document.getElementById('filter-metode-riwayat');
         if(fMetode) {
             if(sub === 'riwayat') fMetode.classList.remove('hidden');
@@ -1399,7 +1372,7 @@ function debounceRender(fungsiRender, delay = 400) {
         
         renderTableBendahara();
     }
-// --- HELPER UNTUK BENDAHARA ---
+
     // --- HELPER UNTUK BENDAHARA ---
     function getLocalYYYYMMDD(val) {
         if(!val) return '';
@@ -1415,7 +1388,13 @@ function debounceRender(fungsiRender, delay = 400) {
         return val === true || String(val).toLowerCase() === 'true' || val === 1 || String(val) === '1';
     }
 
-        function getKeuanganInfo(sUang) {
+    function isTf(bukti) {
+        if (!bukti) return false;
+        const str = String(bukti).trim().toLowerCase();
+        return str !== '' && str !== 'null' && str !== 'tunai' && str !== 'false';
+    }
+
+    function getKeuanganInfo(sUang) {
         let res = { isLunas: false, hasTransfer: false, tagihan: 0, bukti: null, tahapan: [], isTransfer: false };
         if(!sUang) return res;
 
@@ -1544,9 +1523,7 @@ function debounceRender(fungsiRender, delay = 400) {
         const tglAwal = document.getElementById('filter-tgl-awal')?.value;
         const tglAkhir = document.getElementById('filter-tgl-akhir')?.value;
         
-        const dNow = new Date();
-        const y = dNow.getFullYear(); const m = String(dNow.getMonth()+1).padStart(2,'0'); const day = String(dNow.getDate()).padStart(2,'0');
-        const strHariIni = `${y}-${m}-${day}`;
+        const strHariIni = getLocalYYYYMMDD(new Date());
 
         let totalTunai = 0; let totalTransfer = 0; 
         let hariIniTunai = 0; let hariIniTransfer = 0;
@@ -1555,22 +1532,52 @@ function debounceRender(fungsiRender, delay = 400) {
             const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb);
             if(!su) return;
             
-            let tglTrx = s.tgl_pendaftaran ? String(s.tgl_pendaftaran).split('T')[0] : '';
+            let tglTrx = getLocalYYYYMMDD(s.tgl_pendaftaran);
             let masukRentang = true;
             if (tglAwal && tglAwal !== '-' && tglTrx && tglTrx < tglAwal) masukRentang = false;
             if (tglAkhir && tglAkhir !== '-' && tglTrx && tglTrx > tglAkhir) masukRentang = false;
 
-            const info = getKeuanganInfo(su);
-            
-            // Kalkulasi cerdas berdasarkan jendela yang sedang aktif
-            if (info.isLunas && info.tagihan > 0) {
-                if (masukRentang) {
-                    if (info.isTransfer) totalTransfer += info.tagihan;
-                    else totalTunai += info.tagihan;
-                }
-                if (tglTrx === strHariIni) {
-                    if (info.isTransfer) hariIniTransfer++;
-                    else hariIniTunai++;
+            if (activeKatBendahara === 'pendaftaran' && isTrue(su.konf_pendaftaran)) {
+                let tag = 300000;
+                let trf = isTf(su.bukti_tf_pendaftaran);
+                if (masukRentang) { if (trf) totalTransfer += tag; else totalTunai += tag; }
+                if (tglTrx === strHariIni) { if (trf) hariIniTransfer++; else hariIniTunai++; }
+            }
+            else if (activeKatBendahara === 'daftarulang' && isTrue(su.konf_daftar_ulang)) {
+                let tag = parseInt(su.daftar_ulang) || 0;
+                let trf = isTf(su.bukti_tf_daftar_ulang);
+                if (masukRentang) { if (trf) totalTransfer += tag; else totalTunai += tag; }
+                if (tglTrx === strHariIni) { if (trf) hariIniTransfer++; else hariIniTunai++; }
+            }
+            else if (activeKatBendahara === 'bopd') {
+                const totalBopd = parseInt(su.bopd) || 0;
+                const eb = parseInt(su.early_bird)||0; const aum = parseInt(su.kader_aum)||0; const bea = parseInt(su.beasiswa_lainnya)||0;
+                
+                if (String(su.jenis_pembayaran_bopd).toLowerCase() === 'angsuran') {
+                    const b1 = su.bopd1 != null ? su.bopd1 : Math.max(0, (totalBopd * 0.5) - (eb+aum+bea));
+                    const b2 = su.bopd2 != null ? su.bopd2 : (totalBopd * 0.25);
+                    const b3 = su.bopd3 != null ? su.bopd3 : (totalBopd * 0.25);
+                    
+                    if (isTrue(su.konf_bopd1)) {
+                        let trf = isTf(su.bukti_tf_bopd1);
+                        if (masukRentang) { if (trf) totalTransfer += b1; else totalTunai += b1; }
+                        if (tglTrx === strHariIni) { if(trf) hariIniTransfer++; else hariIniTunai++; }
+                    }
+                    if (isTrue(su.konf_bopd2)) {
+                        let trf = isTf(su.bukti_tf_bopd2);
+                        if (masukRentang) { if (trf) totalTransfer += b2; else totalTunai += b2; }
+                        if (tglTrx === strHariIni) { if(trf) hariIniTransfer++; else hariIniTunai++; }
+                    }
+                    if (isTrue(su.konf_bopd3)) {
+                        let trf = isTf(su.bukti_tf_bopd3);
+                        if (masukRentang) { if (trf) totalTransfer += b3; else totalTunai += b3; }
+                        if (tglTrx === strHariIni) { if(trf) hariIniTransfer++; else hariIniTunai++; }
+                    }
+                } else if (isTrue(su.konfirmasi_bopd)) {
+                    let tag = Math.max(0, totalBopd - (eb+aum+bea));
+                    let trf = isTf(su.bukti_transfer);
+                    if (masukRentang) { if (trf) totalTransfer += tag; else totalTunai += tag; }
+                    if (tglTrx === strHariIni) { if(trf) hariIniTransfer++; else hariIniTunai++; }
                 }
             }
         });
@@ -1595,18 +1602,39 @@ function debounceRender(fungsiRender, delay = 400) {
         let judulLaporan = activeKatBendahara === 'pendaftaran' ? 'PENDAFTARAN' : activeKatBendahara === 'daftarulang' ? 'DAFTAR ULANG' : 'BOPD';
 
         masterData.forEach(s => {
-            let tglTrx = s.tgl_pendaftaran ? String(s.tgl_pendaftaran).split('T')[0] : '';
+            let tglTrx = getLocalYYYYMMDD(s.tgl_pendaftaran);
             if(tglAwal && tglAwal !== '-' && tglTrx && tglTrx < tglAwal) return;
             if(tglAkhir && tglAkhir !== '-' && tglTrx && tglTrx > tglAkhir) return;
 
             const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb);
             if(!su) return;
             
-            const info = getKeuanganInfo(su);
-            if (info.isLunas && info.tagihan > 0) {
-                const item = { tgl: tglTrx || '-', nama: s.nama_murid, nominal: info.tagihan, ket: info.isTransfer ? 'TRANSFER' : 'TUNAI' };
-                if (info.isTransfer) { listTransfer.push(item); totalTransfer += info.tagihan; } 
-                else { listTunai.push(item); totalTunai += info.tagihan; }
+            const addItem = (tagihan, validTf) => {
+                if (tagihan <= 0) return;
+                const item = { tgl: tglTrx || '-', nama: s.nama_murid, nominal: tagihan, ket: validTf ? 'TRANSFER' : 'TUNAI' };
+                if (validTf) { listTransfer.push(item); totalTransfer += tagihan; } 
+                else { listTunai.push(item); totalTunai += tagihan; }
+            };
+
+            if (activeKatBendahara === 'pendaftaran' && isTrue(su.konf_pendaftaran)) {
+                addItem(300000, isTf(su.bukti_tf_pendaftaran));
+            }
+            else if (activeKatBendahara === 'daftarulang' && isTrue(su.konf_daftar_ulang)) {
+                addItem(parseInt(su.daftar_ulang) || 0, isTf(su.bukti_tf_daftar_ulang));
+            }
+            else if (activeKatBendahara === 'bopd') {
+                const totalBopd = parseInt(su.bopd) || 0;
+                const eb = parseInt(su.early_bird)||0; const aum = parseInt(su.kader_aum)||0; const bea = parseInt(su.beasiswa_lainnya)||0;
+                if (String(su.jenis_pembayaran_bopd).toLowerCase() === 'angsuran') {
+                    const b1 = su.bopd1 != null ? su.bopd1 : Math.max(0, (totalBopd * 0.5) - (eb+aum+bea));
+                    const b2 = su.bopd2 != null ? su.bopd2 : (totalBopd * 0.25);
+                    const b3 = su.bopd3 != null ? su.bopd3 : (totalBopd * 0.25);
+                    if (isTrue(su.konf_bopd1)) addItem(b1, isTf(su.bukti_tf_bopd1));
+                    if (isTrue(su.konf_bopd2)) addItem(b2, isTf(su.bukti_tf_bopd2));
+                    if (isTrue(su.konf_bopd3)) addItem(b3, isTf(su.bukti_tf_bopd3));
+                } else if (isTrue(su.konfirmasi_bopd)) {
+                    addItem(Math.max(0, totalBopd - (eb+aum+bea)), isTf(su.bukti_transfer));
+                }
             }
         });
 
@@ -1677,9 +1705,9 @@ function debounceRender(fungsiRender, delay = 400) {
             <style>
                 @page { size: 80mm auto; margin: 0; }
                 body { font-family: 'Courier New', Courier, monospace; font-size: 12px; line-height: 1.4; color: #000; background-color: #fff; padding: 4mm; width: 72mm; margin: 0 auto; -webkit-print-color-adjust: exact; }
-                .text-center { text-align: center; } .text-right { text-align: right; } .bold { font-weight: bold; }
+                .text-center { text-align: center; } .text-right { text-align: right; } .text-left { text-align: left; } .bold { font-weight: bold; }
                 .line-double { border-bottom: 2px dashed #000; margin: 5px 0; } .line-single { border-bottom: 1px dashed #000; margin: 5px 0; }
-                .shop-name { font-size: 16px; font-weight: bold; text-transform: uppercase; } .shop-detail { font-size: 11px; margin-bottom: 2px; }
+                .shop-name { font-size: 16px; font-weight: bold; text-transform: uppercase; margin-top:5px; } .shop-detail { font-size: 11px; margin-bottom: 2px; }
                 .meta-table { width: 100%; font-size: 11px; margin: 8px 0; text-align: left; } .meta-table td { padding: 1px 0; vertical-align: top; }
                 .receipt-table { width: 100%; border-collapse: collapse; } .receipt-table th { font-weight: bold; padding: 4px 0; border-bottom: 1px dashed #000; border-top: 1px dashed #000; text-align: left;} .receipt-table td { padding: 3px 0; vertical-align: top; text-align: left;}
                 .col-desc  { width: 45%; text-align: left; } .col-qty   { width: 10%; text-align: center; } .col-price { width: 20%; text-align: right; } .col-total { width: 25%; text-align: right; }
@@ -1721,7 +1749,7 @@ function debounceRender(fungsiRender, delay = 400) {
             <div class="line-double"></div>
             <div class="text-center footer">
                 <div class="bold">Terima Kasih</div>
-                <div>Simpan struk ini sebagai bukti pembayaran yang sah.</div>
+                <div>Simpan struk ini sebagai bukti pembayaran.</div>
             </div>
         </body>
         </html>`;
@@ -1731,7 +1759,7 @@ function debounceRender(fungsiRender, delay = 400) {
     }
 
     function setRealtimeDate() {
-        const tglSekarang = new Date().toISOString().split('T')[0];
+        const tglSekarang = getLocalYYYYMMDD(new Date());
         const fAwal = document.getElementById('filter-tgl-awal');
         const fAkhir = document.getElementById('filter-tgl-akhir');
         
@@ -1740,6 +1768,7 @@ function debounceRender(fungsiRender, delay = 400) {
         
         if(typeof hitungRekapBendahara === 'function') hitungRekapBendahara();
     }
+
     function bukaKasir(no_ppdb) {
         const s = masterData.find(x => x.no_ppdb === no_ppdb); const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {}; if(!s) return;
         const info = getKeuanganInfo(sUang);
@@ -1814,11 +1843,7 @@ function debounceRender(fungsiRender, delay = 400) {
         }
         else if(activeKatBendahara === 'daftarulang') { pl.konf_daftar_ulang = true; }
         else if(activeKatBendahara === 'bopd') {
-            if(currentDataKasir.isAngsuran) { 
-                document.querySelectorAll('.chk-kasir-dyn:not(:disabled)').forEach(c => { 
-                    if(c.checked) { const thp = c.getAttribute('data-tahap'); pl[`konf_bopd${thp}`] = true; } 
-                }); 
-            } 
+            if(currentDataKasir.isAngsuran) { document.querySelectorAll('.chk-kasir-dyn:not(:disabled)').forEach(c => { if(c.checked) { const thp = c.getAttribute('data-tahap'); pl[`konf_bopd${thp}`] = true; } }); } 
             else { pl.konfirmasi_bopd = true; }
         }
         
@@ -1837,7 +1862,7 @@ function debounceRender(fungsiRender, delay = 400) {
         document.getElementById('tf-nama').innerText = s.nama_murid;
         
         let amount = info.tagihan; let img = info.bukti; let targetTahap = null;
-        if(activeKatBendahara === 'bopd' && sUang.jenis_pembayaran_bopd === 'Angsuran') { const t = info.tahapan.find(x => !x.lunas && !!x.bukti); if(t) { amount = t.tagihan; img = t.bukti; targetTahap = t.tahap; } }
+        if(activeKatBendahara === 'bopd' && String(sUang.jenis_pembayaran_bopd).toLowerCase() === 'angsuran') { const t = info.tahapan.find(x => !x.lunas && !!x.bukti); if(t) { amount = t.tagihan; img = t.bukti; targetTahap = t.tahap; } }
 
         document.getElementById('tf-tagihan').innerText = formatRp(amount);
         document.getElementById('tf-bukti').src = img || 'https://placehold.co/400x400/eeeeee/999999?text=Tidak+Ada+Bukti';
