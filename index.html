@@ -1103,6 +1103,31 @@ function debounceRender(fungsiRender, delay = 400) {
             let matchStatus = true; if(statusFlt === 'sudah') matchStatus = isComplete; if(statusFlt === 'belum') matchStatus = !isComplete; return matchRuang && matchName && matchStatus;
         });
 
+        dataFlt.sort((a, b) => {
+            const nameA = (a.nama_murid || '').toUpperCase();
+            const nameB = (b.nama_murid || '').toUpperCase();
+            if (sortOrder === 'az') return nameA.localeCompare(nameB);
+            if (sortOrder === 'za') return nameB.localeCompare(nameA);
+            return 0;
+        });
+        
+        tbody.innerHTML = dataFlt.map(sMaster => {
+            const sAna = analisisData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
+            const arr = [parseInt(sAna.mengenal_huruf)||0, parseInt(sAna.mengenal_bilangan)||0, parseInt(sAna.menggunting_dan_menempel_puzzel)||0, parseInt(sAna.menyanyi_lagu_nasional)||0, parseInt(sAna.melafalkan_surat_pendek_doa_harian)||0, parseInt(sAna.interview)||0];
+            const r = Math.round(arr.reduce((a, b) => a + b, 0) / 6);
+            const getC = (v) => v === 0 ? 'text-gray-300' : v <= 40 ? 'text-red-500 font-bold' : v <= 80 ? 'text-green-600 font-bold' : 'text-blue-600 font-bold';
+            const isComplete = (sAna.mengenal_huruf != null && sAna.mengenal_bilangan != null && sAna.menggunting_dan_menempel_puzzel != null && sAna.menyanyi_lagu_nasional != null && sAna.melafalkan_surat_pendek_doa_harian != null && sAna.interview != null);
+
+            // LOGIKA WARNA NAMA: Jika LENGKAP ubah biru, jika belum tetap navy
+            const namaColor = isComplete ? 'text-blue-600' : 'text-brand-navy';
+
+            const btnGrafik = isComplete ? `<button onclick="bukaModalGrafik('${sMaster.no_ppdb}')" class="flex-1 text-purple-600 bg-purple-50 border border-purple-100 hover:bg-purple-100 px-2 py-1.5 rounded-lg text-xs font-bold transition-colors"><i class="ph-bold ph-chart-polar"></i> Grafik</button>` : `<button disabled class="flex-1 text-gray-400 bg-gray-100 border border-gray-200 px-2 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed"><i class="ph-bold ph-chart-polar"></i> Grafik</button>`;
+            const btnPreview = isComplete ? `<button onclick="cetakAnalisis('${sMaster.no_ppdb}')" class="bg-green-50 text-green-700 border border-green-200 w-full max-w-[180px] px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-green-100 transition-colors shadow-sm"><i class="ph-bold ph-eye"></i> Preview (F4)</button>` : `<button disabled class="bg-gray-100 text-gray-400 border border-gray-200 w-full max-w-[180px] px-3 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed shadow-sm"><i class="ph-bold ph-eye"></i> Preview (F4)</button>`;
+
+            return `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4 font-semibold ${namaColor}">${sMaster.nama_murid || '-'}</td><td class="py-3 px-4 text-center text-xs font-medium text-brand-muted">${sMaster.ruang || '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.mengenal_huruf != null ? arr[0] : 0)}">${sAna.mengenal_huruf != null ? arr[0] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.mengenal_bilangan != null ? arr[1] : 0)}">${sAna.mengenal_bilangan != null ? arr[1] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.menggunting_dan_menempel_puzzel != null ? arr[2] : 0)}">${sAna.menggunting_dan_menempel_puzzel != null ? arr[2] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.menyanyi_lagu_nasional != null ? arr[3] : 0)}">${sAna.menyanyi_lagu_nasional != null ? arr[3] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.melafalkan_surat_pendek_doa_harian != null ? arr[4] : 0)}">${sAna.melafalkan_surat_pendek_doa_harian != null ? arr[4] : '-'}</td><td class="py-3 px-4 text-center ${getC(sAna.interview != null ? arr[5] : 0)}">${sAna.interview != null ? arr[5] : '-'}</td><td class="py-3 px-4 text-center"><span class="bg-gray-100 px-3 py-1 rounded-lg font-bold ${r<=40?'text-red-500':r<=80?'text-green-600':'text-blue-600'}">${isComplete ? r : '-'}</span></td><td class="py-3 px-4 text-center flex flex-col gap-1 items-center justify-center"><div class="flex gap-1 w-full max-w-[180px]">${btnGrafik}<button onclick="bukaModalAnalisis('${sMaster.no_ppdb}', '${sMaster.nama_murid}')" class="flex-1 bg-blue-50 text-blue-600 border border-blue-100 px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors"><i class="ph-bold ph-pencil-simple"></i> Input</button></div>${btnPreview}</td></tr>`;
+        }).join('');
+    }
+
         // LOGIKA SORTING A-Z
         dataFlt.sort((a, b) => {
             const nameA = (a.nama_murid || '').toUpperCase();
@@ -1197,7 +1222,6 @@ function debounceRender(fungsiRender, delay = 400) {
             return matchName && matchStatus;
         });
 
-        // LOGIKA SORTING A-Z
         d.sort((a, b) => {
             const nameA = (a.nama_murid || '').toUpperCase();
             const nameB = (b.nama_murid || '').toUpperCase();
@@ -1208,7 +1232,12 @@ function debounceRender(fungsiRender, delay = 400) {
 
         tbody.innerHTML = d.map(sMaster => {
             const sUang = keuanganData.find(x => x.no_ppdb === sMaster.no_ppdb) || {};
-            return `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4"><a href="javascript:void(0)" onclick="bukaModalBiodata('${sMaster.id}')" class="font-bold text-brand-navy hover:text-brand-gold underline block">${sMaster.nama_murid || '-'}</a></td><td class="py-3 px-4 text-center font-mono text-sm">${formatRp(sUang.daftar_ulang || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm">${formatRp(sUang.bopd || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm text-red-500">- ${formatRp(sUang.early_bird || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm text-red-500">- ${formatRp(sUang.kader_aum || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm text-pink-600">- ${formatRp(sUang.beasiswa_lainnya || 0)}</td><td class="py-3 px-4 text-center text-xs font-semibold text-gray-500">${sUang.pewawancara || '-'}</td></tr>`;
+            const isSudah = !!sUang.pewawancara || (sUang.daftar_ulang != null && sUang.daftar_ulang > 0);
+            
+            // LOGIKA WARNA NAMA: Jika SUDAH DIISI ubah biru, jika belum tetap navy
+            const namaColor = isSudah ? 'text-blue-600' : 'text-brand-navy';
+
+            return `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4"><a href="javascript:void(0)" onclick="bukaModalBiodata('${sMaster.id}')" class="font-bold ${namaColor} hover:text-brand-gold underline block">${sMaster.nama_murid || '-'}</a></td><td class="py-3 px-4 text-center font-mono text-sm">${formatRp(sUang.daftar_ulang || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm">${formatRp(sUang.bopd || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm text-red-500">- ${formatRp(sUang.early_bird || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm text-red-500">- ${formatRp(sUang.kader_aum || 0)}</td><td class="py-3 px-4 text-center font-mono text-sm text-pink-600">- ${formatRp(sUang.beasiswa_lainnya || 0)}</td><td class="py-3 px-4 text-center text-xs font-semibold text-gray-500">${sUang.pewawancara || '-'}</td></tr>`;
         }).join('');
     }
     function toggleCustomBOPD() { 
@@ -1498,18 +1527,19 @@ function debounceRender(fungsiRender, delay = 400) {
         const tglAwal = document.getElementById('filter-tgl-awal')?.value;
         const tglAkhir = document.getElementById('filter-tgl-akhir')?.value;
         
-        const d = new Date();
-        const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); const day = String(d.getDate()).padStart(2,'0');
-        const strHariIni = `${y}-${m}-${day}`;
+        // PERBAIKAN FATAL: Memaksa zona waktu Hari Ini agar setara dengan standar UTC Supabase
+        const strHariIni = new Date().toISOString().split('T')[0];
 
         let totalTunai = 0; let totalTransfer = 0; 
-        let hariIniTunai = 0; let hariIniTransfer = 0; // Variabel baru pelacak jumlah murid/transaksi
+        let hariIniTunai = 0; let hariIniTransfer = 0; // Pelacak jumlah murid/transaksi
 
         masterData.forEach(s => {
             const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb);
             if(!su) return;
             
+            // SANGAT PENTING: Menggunakan split untuk membuang karakter jam T00:00:00
             let tglTrx = s.tgl_pendaftaran ? String(s.tgl_pendaftaran).split('T')[0] : '';
+            
             let masukRentang = true;
             if (tglAwal && tglAwal !== '-' && tglTrx && tglTrx < tglAwal) masukRentang = false;
             if (tglAkhir && tglAkhir !== '-' && tglTrx && tglTrx > tglAkhir) masukRentang = false;
@@ -1534,6 +1564,7 @@ function debounceRender(fungsiRender, delay = 400) {
                     const b1 = su.bopd1 != null ? su.bopd1 : Math.max(0, (totalBopd * 0.5) - (eb+aum+bea));
                     const b2 = su.bopd2 != null ? su.bopd2 : (totalBopd * 0.25);
                     const b3 = su.bopd3 != null ? su.bopd3 : (totalBopd * 0.25);
+                    
                     if (su.konf_bopd1) {
                         let isTrf = isTf(su.bukti_tf_bopd1);
                         if (masukRentang) { if (isTrf) totalTransfer += b1; else totalTunai += b1; }
@@ -1564,7 +1595,6 @@ function debounceRender(fungsiRender, delay = 400) {
         
         const elHariIni = document.getElementById('rekap-hari-ini'); 
         if(elHariIni) {
-            // Penyesuaian ukuran font dinamis agar teks muat dalam kartu dashboard
             elHariIni.className = "text-sm sm:text-base font-bold text-brand-navy mt-1";
             elHariIni.innerHTML = `<span class="text-green-600">${hariIniTunai} Tunai</span> &bull; <span class="text-blue-600">${hariIniTransfer} Transfer</span>`;
         }
