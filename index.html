@@ -1118,7 +1118,6 @@ function debounceRender(fungsiRender, delay = 400) {
             const getC = (v) => v === 0 ? 'text-gray-300' : v <= 40 ? 'text-red-500 font-bold' : v <= 80 ? 'text-green-600 font-bold' : 'text-blue-600 font-bold';
             const isComplete = (sAna.mengenal_huruf != null && sAna.mengenal_bilangan != null && sAna.menggunting_dan_menempel_puzzel != null && sAna.menyanyi_lagu_nasional != null && sAna.melafalkan_surat_pendek_doa_harian != null && sAna.interview != null);
 
-            // LOGIKA WARNA NAMA: Jika LENGKAP ubah biru, jika belum tetap navy
             const namaColor = isComplete ? 'text-blue-600' : 'text-brand-navy';
 
             const btnGrafik = isComplete ? `<button onclick="bukaModalGrafik('${sMaster.no_ppdb}')" class="flex-1 text-purple-600 bg-purple-50 border border-purple-100 hover:bg-purple-100 px-2 py-1.5 rounded-lg text-xs font-bold transition-colors"><i class="ph-bold ph-chart-polar"></i> Grafik</button>` : `<button disabled class="flex-1 text-gray-400 bg-gray-100 border border-gray-200 px-2 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed"><i class="ph-bold ph-chart-polar"></i> Grafik</button>`;
@@ -1416,13 +1415,7 @@ function debounceRender(fungsiRender, delay = 400) {
         return val === true || String(val).toLowerCase() === 'true' || val === 1 || String(val) === '1';
     }
 
-    function isTf(bukti) {
-        if (!bukti) return false;
-        const str = String(bukti).trim().toLowerCase();
-        return str !== '' && str !== 'null' && str !== 'tunai' && str !== 'false';
-    }
-
-    function getKeuanganInfo(sUang) {
+        function getKeuanganInfo(sUang) {
         let res = { isLunas: false, hasTransfer: false, tagihan: 0, bukti: null, tahapan: [], isTransfer: false };
         if(!sUang) return res;
 
