@@ -1424,7 +1424,7 @@ function getKeuanganInfo(sUang) {
         const tbody = document.getElementById('tbody-bendahara');
         if(!thead || !tbody) return;
         const q = (document.getElementById('filter-cari-bendahara')?.value || '').toLowerCase();
-        const fMetode = document.getElementById('filter-metode-riwayat')?.value || 'all'; // Ambil nilai filter metode
+        const fMetode = document.getElementById('filter-metode-riwayat')?.value || 'all'; 
         
         if(activeSubBendahara === 'tunai') { thead.innerHTML = `<tr><th class="py-3 px-4">Nama Siswa</th><th class="py-3 px-4 text-center">Nominal Tagihan</th><th class="py-3 px-4 text-center">Aksi Kasir</th></tr>`; } 
         else if (activeSubBendahara === 'transfer') { thead.innerHTML = `<tr><th class="py-3 px-4">Nama Siswa</th><th class="py-3 px-4 text-center">Menunggu Validasi</th><th class="py-3 px-4 text-center">Cek Bukti</th></tr>`; } 
@@ -1439,7 +1439,6 @@ function getKeuanganInfo(sUang) {
             if (activeSubBendahara === 'transfer') return info.hasTransfer;
             if (activeSubBendahara === 'riwayat') {
                 if (!info.isLunas) return false;
-                // Filter logika Tunai / Transfer
                 if (fMetode === 'tunai' && info.isTransfer) return false;
                 if (fMetode === 'transfer' && !info.isTransfer) return false;
                 return true;
@@ -1447,7 +1446,6 @@ function getKeuanganInfo(sUang) {
             return false;
         });
 
-        // OTOMATIS SORTIR A-Z UNTUK SEMUA SUB-TAB KASIR
         data.sort((a, b) => (a.nama_murid || '').localeCompare(b.nama_murid || ''));
 
         tbody.innerHTML = data.map(s => {
@@ -1462,10 +1460,9 @@ function getKeuanganInfo(sUang) {
                 return `<tr class="border-b bg-orange-50"><td class="py-3 px-4 font-bold text-brand-navy">${s.nama_murid||'-'}<br><span class="text-xs text-brand-muted font-normal">${s.no_ppdb}</span></td><td class="py-3 px-4 text-center font-mono font-bold text-orange-600">${formatRp(amountToValidate)}</td><td class="py-3 px-4 text-center"><button onclick="bukaCekTransfer('${s.no_ppdb}')" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-colors"><i class="ph-bold ph-eye"></i> Cek Transfer</button></td></tr>`;
             } else {
                 const ketMetode = info.isTransfer ? `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-bold border border-blue-200">Transfer</span>` : `<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold border border-green-200">Tunai</span>`;
-                // Tombol diubah agar memanggil no_ppdb, mencegah syntax error pada URL gambar
                 const btnBukti = info.isTransfer && info.bukti ? `<button onclick="bukaZoomBuktiKhusus('${s.no_ppdb}')" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-2 py-1.5 rounded text-[10px] font-bold transition-colors border border-blue-200" title="Lihat Bukti Transfer"><i class="ph-bold ph-image"></i></button>` : '';
                 const btnStruk = `<button onclick="cetakStrukBendahara('${s.no_ppdb}')" class="bg-gray-800 text-white hover:bg-gray-700 px-2 py-1.5 rounded text-[10px] font-bold transition-colors" title="Cetak Struk POS"><i class="ph-bold ph-printer"></i></button>`;
-                
+
                 return `<tr class="border-b"><td class="py-3 px-4 font-bold text-brand-navy">${s.nama_murid||'-'}<br><span class="text-xs text-brand-muted font-normal">${s.no_ppdb}</span></td><td class="py-3 px-4 text-center font-mono font-bold text-green-600">${formatRp(info.tagihan)}</td><td class="py-3 px-4 text-center">${ketMetode}</td><td class="py-3 px-4 text-center flex justify-center gap-1">${btnStruk}${btnBukti}</td></tr>`;
             }
         }).join('');
@@ -1495,7 +1492,6 @@ function getKeuanganInfo(sUang) {
         const tglAwal = document.getElementById('filter-tgl-awal')?.value;
         const tglAkhir = document.getElementById('filter-tgl-akhir')?.value;
         
-        // Buat YYYY-MM-DD lokal mesin untuk patokan Lunas Hari Ini
         const d = new Date();
         const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); const day = String(d.getDate()).padStart(2,'0');
         const tglHariIni = `${y}-${m}-${day}`;
@@ -1508,14 +1504,13 @@ function getKeuanganInfo(sUang) {
             const info = getKeuanganInfo(su);
             
             if (info.isLunas && info.tagihan > 0) {
-                let tglTrx = s.tgl_pendaftaran || ''; 
+                // FIXED: Memotong timestamp T00:00:00 agar bisa divalidasi dengan YYYY-MM-DD
+                let tglTrx = (s.tgl_pendaftaran || '').split('T')[0]; 
                 
-                // 1. Kalkulasi Lunas Hari Ini (Bypass filter tanggal di layar)
                 if (tglTrx === tglHariIni) {
                     lunasHariIni += info.tagihan;
                 }
 
-                // 2. Kalkulasi Total Tunai & Transfer (Mengikuti filter rentang tanggal)
                 let masukRentang = true;
                 if (tglAwal && tglAwal !== '-' && tglTrx && tglTrx < tglAwal) masukRentang = false;
                 if (tglAkhir && tglAkhir !== '-' && tglTrx && tglTrx > tglAkhir) masukRentang = false;
@@ -1542,15 +1537,16 @@ function getKeuanganInfo(sUang) {
         let judulLaporan = activeKatBendahara === 'pendaftaran' ? 'PENDAFTARAN' : activeKatBendahara === 'daftarulang' ? 'DAFTAR ULANG' : 'BOPD';
 
         masterData.forEach(s => {
-            if(tglAwal && tglAwal !== '-' && s.tgl_pendaftaran && s.tgl_pendaftaran < tglAwal) return;
-            if(tglAkhir && tglAkhir !== '-' && s.tgl_pendaftaran && s.tgl_pendaftaran > tglAkhir) return;
+            let tglTrx = (s.tgl_pendaftaran || '').split('T')[0];
+            if(tglAwal && tglAwal !== '-' && tglTrx && tglTrx < tglAwal) return;
+            if(tglAkhir && tglAkhir !== '-' && tglTrx && tglTrx > tglAkhir) return;
 
             const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb);
             if(!su) return;
             const info = getKeuanganInfo(su);
             
             if (info.isLunas && info.tagihan > 0) {
-                const item = { tgl: s.tgl_pendaftaran || '-', nama: s.nama_murid, nominal: info.tagihan, ket: judulLaporan };
+                const item = { tgl: tglTrx || '-', nama: s.nama_murid, nominal: info.tagihan, ket: judulLaporan };
                 if (info.isTransfer) { listTransfer.push(item); totalTransfer += info.tagihan; } 
                 else { listTunai.push(item); totalTunai += info.tagihan; }
             }
@@ -1587,13 +1583,58 @@ function getKeuanganInfo(sUang) {
         const w = window.open('','_blank'); w.document.write(html); w.document.close();
     }
 
+    function bukaZoomBuktiKhusus(no_ppdb) {
+        const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb);
+        if(!sUang) return;
+        const info = getKeuanganInfo(sUang);
+        if(info.bukti) {
+            document.getElementById('zoom-img-bukti').src = info.bukti;
+            document.getElementById('modal-zoom-bukti').classList.replace('hidden', 'flex');
+        } else {
+            showToast("Gambar bukti transfer tidak ditemukan.", true);
+        }
+    }
+
+    function cetakStrukBendahara(no_ppdb) {
+        const sMaster = masterData.find(x => x.no_ppdb === no_ppdb);
+        const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb);
+        if(!sMaster || !sUang) return showToast("Data tidak valid", true);
+
+        const info = getKeuanganInfo(sUang);
+        let title = activeKatBendahara === 'pendaftaran' ? "PEMBAYARAN PENDAFTARAN" : activeKatBendahara === 'daftarulang' ? "PEMBAYARAN DAFTAR ULANG" : "PEMBAYARAN BOPD";
+        const metode = info.isTransfer ? "TRANSFER" : "TUNAI";
+        const tgl = new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
+        
+        const html = `<!DOCTYPE html><html><head><title>Struk - ${sMaster.nama_murid}</title><style>
+            @page { margin: 0; } body { font-family: 'Courier New', Courier, monospace; width: 58mm; margin: 0 auto; padding: 10px; font-size: 12px; color: #000; background: #fff; } .text-center { text-align: center; } .text-right { text-align: right; } .bold { font-weight: bold; } .divider { border-top: 1px dashed #000; margin: 6px 0; } @media print { .no-print { display: none !important; } body { width: 100%; padding: 0; } }
+        </style></head><body>
+            <div class="text-center bold" style="font-size:14px; margin-bottom:4px;">SD MUH. SUDAGARAN</div>
+            <div class="text-center" style="font-size:10px; margin-bottom:10px;">Jl. Sudagaran, Wonosobo</div>
+            <div class="divider"></div>
+            <div style="font-size:10px; margin-bottom:5px;">Tgl : ${tgl}<br>Opr : ${currentUsername.toUpperCase()}<br>No  : ${no_ppdb}</div>
+            <div class="divider"></div>
+            <div style="margin-bottom:5px; font-size:11px;">Nama: <span class="bold">${sMaster.nama_murid}</span></div>
+            <div class="bold text-center" style="margin-top:8px; margin-bottom:8px; font-size:11px;">${title}</div>
+            <div class="divider"></div>
+            <table style="width:100%; font-size:11px; margin-bottom:5px;"><tr><td>Nominal</td><td class="text-right bold">${formatRp(info.tagihan)}</td></tr><tr><td>Metode</td><td class="text-right bold">${metode}</td></tr><tr><td>Status</td><td class="text-right bold">LUNAS</td></tr></table>
+            <div class="divider"></div>
+            <div class="text-center" style="margin-top:10px; font-size:9px;">Terima kasih.<br>Simpan struk ini sebagai bukti.</div>
+            <button class="no-print" style="margin-top:20px; width:100%; padding:10px; cursor:pointer; background:#000; color:#fff; border:none; border-radius:4px; font-weight:bold;" onclick="window.print()">🖨️ Cetak Struk</button>
+        </body></html>`;
+
+        const w = window.open('', '_blank', 'width=300,height=500'); if(!w) return showToast("Izinkan pop-up browser!", true); w.document.write(html); w.document.close();
+        setTimeout(() => { w.print(); }, 500);
+    }
+
     function setRealtimeDate() {
         const tglSekarang = new Date().toISOString().split('T')[0];
         const fAwal = document.getElementById('filter-tgl-awal');
         const fAkhir = document.getElementById('filter-tgl-akhir');
         if(fAwal && !fAwal.value) fAwal.value = tglSekarang;
         if(fAkhir && !fAkhir.value) fAkhir.value = tglSekarang;
-        hitungRekapBendahara();
+        
+        // Memastikan perhitungan rekap dipanggil saat halaman pertama kali termuat
+        if(typeof hitungRekapBendahara === 'function') hitungRekapBendahara();
     }
     function bukaKasir(no_ppdb) {
         const s = masterData.find(x => x.no_ppdb === no_ppdb); const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {}; if(!s) return;
