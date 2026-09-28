@@ -1493,63 +1493,79 @@
     }
 
     function getKeuanganInfo(sUang) {
-        let res = { isLunas: false, hasTransfer: false, tagihan: 0, bukti: null, tahapan: [], isTransfer: false, kasir: '' };
-        if(!sUang) return res;
-        const no = sUang.no_ppdb;
-        
-        const sumAngsuran = (kat) => (angsuranData||[]).filter(x => x.no_ppdb === no && x.kategori === kat).reduce((a,b) => a + parseInt(b.nominal), 0);
+    let res = { isLunas: false, hasTransfer: false, tagihan: 0, bukti: null, tahapan: [], isTransfer: false, kasir: '' };
+    if(!sUang) return res;
+    const no = sUang.no_ppdb;
+    
+    const sumAngsuran = (kat) => (angsuranData||[]).filter(x => x.no_ppdb === no && x.kategori === kat).reduce((a,b) => a + parseInt(b.nominal), 0);
 
-        if (activeKatBendahara === 'pendaftaran') {
-            res.isLunas = isTrue(sUang.konf_pendaftaran);
-            res.tagihan = res.isLunas ? 0 : 300000;
-            res.bukti = sUang.bukti_tf_pendaftaran;
+    if (activeKatBendahara === 'pendaftaran') {
+        res.isLunas = isTrue(sUang.konf_pendaftaran);
+        res.tagihan = res.isLunas ? 0 : 300000;
+        res.bukti = sUang.bukti_tf_pendaftaran;
+        res.isTransfer = res.isLunas && isTf(res.bukti);
+        res.hasTransfer = !res.isLunas && isTf(res.bukti);
+        res.kasir = sUang.kasir_pendaftaran || (res.isTransfer ? 'Bendahara' : 'Atika Estiary');
+    }
+    else if (activeKatBendahara === 'daftarulang') {
+        const totalDU = parseInt(sUang.daftar_ulang) || 0;
+        const terbayarDU = sumAngsuran('daftar_ulang'); 
+        res.isLunas = isTrue(sUang.konf_daftar_ulang);
+        res.tagihan = res.isLunas ? 0 : Math.max(0, totalDU - terbayarDU);
+        if(!res.isLunas && res.tagihan === 0 && totalDU > 0) res.isLunas = true;
+        
+        // PERBAIKAN: Menyuntikkan status bukti transfer untuk Daftar Ulang agar tabel terbaca
+        res.bukti = sUang.bukti_tf_daftar_ulang;
+        res.isTransfer = res.isLunas && isTf(res.bukti);
+        res.hasTransfer = !res.isLunas && isTf(res.bukti);
+        
+        res.kasir = sUang.kasir_daftar_ulang || (res.isTransfer ? 'Bendahara' : 'Atika Estiary');
+    }
+    else if (activeKatBendahara === 'bopd') {
+        const totalBopd = parseInt(sUang.bopd) || 0;
+        const eb = parseInt(sUang.early_bird)||0; const aum = parseInt(sUang.kader_aum)||0; const bea = parseInt(sUang.beasiswa_lainnya)||0;
+        const tagihanBersih = Math.max(0, totalBopd - (eb+aum+bea));
+        const isAngsuranLama = String(sUang.jenis_pembayaran_bopd).toLowerCase() === 'angsuran';
+
+        if (isAngsuranLama) {
+            const b1 = sUang.bopd1 != null ? sUang.bopd1 : Math.max(0, (totalBopd * 0.5) - (eb+aum+bea));
+            const b2 = sUang.bopd2 != null ? sUang.bopd2 : (totalBopd * 0.25);
+            const b3 = sUang.bopd3 != null ? sUang.bopd3 : (totalBopd * 0.25);
+            
+            let l1 = isTrue(sUang.konf_bopd1); let l2 = isTrue(sUang.konf_bopd2); let l3 = isTrue(sUang.konf_bopd3);
+            
+            const tb1 = sumAngsuran('bopd1'); const tb2 = sumAngsuran('bopd2'); const tb3 = sumAngsuran('bopd3');
+            
+            const sisaB1 = l1 ? 0 : Math.max(0, b1 - tb1);
+            const sisaB2 = l2 ? 0 : Math.max(0, b2 - tb2);
+            const sisaB3 = l3 ? 0 : Math.max(0, b3 - tb3);
+
+            // PERBAIKAN: Menyuntikkan properti 'bukti' pada masing-masing tahapan agar modal popup tidak kosong
+            res.tahapan = [
+                { tahap: 1, tagihan: sisaB1, lunas: l1 || (sisaB1 === 0 && b1 > 0), dbKey: 'bopd1', bukti: sUang.bukti_tf_bopd1 },
+                { tahap: 2, tagihan: sisaB2, lunas: l2 || (sisaB2 === 0 && b2 > 0), dbKey: 'bopd2', bukti: sUang.bukti_tf_bopd2 },
+                { tahap: 3, tagihan: sisaB3, lunas: l3 || (sisaB3 === 0 && b3 > 0), dbKey: 'bopd3', bukti: sUang.bukti_tf_bopd3 }
+            ];
+            res.tagihan = sisaB1 + sisaB2 + sisaB3;
+            res.isLunas = (l1 || (sisaB1===0 && b1>0)) && (l2 || (sisaB2===0 && b2>0)) && (l3 || (sisaB3===0 && b3>0));
+            
+            // PERBAIKAN: Trigger Cek Transfer tabel utama untuk BOPD
+            res.hasTransfer = (!l1 && isTf(sUang.bukti_tf_bopd1)) || (!l2 && isTf(sUang.bukti_tf_bopd2)) || (!l3 && isTf(sUang.bukti_tf_bopd3));
+            
+        } else {
+            const tbLunas = sumAngsuran('bopd_lunas');
+            res.isLunas = isTrue(sUang.konfirmasi_bopd); 
+            res.tagihan = res.isLunas ? 0 : Math.max(0, tagihanBersih - tbLunas);
+            if(res.tagihan === 0 && tagihanBersih > 0) res.isLunas = true;
+            
+            // PERBAIKAN: Status bukti untuk Pelunasan BOPD penuh
+            res.bukti = sUang.bukti_transfer;
             res.isTransfer = res.isLunas && isTf(res.bukti);
             res.hasTransfer = !res.isLunas && isTf(res.bukti);
-            res.kasir = sUang.kasir_pendaftaran || (res.isTransfer ? 'Bendahara' : 'Atika Estiary');
         }
-        else if (activeKatBendahara === 'daftarulang') {
-            const totalDU = parseInt(sUang.daftar_ulang) || 0;
-            const terbayarDU = sumAngsuran('daftar_ulang'); 
-            res.isLunas = isTrue(sUang.konf_daftar_ulang);
-            res.tagihan = res.isLunas ? 0 : Math.max(0, totalDU - terbayarDU);
-            if(!res.isLunas && res.tagihan === 0 && totalDU > 0) res.isLunas = true;
-            res.kasir = sUang.kasir_daftar_ulang || 'Atika Estiary';
-        }
-        else if (activeKatBendahara === 'bopd') {
-            const totalBopd = parseInt(sUang.bopd) || 0;
-            const eb = parseInt(sUang.early_bird)||0; const aum = parseInt(sUang.kader_aum)||0; const bea = parseInt(sUang.beasiswa_lainnya)||0;
-            const tagihanBersih = Math.max(0, totalBopd - (eb+aum+bea));
-            const isAngsuranLama = String(sUang.jenis_pembayaran_bopd).toLowerCase() === 'angsuran';
-
-            if (isAngsuranLama) {
-                const b1 = sUang.bopd1 != null ? sUang.bopd1 : Math.max(0, (totalBopd * 0.5) - (eb+aum+bea));
-                const b2 = sUang.bopd2 != null ? sUang.bopd2 : (totalBopd * 0.25);
-                const b3 = sUang.bopd3 != null ? sUang.bopd3 : (totalBopd * 0.25);
-                
-                let l1 = isTrue(sUang.konf_bopd1); let l2 = isTrue(sUang.konf_bopd2); let l3 = isTrue(sUang.konf_bopd3);
-                
-                const tb1 = sumAngsuran('bopd1'); const tb2 = sumAngsuran('bopd2'); const tb3 = sumAngsuran('bopd3');
-                
-                const sisaB1 = l1 ? 0 : Math.max(0, b1 - tb1);
-                const sisaB2 = l2 ? 0 : Math.max(0, b2 - tb2);
-                const sisaB3 = l3 ? 0 : Math.max(0, b3 - tb3);
-
-                res.tahapan = [
-                    { tahap: 1, tagihan: sisaB1, lunas: l1 || (sisaB1 === 0 && b1 > 0), dbKey: 'bopd1' },
-                    { tahap: 2, tagihan: sisaB2, lunas: l2 || (sisaB2 === 0 && b2 > 0), dbKey: 'bopd2' },
-                    { tahap: 3, tagihan: sisaB3, lunas: l3 || (sisaB3 === 0 && b3 > 0), dbKey: 'bopd3' }
-                ];
-                res.tagihan = sisaB1 + sisaB2 + sisaB3;
-                res.isLunas = (l1 || (sisaB1===0 && b1>0)) && (l2 || (sisaB2===0 && b2>0)) && (l3 || (sisaB3===0 && b3>0));
-            } else {
-                const tbLunas = sumAngsuran('bopd_lunas');
-                res.isLunas = isTrue(sUang.konfirmasi_bopd); 
-                res.tagihan = res.isLunas ? 0 : Math.max(0, tagihanBersih - tbLunas);
-                if(res.tagihan === 0 && tagihanBersih > 0) res.isLunas = true;
-            }
-        }
-        return res;
     }
+    return res;
+}
 
     function renderTableBendahara() {
         const thead = document.getElementById('thead-bendahara');
