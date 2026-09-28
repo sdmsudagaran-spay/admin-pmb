@@ -1420,18 +1420,19 @@
         if(!sUang || !sMaster) return [];
         let list = [];
         const fbTgl = getLocalYYYYMMDD(sMaster.tgl_pendaftaran);
+        const fbKasir = sUang.pewawancara || 'Admin';
 
         if (kat === 'pendaftaran' && isTrue(sUang.konf_pendaftaran)) {
             let isTrf = isTf(sUang.bukti_tf_pendaftaran);
             let tglTrx = sUang.tgl_bayar_pendaftaran ? String(sUang.tgl_bayar_pendaftaran).split('T')[0] : fbTgl;
-            list.push({ nominal: 300000, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_pendaftaran || (isTrf ? 'Bendahara' : 'Atika Estiary') });
+            list.push({ idTrx: 'pendaftaran', nominal: 300000, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_pendaftaran || fbKasir, buktiOriginal: sUang.bukti_tf_pendaftaran });
         }
         else if (kat === 'daftarulang' && isTrue(sUang.konf_daftar_ulang)) {
             const nominal = parseInt(sUang.daftar_ulang) || 0;
             if(nominal > 0) {
                 let isTrf = isTf(sUang.bukti_tf_daftar_ulang);
                 let tglTrx = sUang.tgl_bayar_daftar_ulang ? String(sUang.tgl_bayar_daftar_ulang).split('T')[0] : fbTgl;
-                list.push({ nominal, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_daftar_ulang || (isTrf ? 'Bendahara' : 'Atika Estiary') });
+                list.push({ idTrx: 'daftarulang', nominal, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_daftar_ulang || fbKasir, buktiOriginal: sUang.bukti_tf_daftar_ulang });
             }
         }
         else if (kat === 'bopd') {
@@ -1446,24 +1447,24 @@
                 if(isTrue(sUang.konf_bopd1)) {
                     let isTrf = isTf(sUang.bukti_tf_bopd1);
                     let tglTrx = sUang.tgl_bayar_bopd1 ? String(sUang.tgl_bayar_bopd1).split('T')[0] : fbTgl;
-                    list.push({ nominal: b1, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_bopd1 || (isTrf ? 'Bendahara' : 'Atika Estiary') });
+                    list.push({ idTrx: 'bopd1', nominal: b1, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_bopd1 || fbKasir, buktiOriginal: sUang.bukti_tf_bopd1 });
                 }
                 if(isTrue(sUang.konf_bopd2)) {
                     let isTrf = isTf(sUang.bukti_tf_bopd2);
                     let tglTrx = sUang.tgl_bayar_bopd2 ? String(sUang.tgl_bayar_bopd2).split('T')[0] : fbTgl;
-                    list.push({ nominal: b2, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_bopd2 || (isTrf ? 'Bendahara' : 'Atika Estiary') });
+                    list.push({ idTrx: 'bopd2', nominal: b2, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_bopd2 || fbKasir, buktiOriginal: sUang.bukti_tf_bopd2 });
                 }
                 if(isTrue(sUang.konf_bopd3)) {
                     let isTrf = isTf(sUang.bukti_tf_bopd3);
                     let tglTrx = sUang.tgl_bayar_bopd3 ? String(sUang.tgl_bayar_bopd3).split('T')[0] : fbTgl;
-                    list.push({ nominal: b3, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_bopd3 || (isTrf ? 'Bendahara' : 'Atika Estiary') });
+                    list.push({ idTrx: 'bopd3', nominal: b3, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_bopd3 || fbKasir, buktiOriginal: sUang.bukti_tf_bopd3 });
                 }
             } else if (isTrue(sUang.konfirmasi_bopd)) {
                 const nominal = Math.max(0, totalBopd - (eb+aum+bea));
                 if(nominal > 0) {
                     let isTrf = isTf(sUang.bukti_transfer);
                     let tglTrx = sUang.tgl_bayar_bopd_lunas ? String(sUang.tgl_bayar_bopd_lunas).split('T')[0] : fbTgl;
-                    list.push({ nominal, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_bopd_lunas || (isTrf ? 'Bendahara' : 'Atika Estiary') });
+                    list.push({ idTrx: 'bopd_lunas', nominal, isTransfer: isTrf, tglTrx: tglTrx, kasir: sUang.kasir_bopd_lunas || fbKasir, buktiOriginal: sUang.bukti_transfer });
                 }
             }
         }
@@ -1509,12 +1510,7 @@
                     { tahap: 3, tagihan: b3, lunas: l3, bukti: sUang.bukti_tf_bopd3 }
                 ];
                 res.tagihan = totalBopd - (eb+aum+bea);
-                
-                const tf1 = l1 && isTf(sUang.bukti_tf_bopd1);
-                const tf2 = l2 && isTf(sUang.bukti_tf_bopd2);
-                const tf3 = l3 && isTf(sUang.bukti_tf_bopd3);
-                res.isTransfer = tf1 || tf2 || tf3;
-                
+                res.isTransfer = (l1 && isTf(sUang.bukti_tf_bopd1)) || (l2 && isTf(sUang.bukti_tf_bopd2)) || (l3 && isTf(sUang.bukti_tf_bopd3));
                 res.hasTransfer = (!l1 && isTf(sUang.bukti_tf_bopd1)) || (!l2 && isTf(sUang.bukti_tf_bopd2)) || (!l3 && isTf(sUang.bukti_tf_bopd3));
                 res.bukti = sUang.bukti_tf_bopd3 || sUang.bukti_tf_bopd2 || sUang.bukti_tf_bopd1;
                 res.kasir = sUang.kasir_bopd3 || sUang.kasir_bopd2 || sUang.kasir_bopd1 || (res.isTransfer ? 'Bendahara' : 'Atika Estiary');
@@ -1544,6 +1540,44 @@
         else if (activeSubBendahara === 'transfer') { thead.innerHTML = `<tr><th class="py-3 px-4">Nama Siswa</th><th class="py-3 px-4 text-center">Menunggu Validasi</th><th class="py-3 px-4 text-center">Cek Bukti</th></tr>`; } 
         else { thead.innerHTML = `<tr><th class="py-3 px-4">Nama Siswa</th><th class="py-3 px-4 text-center">Nominal Lunas</th><th class="py-3 px-4 text-center">Kasir</th><th class="py-3 px-4 text-center">Metode</th><th class="py-3 px-4 text-center">Aksi</th></tr>`; }
 
+        // --- MEROMBAK TABEL RIWAYAT MENJADI BERBASIS TRANSAKSI ---
+        if (activeSubBendahara === 'riwayat') {
+            let trxList = [];
+            masterData.forEach(s => {
+                if(q && !s.nama_murid?.toLowerCase().includes(q)) return;
+                const sUang = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
+                const validTrx = getValidTransactions(s, sUang, activeKatBendahara);
+                
+                validTrx.forEach(trx => {
+                    if (fMetode === 'tunai' && trx.isTransfer) return;
+                    if (fMetode === 'transfer' && !trx.isTransfer) return;
+                    
+                    let d = trx.tglTrx;
+                    if (isFilterActive) {
+                        if (!d) return;
+                        if (tglAwal && tglAwal !== '-' && d < tglAwal) return;
+                        if (tglAkhir && tglAkhir !== '-' && d > tglAkhir) return;
+                    }
+                    trxList.push({ siswa: s, trx: trx });
+                });
+            });
+
+            // Urutkan dari transaksi terbaru
+            trxList.sort((a,b) => (b.trx.tglTrx || '').localeCompare(a.trx.tglTrx || ''));
+
+            tbody.innerHTML = trxList.map(item => {
+                const s = item.siswa; const trx = item.trx;
+                const ketMetode = trx.isTransfer ? `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-bold border border-blue-200">Transfer</span>` : `<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold border border-green-200">Tunai</span>`;
+                const btnBukti = trx.isTransfer && trx.buktiOriginal ? `<button onclick="bukaZoomBuktiCustom('${trx.buktiOriginal}')" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-2 py-1.5 rounded text-[10px] font-bold transition-colors border border-blue-200" title="Lihat Bukti Transfer"><i class="ph-bold ph-image"></i></button>` : '';
+                const btnStruk = `<button onclick="cetakStrukBendahara('${s.no_ppdb}')" class="bg-gray-800 text-white hover:bg-gray-700 px-2 py-1.5 rounded text-[10px] font-bold transition-colors" title="Cetak Struk POS"><i class="ph-bold ph-printer"></i></button>`;
+                const btnBatal = `<button onclick="batalkanValidasi('${s.no_ppdb}', '${trx.idTrx}')" class="bg-red-50 text-red-600 hover:bg-red-100 px-2 py-1.5 rounded text-[10px] font-bold transition-colors border border-red-200" title="Batalkan Transaksi (Kembali Belum Lunas)"><i class="ph-bold ph-x"></i></button>`;
+
+                return `<tr class="border-b"><td class="py-3 px-4 font-bold text-brand-navy">${s.nama_murid||'-'}<br><span class="text-xs text-brand-muted font-normal">${s.no_ppdb}</span></td><td class="py-3 px-4 text-center font-mono font-bold text-green-600">${formatRp(trx.nominal)}<br><span class="text-[9px] text-gray-400 font-sans">${trx.tglTrx}</span></td><td class="py-3 px-4 text-center text-xs font-bold text-gray-600">${trx.kasir||'-'}</td><td class="py-3 px-4 text-center">${ketMetode}</td><td class="py-3 px-4 text-center flex justify-center gap-1">${btnStruk}${btnBukti}${btnBatal}</td></tr>`;
+            }).join('');
+            if(trxList.length === 0) tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500 text-sm">Tidak ada transaksi yang cocok.</td></tr>`;
+            return;
+        }
+
         let data = masterData.filter(s => {
             if(q && !s.nama_murid?.toLowerCase().includes(q)) return false;
             const sUang = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
@@ -1551,22 +1585,6 @@
             
             if (activeSubBendahara === 'tunai') return !info.isLunas;
             if (activeSubBendahara === 'transfer') return info.hasTransfer;
-            if (activeSubBendahara === 'riwayat') {
-                if (!info.isLunas) return false;
-                if (fMetode === 'tunai' && info.isTransfer) return false;
-                if (fMetode === 'transfer' && !info.isTransfer) return false;
-                
-                const validTrx = getValidTransactions(s, sUang, activeKatBendahara);
-                return validTrx.some(trx => {
-                    let d = trx.tglTrx; 
-                    if (!isFilterActive) return true;
-                    if (!d) return false; 
-                    let ok = true;
-                    if (tglAwal && tglAwal !== '-' && d < tglAwal) ok = false;
-                    if (tglAkhir && tglAkhir !== '-' && d > tglAkhir) ok = false;
-                    return ok;
-                });
-            }
             return false;
         });
 
@@ -1582,15 +1600,41 @@
                 let amountToValidate = info.tagihan;
                 if(activeKatBendahara === 'bopd' && info.tahapan.length > 0) { const t = info.tahapan.find(x => !x.lunas && !!x.bukti); if(t) amountToValidate = t.tagihan; }
                 return `<tr class="border-b bg-orange-50"><td class="py-3 px-4 font-bold text-brand-navy">${s.nama_murid||'-'}<br><span class="text-xs text-brand-muted font-normal">${s.no_ppdb}</span></td><td class="py-3 px-4 text-center font-mono font-bold text-orange-600">${formatRp(amountToValidate)}</td><td class="py-3 px-4 text-center"><button onclick="bukaCekTransfer('${s.no_ppdb}')" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-colors"><i class="ph-bold ph-eye"></i> Cek Transfer</button></td></tr>`;
-            } else {
-                const ketMetode = info.isTransfer ? `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-bold border border-blue-200">Transfer</span>` : `<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold border border-green-200">Tunai</span>`;
-                const btnBukti = info.isTransfer && info.bukti ? `<button onclick="bukaZoomBuktiKhusus('${s.no_ppdb}')" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-2 py-1.5 rounded text-[10px] font-bold transition-colors border border-blue-200" title="Lihat Bukti Transfer"><i class="ph-bold ph-image"></i></button>` : '';
-                const btnStruk = `<button onclick="cetakStrukBendahara('${s.no_ppdb}')" class="bg-gray-800 text-white hover:bg-gray-700 px-2 py-1.5 rounded text-[10px] font-bold transition-colors" title="Cetak Struk POS"><i class="ph-bold ph-printer"></i></button>`;
-
-                return `<tr class="border-b"><td class="py-3 px-4 font-bold text-brand-navy">${s.nama_murid||'-'}<br><span class="text-xs text-brand-muted font-normal">${s.no_ppdb}</span></td><td class="py-3 px-4 text-center font-mono font-bold text-green-600">${formatRp(info.tagihan)}</td><td class="py-3 px-4 text-center text-xs font-bold text-gray-600">${info.kasir||'-'}</td><td class="py-3 px-4 text-center">${ketMetode}</td><td class="py-3 px-4 text-center flex justify-center gap-1">${btnStruk}${btnBukti}</td></tr>`;
             }
         }).join('');
         if(data.length === 0) tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500 text-sm">Tidak ada data siswa untuk kategori ini.</td></tr>`;
+    }
+
+    function bukaZoomBuktiCustom(url) {
+        if(!url) return showToast("Bukti tidak ditemukan", true);
+        document.getElementById('zoom-img-bukti').src = url;
+        document.getElementById('modal-zoom-bukti').classList.replace('hidden', 'flex');
+    }
+
+    function batalkanValidasi(no_ppdb, idTrx) {
+        askConfirm("BATALKAN TRANSAKSI INI? Status siswa akan dikembalikan menjadi 'Belum Lunas'.", async () => {
+            const pl = {};
+            if (idTrx === 'pendaftaran') { 
+                pl.konf_pendaftaran = false; pl.tgl_bayar_pendaftaran = null; pl.kasir_pendaftaran = null; 
+            } 
+            else if (idTrx === 'daftarulang') { 
+                pl.konf_daftar_ulang = false; pl.tgl_bayar_daftar_ulang = null; pl.kasir_daftar_ulang = null; 
+            } 
+            else if (idTrx.startsWith('bopd')) {
+                if (idTrx === 'bopd_lunas') { 
+                    pl.konfirmasi_bopd = false; pl.tgl_bayar_bopd_lunas = null; pl.kasir_bopd_lunas = null; 
+                } 
+                else { 
+                    pl[`konf_${idTrx}`] = false; pl[`tgl_bayar_${idTrx}`] = null; pl[`kasir_${idTrx}`] = null; 
+                }
+            }
+
+            try { 
+                await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl); 
+                showToast("Transaksi berhasil dibatalkan dan ditarik kembali", true); 
+                loadData(); 
+            } catch(e) { showToast(e.message, true); }
+        });
     }
 
     function updateBendaharaBadges() {
