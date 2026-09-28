@@ -739,7 +739,7 @@
             
             <div>
                 <label class="text-xs font-bold text-brand-navy block mb-1">Nominal Uang Diterima (Tunai)</label>
-                <input type="number" id="kasir-dyn-bayar" oninput="hitungKembalianDyn()" class="w-full border-2 border-brand-navy rounded-xl p-3 text-lg font-bold text-center focus:border-brand-gold focus:outline-none" placeholder="Masukkan jumlah uang...">
+                <input type="text" id="kasir-dyn-bayar" oninput="formatInputRibuan(this); hitungKembalianDyn()" class="w-full border-2 border-brand-navy rounded-xl p-3 text-lg font-bold text-center focus:border-brand-gold focus:outline-none" placeholder="Masukkan jumlah uang ...">
             </div>
             <div class="bg-gray-100 p-3 rounded-xl border border-gray-200 flex justify-between items-center">
                 <span class="text-sm font-bold text-brand-navy">Kembalian:</span>
