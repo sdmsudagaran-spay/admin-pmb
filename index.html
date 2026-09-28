@@ -1422,7 +1422,14 @@
     function isTf(bukti) {
         if (!bukti) return false;
         const str = String(bukti).trim().toLowerCase();
-        return str !== '' && str !== 'null' && str !== 'tunai' && str !== 'false';
+        
+        // Jaring Pengaman 1: URL Bucket Supabase (Sistem Baru)
+        if (str.startsWith('http')) return true;
+        
+        // Jaring Pengaman 2: Teks Base64 (Sistem Lama / Sisa user yang belum refresh)
+        if (str.startsWith('data:image')) return true;
+        
+        return false;
     }
 
     function getValidTransactions(sMaster, sUang, kat) {
