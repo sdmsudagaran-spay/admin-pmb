@@ -1851,10 +1851,22 @@
     }
 
     function bukaKasir(no_ppdb) {
-        const s = masterData.find(x => x.no_ppdb === no_ppdb); const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {}; if(!s) return;
-        const info = getKeuanganInfo(sUang);
+        const s = masterData.find(x => x.no_ppdb === no_ppdb); 
+        const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {}; 
+        if(!s) return;
         
-        currentDataKasir = { no_ppdb: no_ppdb, tagihanUtama: info.tagihan, siswa: s };
+        const info = getKeuanganInfo(sUang);
+        const isAngsSkema = activeKatBendahara === 'bopd' && String(sUang.jenis_pembayaran_bopd).toLowerCase() === 'angsuran';
+        
+        currentDataKasir = { 
+            no_ppdb: no_ppdb, 
+            tagihanUtama: info.tagihan, 
+            siswa: s,
+            sisaTagihanAsli: info.tagihan,
+            isAngsuranSkema: isAngsSkema,
+            tahapan: info.tahapan,
+            tipeBayar: 'skema' // Default mode
+        };
         
         document.getElementById('kasir-dyn-nama').innerText = s.nama_murid;
         document.getElementById('kasir-dyn-noppdb').innerText = s.no_ppdb;
@@ -1866,36 +1878,109 @@
         if(activeKatBendahara === 'pendaftaran') {
             rin.innerHTML = `<div class="flex justify-between items-center bg-white p-3 rounded border"><span class="font-bold text-brand-navy">Biaya Pendaftaran</span><span class="font-mono text-lg font-bold text-red-500">${formatRp(info.tagihan)}</span></div>`;
             currentDataKasir.totalTagihanActive = info.tagihan;
-            currentDataKasir.isAngsuranBaru = false;
+            currentDataKasir.tipeBayar = 'skema';
         } else {
             let judul = activeKatBendahara === 'daftarulang' ? 'Daftar Ulang' : 'BOPD';
+            
+            // Generate View: Sesuai Skema
+            let htmlSkema = '';
+            if (isAngsSkema) {
+                htmlSkema = `
+                    <p class="font-bold text-brand-navy border-b pb-1 mb-2">Pilih Tahap Skema BOPD:</p>
+                    ${info.tahapan.map(t => `
+                        <label class="flex items-center justify-between bg-white p-2 rounded border cursor-pointer ${t.lunas ? 'opacity-50' : 'hover:border-brand-gold'}">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" class="chk-kasir-dyn accent-brand-gold" value="${t.tagihan}" data-tahap="${t.tahap}" ${t.lunas ? 'checked disabled' : ''} onchange="hitungTagihanDyn()">
+                                <span class="${t.lunas ? 'line-through text-gray-500' : 'text-brand-navy font-bold'}">Tahap ${t.tahap}</span>
+                            </div>
+                            <span class="font-mono text-xs font-bold ${t.lunas ? 'text-green-600' : 'text-red-500'}">${formatRp(t.tagihan)}</span>
+                        </label>
+                    `).join('')}
+                `;
+            } else {
+                htmlSkema = `
+                    <div class="flex justify-between items-center bg-white p-3 rounded border">
+                        <span class="font-bold text-brand-navy">Pelunasan ${judul}</span>
+                        <span class="font-mono text-lg font-bold text-red-500">${formatRp(info.tagihan)}</span>
+                    </div>
+                `;
+            }
+
             rin.innerHTML = `
-                <div class="bg-white p-3 rounded border space-y-2">
-                    <div class="flex justify-between items-center border-b pb-2"><span class="font-bold text-brand-navy">Sisa Tagihan ${judul}</span><span class="font-mono text-lg font-bold text-red-500">${formatRp(info.tagihan)}</span></div>
+                <div class="flex gap-2 mb-3 bg-gray-100 p-1 rounded-lg">
+                    <button id="btn-tipe-skema" onclick="switchTipeBayar('skema')" class="flex-1 py-1.5 text-xs font-bold rounded shadow-sm bg-white text-brand-navy transition-all">Sesuai Skema</button>
+                    <button id="btn-tipe-bebas" onclick="switchTipeBayar('bebas')" class="flex-1 py-1.5 text-xs font-bold rounded text-gray-500 hover:text-brand-navy transition-all">Angsuran Bebas</button>
+                </div>
+                
+                <div id="view-bayar-skema" class="space-y-2 block">
+                    ${htmlSkema}
+                </div>
+                
+                <div id="view-bayar-bebas" class="bg-white p-3 rounded border space-y-2 hidden">
+                    <div class="flex justify-between items-center border-b pb-2"><span class="font-bold text-brand-navy">Sisa Tagihan Berjalan</span><span class="font-mono text-lg font-bold text-red-500">${formatRp(info.tagihan)}</span></div>
                     <div>
-                        <label class="text-[10px] font-bold text-brand-muted block mb-1">Nominal yang ingin dibayar SEKARANG:</label>
-                        <input type="text" id="kasir-dyn-angsuran" oninput="formatInputRibuan(this); hitungTagihanDyn()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:border-brand-gold outline-none font-bold text-brand-navy" placeholder="Ketik nominal cicilan (Misal: 500.000)...">
+                        <label class="text-[10px] font-bold text-brand-muted block mb-1">Nominal Titipan Angsuran:</label>
+                        <input type="text" id="kasir-dyn-angsuran" oninput="formatInputRibuan(this); hitungTagihanDyn()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:border-brand-gold outline-none font-bold text-brand-navy" placeholder="Ketik nominal uang cicilan...">
                     </div>
                 </div>
+                
+                <div class="flex justify-between items-center mt-3 pt-2 border-t font-bold text-brand-navy"><span>Total yang Dibayar:</span><span id="kasir-dyn-total-terpilih" class="text-xl text-red-500">Rp 0</span></div>
             `;
             currentDataKasir.totalTagihanActive = 0; 
-            currentDataKasir.isAngsuranBaru = true;
-            currentDataKasir.sisaTagihanAsli = info.tagihan;
+            if(!isAngsSkema) currentDataKasir.totalTagihanActive = info.tagihan; 
         }
-        hitungTagihanDyn(); document.getElementById('modal-kasir-dinamis').classList.replace('hidden', 'flex');
+        
+        hitungTagihanDyn(); 
+        document.getElementById('modal-kasir-dinamis').classList.replace('hidden', 'flex');
+    }
+
+    function switchTipeBayar(tipe) {
+        currentDataKasir.tipeBayar = tipe;
+        const bSkema = document.getElementById('btn-tipe-skema');
+        const bBebas = document.getElementById('btn-tipe-bebas');
+        const vSkema = document.getElementById('view-bayar-skema');
+        const vBebas = document.getElementById('view-bayar-bebas');
+
+        if(tipe === 'skema') {
+            bSkema.classList.add('bg-white', 'shadow-sm', 'text-brand-navy'); bSkema.classList.remove('text-gray-500');
+            bBebas.classList.remove('bg-white', 'shadow-sm', 'text-brand-navy'); bBebas.classList.add('text-gray-500');
+            vSkema.classList.replace('hidden', 'block');
+            vBebas.classList.replace('block', 'hidden');
+        } else {
+            bBebas.classList.add('bg-white', 'shadow-sm', 'text-brand-navy'); bBebas.classList.remove('text-gray-500');
+            bSkema.classList.remove('bg-white', 'shadow-sm', 'text-brand-navy'); bSkema.classList.add('text-gray-500');
+            vBebas.classList.replace('hidden', 'block');
+            vSkema.classList.replace('block', 'hidden');
+        }
+        hitungTagihanDyn();
     }
 
     function hitungTagihanDyn() {
-        if(currentDataKasir.isAngsuranBaru) {
-            const inputVal = document.getElementById('kasir-dyn-angsuran').value.replace(/[^0-9]/g, '');
-            let bayarAngsuran = parseInt(inputVal) || 0;
-            if(bayarAngsuran > currentDataKasir.sisaTagihanAsli) {
-                bayarAngsuran = currentDataKasir.sisaTagihanAsli;
-                document.getElementById('kasir-dyn-angsuran').value = new Intl.NumberFormat('id-ID').format(bayarAngsuran);
-                showToast("Angsuran tidak boleh melebihi sisa tagihan!", true);
+        if (activeKatBendahara === 'pendaftaran') {
+            currentDataKasir.totalTagihanActive = 300000;
+        } else {
+            if(currentDataKasir.tipeBayar === 'skema') {
+                if (currentDataKasir.isAngsuranSkema) {
+                    let t = 0; 
+                    document.querySelectorAll('.chk-kasir-dyn:not(:disabled)').forEach(c => { if(c.checked) t += parseInt(c.value); });
+                    currentDataKasir.totalTagihanActive = t;
+                } else {
+                    currentDataKasir.totalTagihanActive = currentDataKasir.sisaTagihanAsli;
+                }
+            } else {
+                const inputVal = document.getElementById('kasir-dyn-angsuran').value.replace(/[^0-9]/g, '');
+                let bayarAngsuran = parseInt(inputVal) || 0;
+                if(bayarAngsuran > currentDataKasir.sisaTagihanAsli) {
+                    bayarAngsuran = currentDataKasir.sisaTagihanAsli;
+                    document.getElementById('kasir-dyn-angsuran').value = new Intl.NumberFormat('id-ID').format(bayarAngsuran);
+                    showToast("Angsuran tidak boleh melebihi sisa tagihan!", true);
+                }
+                currentDataKasir.totalTagihanActive = bayarAngsuran;
             }
-            currentDataKasir.totalTagihanActive = bayarAngsuran;
         }
+        const totEl = document.getElementById('kasir-dyn-total-terpilih'); 
+        if(totEl) totEl.innerText = formatRp(currentDataKasir.totalTagihanActive);
+        
         hitungKembalianDyn();
     }
 
@@ -1920,22 +2005,48 @@
         const btn = document.getElementById('btn-bayar-dyn'); btn.disabled = true; btn.innerHTML = 'Memproses...';
 
         try {
-            if(currentDataKasir.isAngsuranBaru) {
-                const plAngsuran = { no_ppdb: no, kategori: activeKatBendahara, nominal: currentDataKasir.totalTagihanActive, metode: 'Tunai', tgl_bayar: nowLocalStr, kasir: currentUsername };
-                await apiRequest(`${SUPABASE_URL}angsuran`, 'POST', plAngsuran);
-
-                // Tandai Lunas di tabel master jika angsuran sudah menutupi total tagihan
-                if(currentDataKasir.totalTagihanActive === currentDataKasir.sisaTagihanAsli) {
-                    const pl = {};
-                    if(activeKatBendahara === 'daftarulang') { pl.konf_daftar_ulang = true; pl.tgl_bayar_daftar_ulang = nowLocalStr; pl.kasir_daftar_ulang = currentUsername; } 
-                    else if (activeKatBendahara === 'bopd') { pl.konfirmasi_bopd = true; pl.tgl_bayar_bopd_lunas = nowLocalStr; pl.kasir_bopd_lunas = currentUsername; }
-                    const ex = keuanganData.find(x => x.no_ppdb === no);
-                    if(ex && ex.id) await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no}`, 'PATCH', pl);
-                }
-            } else {
+            if (activeKatBendahara === 'pendaftaran') {
                 const pl = { konf_pendaftaran: true, pendaftaran: 300000, tgl_bayar_pendaftaran: nowLocalStr, kasir_pendaftaran: currentUsername };
                 const ex = keuanganData.find(x => x.no_ppdb === no);
                 if(ex && ex.id) await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no}`, 'PATCH', pl);
+            } else {
+                if (currentDataKasir.tipeBayar === 'bebas') {
+                    // MODE ANGSURAN BEBAS: Masuk ke tabel angsuran relasional
+                    const plAngsuran = { no_ppdb: no, kategori: activeKatBendahara, nominal: currentDataKasir.totalTagihanActive, metode: 'Tunai', tgl_bayar: nowLocalStr, kasir: currentUsername };
+                    await apiRequest(`${SUPABASE_URL}angsuran`, 'POST', plAngsuran);
+
+                    // Tandai Lunas Permanen di tabel master jika akumulasi angsuran sudah menutupi sisa
+                    if(currentDataKasir.totalTagihanActive === currentDataKasir.sisaTagihanAsli) {
+                        const pl = {};
+                        if(activeKatBendahara === 'daftarulang') { pl.konf_daftar_ulang = true; pl.tgl_bayar_daftar_ulang = nowLocalStr; pl.kasir_daftar_ulang = currentUsername; } 
+                        else if (activeKatBendahara === 'bopd') { pl.konfirmasi_bopd = true; pl.tgl_bayar_bopd_lunas = nowLocalStr; pl.kasir_bopd_lunas = currentUsername; }
+                        const ex = keuanganData.find(x => x.no_ppdb === no);
+                        if(ex && ex.id) await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no}`, 'PATCH', pl);
+                    }
+                } else {
+                    // MODE SKEMA LAMA: Mengubah status boolean di tabel keuangan secara langsung
+                    const pl = {};
+                    if(activeKatBendahara === 'daftarulang') { 
+                        pl.konf_daftar_ulang = true; pl.tgl_bayar_daftar_ulang = nowLocalStr; pl.kasir_daftar_ulang = currentUsername; 
+                    }
+                    else if(activeKatBendahara === 'bopd') {
+                        if(currentDataKasir.isAngsuranSkema) { 
+                            document.querySelectorAll('.chk-kasir-dyn:not(:disabled)').forEach(c => { 
+                                if(c.checked) { 
+                                    const thp = c.getAttribute('data-tahap'); 
+                                    pl[`konf_bopd${thp}`] = true; 
+                                    pl[`tgl_bayar_bopd${thp}`] = nowLocalStr;
+                                    pl[`kasir_bopd${thp}`] = currentUsername;
+                                } 
+                            }); 
+                        } 
+                        else { 
+                            pl.konfirmasi_bopd = true; pl.tgl_bayar_bopd_lunas = nowLocalStr; pl.kasir_bopd_lunas = currentUsername; 
+                        }
+                    }
+                    const ex = keuanganData.find(x => x.no_ppdb === no);
+                    if(ex && ex.id) await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no}`, 'PATCH', pl);
+                }
             }
             
             showToast("Pembayaran Berhasil"); closeModal('modal-kasir-dinamis'); await loadData();
