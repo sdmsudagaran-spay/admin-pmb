@@ -1017,6 +1017,9 @@
         document.querySelectorAll('.panel-view').forEach(p => p.classList.add('hidden')); document.getElementById(id)?.classList.remove('hidden');
         if(document.getElementById('desktop-title')) document.getElementById('desktop-title').innerText = title;
         document.querySelectorAll('#nav-menu button').forEach(b => { b.classList.remove('bg-white/10', 'border-l-4', 'border-brand-gold', 'opacity-70'); b.dataset.target === id ? b.classList.add('bg-white/10', 'border-l-4', 'border-brand-gold') : b.classList.add('opacity-70'); });
+        
+        renderAll(); // Eksekusi render HANYA setelah jendela aktif diputuskan
+        
         if(id === 'panel-bendahara') hitungRekapBendahara();
         if(window.innerWidth < 640 && document.getElementById('sidebar').classList.contains('sidebar-mobile-open')) toggleSidebar();
     }
@@ -1206,14 +1209,19 @@
     }
 
     function renderAll() {
+        if(!masterData) return;
         const isAdmin = currentUserRoleArr.includes('admin');
-        if(isAdmin || currentUserRoleArr.includes('sekretaris')) renderSekretaris();
-        if(isAdmin || currentUserRoleArr.includes('penganalisis')) renderPenganalisisFilter();
-        if(isAdmin || currentUserRoleArr.includes('pewawancara')) renderPewawancara();
-        if(isAdmin || currentUserRoleArr.includes('bendahara')) { renderTableBendahara(); hitungRekapBendahara(); updateBendaharaBadges(); }
-        if(isAdmin || currentUserRoleArr.includes('perlengkapan')) renderPerlengkapan();
-        if(isAdmin) { renderAkunProgress(); renderStaf(); renderMenuApp(); }
-        if(isAdmin) renderDashboardEksekutif();
+        
+        // HANYA jalankan rendering jika panelnya tidak disembunyikan (Lazy Rendering)
+        if(!document.getElementById('panel-sekretaris').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('sekretaris'))) renderSekretaris();
+        if(!document.getElementById('panel-penganalisis').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('penganalisis'))) renderPenganalisisFilter();
+        if(!document.getElementById('panel-pewawancara').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('pewawancara'))) renderPewawancara();
+        if(!document.getElementById('panel-bendahara').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('bendahara'))) { renderTableBendahara(); hitungRekapBendahara(); updateBendaharaBadges(); }
+        if(!document.getElementById('panel-perlengkapan').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('perlengkapan'))) renderPerlengkapan();
+        if(!document.getElementById('panel-akun-progress').classList.contains('hidden') && isAdmin) renderAkunProgress();
+        if(!document.getElementById('panel-kelola-akses').classList.contains('hidden') && isAdmin) renderStaf();
+        if(!document.getElementById('panel-menu-app').classList.contains('hidden') && isAdmin) renderMenuApp();
+        if(!document.getElementById('panel-dashboard').classList.contains('hidden') && isAdmin) renderDashboardEksekutif();
     }
     function renderAkunProgress() {
         const tbody = document.getElementById('tbody-akun-progress'); if(!tbody) return;
