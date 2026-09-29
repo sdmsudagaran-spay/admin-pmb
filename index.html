@@ -1090,7 +1090,7 @@
                 listTahun.reverse(); // Urutkan dari tahun terbaru
                 
                 selTahun.innerHTML = listTahun.map(t => 
-                    `<option value="${t}">${t === activeTahunAjaran ? \`TA Aktif (\${t})\` : \`Lihat TA \${t}\`}</option>`
+                    `<option value="${t}">${t === activeTahunAjaran ? 'TA Aktif (' + t + ')' : 'Lihat TA ' + t}</option>`
                 ).join('');
                 selTahun.value = viewTahunAjaran;
             }
