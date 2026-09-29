@@ -140,7 +140,7 @@
                 </div>
                 
                 <!-- Calon Murid 4 Kolom -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div class="bg-gradient-to-br from-blue-500 to-brand-navy p-5 rounded-2xl shadow text-white flex flex-col justify-between relative overflow-hidden">
                         <div><p class="text-xs font-medium opacity-80 uppercase tracking-wider">Total Pendaftar</p><h3 id="dash-total-pendaftar" class="text-3xl font-bold mt-1">0</h3></div>
                         <i class="ph-fill ph-users-three text-5xl opacity-20 absolute -right-2 -bottom-2"></i>
@@ -158,6 +158,10 @@
                         <i class="ph-fill ph-archive text-5xl opacity-5 absolute -right-2 -bottom-2"></i>
                     </div>
                 </div>
+                <div class="bg-gradient-to-br from-red-500 to-red-700 p-5 rounded-2xl shadow text-white flex flex-col justify-between relative overflow-hidden">
+                        <div><p class="text-[10px] font-bold opacity-80 uppercase tracking-wider">Mundur / Batal</p><h3 id="dash-total-mundur" class="text-3xl font-bold mt-1">0</h3></div>
+                        <i class="ph-fill ph-user-minus text-5xl opacity-20 absolute -right-2 -bottom-2"></i>
+                    </div>
 
                 <!-- Keuangan -->
                 <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm mt-2">
@@ -333,6 +337,7 @@
                                 <option value="all">Semua Status</option>
                                 <option value="lengkap">Sudah Lengkap</option>
                                 <option value="belum">Belum Lengkap</option>
+                                <option value="mundur">Mengundurkan Diri</option>
                             </select>
                         </div>
                     </div>
@@ -344,6 +349,7 @@
                                     <th class="py-3.5 px-4">No PPDB</th>
                                     <th class="py-3.5 px-4">Password (No)</th>
                                     <th class="py-3.5 px-4">Nama Lengkap</th>
+                                    <th class="py-3.5 px-4 text-center">Status</th>
                                     <th class="py-3.5 px-4 text-center">Aksi Pantau & Edit</th>
                                 </tr>
                             </thead>
@@ -1107,18 +1113,24 @@
     function renderDashboardEksekutif() {
         if(!masterData || masterData.length === 0) return;
 
-        let countDU = 0;
-        let countWawancara = 0;
+        let countDU = 0; let countWawancara = 0; let countMundur = 0;
 
-        // 1. Hitung Calon Murid, Wawancara, & DU
+        // 1. Hitung Calon Murid, Wawancara, DU, & Mundur
         masterData.forEach(s => {
-            const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
-            if(isTrue(su.konf_daftar_ulang)) countDU++;
-            if(!!su.pewawancara || (su.daftar_ulang != null && su.daftar_ulang > 0)) countWawancara++;
+            if(s.is_mundur === true || String(s.is_mundur) === 'true') {
+                countMundur++; // Hitung yang mundur
+            } else {
+                // Yang mundur TIDAK dihitung dalam daftar ulang dan wawancara
+                const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
+                if(isTrue(su.konf_daftar_ulang)) countDU++;
+                if(!!su.pewawancara || (su.daftar_ulang != null && su.daftar_ulang > 0)) countWawancara++;
+            }
         });
-        document.getElementById('dash-total-pendaftar').innerText = masterData.length;
-        document.getElementById('dash-total-du').innerText = countDU;
-        document.getElementById('dash-total-wawancara').innerText = countWawancara;
+        
+        if(document.getElementById('dash-total-pendaftar')) document.getElementById('dash-total-pendaftar').innerText = masterData.length;
+        if(document.getElementById('dash-total-du')) document.getElementById('dash-total-du').innerText = countDU;
+        if(document.getElementById('dash-total-wawancara')) document.getElementById('dash-total-wawancara').innerText = countWawancara;
+        if(document.getElementById('dash-total-mundur')) document.getElementById('dash-total-mundur').innerText = countMundur;
 
         // Tarik data jumlah siswa dari tahun lain secara asinkron (Background Fetch)
         apiRequest(`${SUPABASE_URL}pendaftar?tahun_ajaran=neq.${encodeURIComponent(viewTahunAjaran)}&select=id`, 'GET')
@@ -1265,16 +1277,17 @@
         const sortOrder = document.getElementById('sort-abjad-master')?.value || 'az';
 
         let processedData = masterData.filter(s => {
+            const isMundur = s.is_mundur === true || String(s.is_mundur) === 'true';
             const sAna = analisisData.find(x => x.no_ppdb === s.no_ppdb) || {};
             const isLengkap = sAna.mengenal_huruf != null && sAna.mengenal_bilangan != null; 
             
             let matchStatus = true;
-            if (flt === 'lengkap') matchStatus = isLengkap;
-            if (flt === 'belum') matchStatus = !isLengkap;
+            if (flt === 'lengkap') matchStatus = isLengkap && !isMundur;
+            if (flt === 'belum') matchStatus = !isLengkap && !isMundur;
+            if (flt === 'mundur') matchStatus = isMundur;
 
             const nama = (s.nama_murid || '').toLowerCase();
             const no = (s.no_ppdb || '').toLowerCase();
-            
             const matchQuery = query === '' || nama.includes(query) || no.includes(query);
 
             return matchStatus && matchQuery;
@@ -1289,19 +1302,77 @@
         });
 
         tbody.innerHTML = processedData.map(s => {
-            const sAna = analisisData.find(x => x.no_ppdb === s.no_ppdb) || {}; const sUang = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
+            const isMundur = s.is_mundur === true || String(s.is_mundur) === 'true';
+            const sAna = analisisData.find(x => x.no_ppdb === s.no_ppdb) || {}; 
+            const sUang = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
+            
             const isAnaLengkap = (sAna.mengenal_huruf != null && sAna.mengenal_bilangan != null && sAna.menggunting_dan_menempel_puzzel != null && sAna.menyanyi_lagu_nasional != null && sAna.melafalkan_surat_pendek_doa_harian != null && sAna.interview != null);
             const isUangLengkap = (sUang.daftar_ulang != null && sUang.daftar_ulang > 0) || sUang.pewawancara;
 
+            const txtCoret = isMundur ? 'line-through text-red-400 opacity-70' : '';
+            const statusHtml = isMundur ? `<span class="bg-red-100 text-red-600 px-2 py-1 rounded text-[10px] font-bold">MUNDUR</span>` : `<span class="bg-green-100 text-green-600 px-2 py-1 rounded text-[10px] font-bold">AKTIF</span>`;
+
             const btnAnalisis = isAnaLengkap ? `<button onclick="cetakAnalisis('${s.no_ppdb}')" title="Preview Hasil Analisis" class="text-purple-600 bg-purple-50 hover:bg-purple-100 p-1.5 rounded border border-purple-100"><i class="ph-bold ph-chart-polar text-lg"></i></button>` : `<button disabled class="text-gray-400 bg-gray-100 p-1.5 rounded border border-gray-200 cursor-not-allowed"><i class="ph-bold ph-chart-polar text-lg"></i></button>`;
             const btnWawancara = isUangLengkap ? `<button onclick="cetakHasilWawancara('${s.no_ppdb}')" title="Cetak Hasil Wawancara (Biaya)" class="text-green-600 bg-green-50 hover:bg-green-100 p-1.5 rounded border border-green-100"><i class="ph-bold ph-money text-lg"></i></button>` : `<button disabled class="text-gray-400 bg-gray-100 p-1.5 rounded border border-gray-200 cursor-not-allowed"><i class="ph-bold ph-money text-lg"></i></button>`;
+            const btnMundur = `<button onclick="toggleMundurSiswa('${s.id}', ${isMundur}, '${s.nama_murid}')" title="${isMundur ? 'Batalkan Undur Diri' : 'Tandai Mengundurkan Diri'}" class="text-${isMundur ? 'gray' : 'red'}-500 bg-${isMundur ? 'gray' : 'red'}-50 hover:bg-${isMundur ? 'gray' : 'red'}-100 p-1.5 rounded border border-${isMundur ? 'gray' : 'red'}-100"><i class="ph-bold ${isMundur ? 'ph-arrow-u-up-left' : 'ph-x'} text-lg"></i></button>`;
 
-            return `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4 font-mono text-xs font-medium">${s.no_ppdb||'-'}</td><td class="py-3 px-4 font-bold text-blue-600">${s.password||'-'}</td><td class="py-3 px-4 font-semibold text-brand-navy">${s.nama_murid||'-'}</td><td class="py-3 px-4 text-center flex justify-center gap-1">${btnAnalisis}${btnWawancara}<button onclick="bukaModalFormSiswa('${s.id}')" title="Edit Siswa" class="text-blue-500 bg-blue-50 hover:bg-blue-100 p-1.5 rounded border border-blue-100 ml-1"><i class="ph-bold ph-pencil-simple text-lg"></i></button><button onclick="hapusSiswa('${s.id}', '${s.no_ppdb}')" title="Hapus Siswa" class="text-red-500 bg-red-50 hover:bg-red-100 p-1.5 rounded border border-red-100"><i class="ph-bold ph-trash text-lg"></i></button></td></tr>`;
+            return `<tr class="hover:bg-gray-50 border-b border-gray-50"><td class="py-3 px-4 font-mono text-xs font-medium ${txtCoret}">${s.no_ppdb||'-'}</td><td class="py-3 px-4 font-bold ${isMundur ? txtCoret : 'text-blue-600'}">${s.password||'-'}</td><td class="py-3 px-4 font-semibold ${isMundur ? txtCoret : 'text-brand-navy'}">${s.nama_murid||'-'}</td><td class="py-3 px-4 text-center">${statusHtml}</td><td class="py-3 px-4 text-center flex justify-center gap-1">${btnAnalisis}${btnWawancara}<button onclick="bukaModalFormSiswa('${s.id}')" title="Edit Siswa" class="text-blue-500 bg-blue-50 hover:bg-blue-100 p-1.5 rounded border border-blue-100 ml-1"><i class="ph-bold ph-pencil-simple text-lg"></i></button>${btnMundur}<button onclick="hapusSiswa('${s.id}', '${s.no_ppdb}')" title="Hapus Siswa" class="text-red-500 bg-red-50 hover:bg-red-100 p-1.5 rounded border border-red-100"><i class="ph-bold ph-trash text-lg"></i></button></td></tr>`;
         }).join('');
 
         if (processedData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500 text-sm">Tidak ada data siswa yang cocok dengan pencarian.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500 text-sm">Tidak ada data siswa yang cocok dengan pencarian.</td></tr>`;
         }
+    }
+
+    function toggleMundurSiswa(id, isMundur, nama) {
+        const aksi = isMundur ? "MEMBATALKAN status undur diri" : "menandai MENGUNDURKAN DIRI";
+        askConfirm(`Yakin ingin ${aksi} untuk siswa ${nama}?`, async () => {
+            try {
+                await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', { is_mundur: !isMundur });
+                showToast(`Status siswa berhasil diperbarui`);
+                loadData();
+            } catch(e) { showToast(e.message, true); }
+        });
+    }
+
+    function autoGenerateAkses() { const nm = document.getElementById('fs-nama').value.trim(); if(nm.length > 0 && !document.getElementById('fs-id').value) { document.getElementById('fs-no').value = 'sdm-' + Math.floor(100 + Math.random() * 900); } }
+
+    function bukaModalFormSiswa(id = null) {
+        document.getElementById('modal-siswa-title').innerText = id ? "Edit Data Siswa" : "Tambah Siswa Baru"; document.getElementById('fs-id').value = id || '';
+        const s = id ? masterData.find(x => x.id == id) : {};
+        const mapping = { 'noppdb': 'no_ppdb', 'no': 'password', 'nama': 'nama_murid', 'tk': 'tk', 'tmplahir': 'tempat_lahir', 'tgllahir': 'tgl_lahir', 'alamat': 'alamat', 'ayah': 'ayah', 'agayah': 'agama_ayah', 'pendayah': 'pend_ayah', 'krjayah': 'pekrj_ayah', 'ibu': 'ibu', 'agibu': 'agama_ibu', 'pendibu': 'pend_ibu', 'krjibu': 'pekrj_ibu' };
+        for (const [keyHtml, keyDb] of Object.entries(mapping)) { document.getElementById(`fs-${keyHtml}`).value = s[keyDb] || ''; }
+        document.getElementById('fs-jk').value = s.jk || 'L'; if(!id) { document.getElementById('fs-agayah').value = 'Islam'; document.getElementById('fs-agibu').value = 'Islam'; }
+        document.getElementById('modal-form-siswa').classList.replace('hidden', 'flex');
+    }
+
+    async function simpanDataSiswa() {
+        const id = document.getElementById('fs-id').value; const no_ppdb = document.getElementById('fs-noppdb').value.trim(); const nama_murid = document.getElementById('fs-nama').value.trim().toUpperCase();
+        if(!nama_murid || !no_ppdb) return showToast("Nama Lengkap dan No PPDB wajib!", true);
+
+        const pl = { no_ppdb: no_ppdb, password: document.getElementById('fs-no').value.trim(), nama_murid: nama_murid, jk: document.getElementById('fs-jk').value, tk: document.getElementById('fs-tk').value.trim(), tempat_lahir: document.getElementById('fs-tmplahir').value.trim(), alamat: document.getElementById('fs-alamat').value.trim(), ayah: document.getElementById('fs-ayah').value.trim(), agama_ayah: document.getElementById('fs-agayah').value.trim(), pend_ayah: document.getElementById('fs-pendayah').value.trim(), pekrj_ayah: document.getElementById('fs-krjayah').value.trim(), ibu: document.getElementById('fs-ibu').value.trim(), agama_ibu: document.getElementById('fs-agibu').value.trim(), pend_ibu: document.getElementById('fs-pendibu').value.trim(), pekrj_ibu: document.getElementById('fs-krjibu').value.trim() };
+        const tgl = document.getElementById('fs-tgllahir').value; if(tgl) pl.tgl_lahir = tgl; else pl.tgl_lahir = null;
+        
+        const btn = document.getElementById('btn-simpan-siswa'); btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
+        try { 
+            if(id) { await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl); } 
+            else { pl.tgl_pendaftaran = new Date().toISOString().split('T')[0]; pl.tahun_ajaran = activeTahunAjaran; await apiRequest(`${SUPABASE_URL}pendaftar`, 'POST', pl); }
+            showToast("Data Siswa Disimpan"); closeModal('modal-form-siswa'); loadData();
+        } catch(e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Data Siswa';
+    }
+
+    function hapusSiswa(id, no_ppdb) { 
+        askConfirm(`Hapus permanen data siswa ini dari SEMUA TABEL?`, async () => {
+            try { 
+                await Promise.all([ 
+                    apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'DELETE'), 
+                    apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'DELETE'), 
+                    apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'DELETE'), 
+                    apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'DELETE') 
+                ]); 
+                showToast("Siswa Dihapus"); loadData(); 
+            } catch(e) { showToast(e.message, true); } 
+        });
     }
 
     function autoGenerateAkses() { const nm = document.getElementById('fs-nama').value.trim(); if(nm.length > 0 && !document.getElementById('fs-id').value) { document.getElementById('fs-no').value = 'sdm-' + Math.floor(100 + Math.random() * 900); } }
