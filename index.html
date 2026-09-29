@@ -1136,11 +1136,15 @@
         if(document.getElementById('dash-total-wawancara')) document.getElementById('dash-total-wawancara').innerText = countWawancara;
         if(document.getElementById('dash-total-mundur')) document.getElementById('dash-total-mundur').innerText = countMundur;
 
-        // Tarik data jumlah siswa dari tahun lain secara asinkron (Background Fetch)
-        apiRequest(`${SUPABASE_URL}pendaftar?tahun_ajaran=neq.${encodeURIComponent(viewTahunAjaran)}&select=id`, 'GET')
-            .then(res => res.json())
-            .then(data => { if(document.getElementById('dash-total-other-year')) document.getElementById('dash-total-other-year').innerText = data.length || 0; })
-            .catch(() => {});
+        // Tarik angka jumlah siswa tahun lain TANPA mendownload isinya sama sekali (Super Ringan)
+        fetch(`${SUPABASE_URL}pendaftar?tahun_ajaran=neq.${encodeURIComponent(viewTahunAjaran)}`, {
+            method: 'HEAD',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'count=exact' }
+        }).then(res => {
+            const range = res.headers.get('content-range');
+            const count = range ? range.split('/')[1] : 0;
+            if(document.getElementById('dash-total-other-year')) document.getElementById('dash-total-other-year').innerText = count;
+        }).catch(() => {});
 
         // 2. Hitung Uang Masuk Rekapitulasi
         let sumPendaftaran = 0, sumDU = 0, sumBOPD = 0;
