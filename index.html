@@ -184,6 +184,14 @@
                             <button onclick="simpanPengaturanDB('timeline')" class="btn-press w-full bg-brand-navy text-white rounded-lg py-2.5 text-sm mt-2 font-medium">Update Timeline</button>
                         </div>
                     </div>
+                    <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm mt-6">
+                        <div class="flex items-center gap-2 mb-4"><i class="ph-fill ph-buildings text-brand-gold text-2xl"></i><h2 class="font-heading font-semibold text-lg text-brand-navy">Master Asal TK</h2></div>
+                        <div class="space-y-3">
+                            <p class="text-xs text-gray-500 mb-2">Daftar nama TK (pisahkan dengan koma). Akan muncul sebagai dropdown di form pendaftaran.</p>
+                            <div><textarea id="pg-daftar-tk" rows="3" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-3 px-4 text-sm focus:border-brand-gold outline-none" placeholder="Contoh: TK Aisyiyah, TK Pertiwi, RA Masyithoh"></textarea></div>
+                            <button onclick="simpanPengaturanDB('tk')" class="btn-press w-full bg-brand-navy text-white rounded-lg py-2.5 text-sm mt-2 font-bold transition-colors">Simpan Daftar TK</button>
+                        </div>
+                    </div>
                     <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                         <div class="bg-white rounded-[24px] p-6 border border-brand-gold shadow-sm mb-6">
                         <div class="flex items-center gap-2 mb-4"><i class="ph-fill ph-calendar-check text-brand-gold text-2xl"></i><h2 class="font-heading font-semibold text-lg text-brand-navy">Tahun Ajaran Aktif (Sakelar Sistem)</h2></div>
@@ -552,7 +560,7 @@
                 <div><label class="text-xs font-medium text-brand-navy block mb-1">No PPDB (Wajib)</label><input type="text" id="fs-noppdb" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></div>
                 <div><label class="text-xs font-bold text-blue-600 block mb-1">Password (Kolom No)</label><input type="text" id="fs-no" class="w-full border border-blue-300 bg-blue-50 rounded-lg p-2.5 text-sm font-bold"></div>
                 <div><label class="text-xs font-medium text-brand-navy block mb-1">Jenis Kelamin</label><select id="fs-jk" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"><option value="L">Laki-laki (L)</option><option value="P">Perempuan (P)</option></select></div>
-                <div><label class="text-xs font-medium text-brand-navy block mb-1">Asal TK / PAUD</label><input type="text" id="fs-tk" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></div>
+                <div><label class="text-xs font-medium text-brand-navy block mb-1">Asal TK / PAUD</label><select id="fs-tk" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-brand-bg focus:border-brand-gold outline-none font-medium"><option value="">-- Pilih Asal TK --</option></select></div>
                 <div><label class="text-xs font-medium text-brand-navy block mb-1">Tempat Lahir</label><input type="text" id="fs-tmplahir" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></div>
                 <div><label class="text-xs font-medium text-brand-navy block mb-1">Tanggal Lahir</label><input type="date" id="fs-tgllahir" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></div>
                 <div class="md:col-span-2"><label class="text-xs font-medium text-brand-navy block mb-1">Alamat Lengkap</label><textarea id="fs-alamat" rows="2" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm resize-none"></textarea></div>
@@ -968,7 +976,9 @@
                     document.getElementById('tl-1').value = sett[0].tl_1 || 'Pendaftaran'; 
                     document.getElementById('tl-2').value = sett[0].tl_2 || 'Dokumen'; 
                     document.getElementById('tl-3').value = sett[0].tl_3 || 'Verifikasi'; 
-                    document.getElementById('tl-4').value = sett[0].tl_4 || 'Lulus'; 
+                    document.getElementById('tl-4').value = sett[0].tl_4 || 'Lulus';
+                    if(document.getElementById('pg-daftar-tk')) document.getElementById('pg-daftar-tk').value = sett[0].daftar_tk || '';
+                    populateDropdownTK(sett[0].daftar_tk || '');
                     
                     if(document.getElementById('pg-tahun-aktif')) document.getElementById('pg-tahun-aktif').value = activeTahunAjaran;
                     if(document.getElementById('pg-tipe')) document.getElementById('pg-tipe').value = sett[0].pg_tipe || 'Info';
@@ -1033,10 +1043,20 @@
     function bukaModalAkun(id = null, isMassal = false) { document.getElementById('akun-id-target').value = id || ''; if(id && !isMassal) { const s = masterData.find(x => x.id == id); document.getElementById('modal-akun-title').innerText = "Kelola Individu"; document.getElementById('akun-ruang').value = s.ruang || ''; for(let i=1; i<=4; i++) document.getElementById(`chk-tl${i}`).checked = s[`t${i}`] || false; } else { document.getElementById('modal-akun-title').innerText = `Update Massal (${selectedIdsForMassAction.length})`; document.getElementById('akun-ruang').value = ''; for(let i=1; i<=4; i++) document.getElementById(`chk-tl${i}`).checked = false; } document.getElementById('modal-akun').classList.replace('hidden', 'flex'); }
     async function simpanAkunProgress() { const id = document.getElementById('akun-id-target').value; const pl = { ruang: document.getElementById('akun-ruang').value.trim(), t1: document.getElementById('chk-tl1').checked, t2: document.getElementById('chk-tl2').checked, t3: document.getElementById('chk-tl3').checked, t4: document.getElementById('chk-tl4').checked }; const btn = document.getElementById('btn-simpan-akun'); btn.disabled = true; btn.innerHTML = 'Processing...'; try { if(id) { await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl); } else { await Promise.all(selectedIdsForMassAction.map(selId => apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${selId}`, 'PATCH', pl))); } showToast("Timeline Berhasil Diupdate"); closeModal('modal-akun'); loadData(); } catch(e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Perubahan'; }
 
+    function populateDropdownTK(strDaftarTK) {
+        const sel = document.getElementById('fs-tk');
+        if(!sel) return;
+        sel.innerHTML = '<option value="">-- Pilih Asal TK --</option>';
+        if(strDaftarTK) {
+            const arrTK = strDaftarTK.split(',').map(s => s.trim()).filter(s => s !== '');
+            arrTK.forEach(tk => { sel.innerHTML += `<option value="${tk}">${tk}</option>`; });
+        }
+    }
+
     async function simpanPengaturanDB(tipeData) {
         let payload = {};
         if(tipeData === 'timeline') { payload = { tl_1: document.getElementById('tl-1').value || 'Pendaftaran', tl_2: document.getElementById('tl-2').value || 'Dokumen', tl_3: document.getElementById('tl-3').value || 'Verifikasi', tl_4: document.getElementById('tl-4').value || 'Lulus' }; updateTimelineLabelsUI(); } 
-        if(tipeData === 'pengumuman') { 
+        else if(tipeData === 'pengumuman') { 
             payload = { 
                 pg_tipe: document.getElementById('pg-tipe').value, 
                 pg_waktu: document.getElementById('pg-waktu').value, 
@@ -1045,6 +1065,26 @@
                 is_pengumuman_aktif: document.getElementById('status-pengumuman').checked 
             }; 
         }
+        else if(tipeData === 'tahun') {
+            const val = document.getElementById('pg-tahun-aktif').value.trim();
+            if(!val) return showToast("Tahun ajaran tidak boleh kosong!", true);
+            payload = { tahun_ajaran_aktif: val };
+        }
+        else if(tipeData === 'tk') {
+            const val = document.getElementById('pg-daftar-tk').value.trim();
+            payload = { daftar_tk: val };
+        }
+
+        try { 
+            await apiRequest(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, 'PATCH', payload); 
+            showToast(`${tipeData} berhasil diperbarui`); 
+            if(tipeData === 'tahun') {
+                setTimeout(() => { window.location.reload(); }, 1000); 
+            } else if (tipeData === 'tk') {
+                populateDropdownTK(document.getElementById('pg-daftar-tk').value.trim());
+            }
+        } catch(e) { showToast(e.message, true); } 
+    }
         if(tipeData === 'tahun') {
             const val = document.getElementById('pg-tahun-aktif').value.trim();
             if(!val) return showToast("Tahun ajaran tidak boleh kosong!", true);
