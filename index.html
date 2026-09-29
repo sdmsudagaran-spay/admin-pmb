@@ -1522,13 +1522,13 @@
                 pl.no_ppdb = no_ppdb; 
                 pl.tahun_ajaran = activeTahunAjaran; 
                 await apiRequest(`${SUPABASE_URL}analisis`, 'POST', pl); 
-            } 
-            showToast("Nilai Tersimpan"); closeModal('modal-analisis'); loadData(); 
-        } catch(e) { showToast(e.message, true); } 
-        btn.disabled = false; btn.innerHTML = 'Simpan Nilai & Deskripsi';
-    }
+        } 
+        showToast("Nilai Tersimpan"); closeModal('modal-analisis'); loadData(); 
+    } catch(e) { showToast(e.message, true); } 
+    btn.disabled = false; btn.innerHTML = 'Simpan Nilai & Deskripsi';
+}
 
-    function bukaModalGrafik(no_ppdb) {
+function bukaModalGrafik(no_ppdb) {
         const sAna = analisisData.find(x => x.no_ppdb === no_ppdb) || {}; 
         const dataVals = [parseInt(sAna.mengenal_huruf)||0, parseInt(sAna.mengenal_bilangan)||0, parseInt(sAna.menggunting_dan_menempel_puzzel)||0, parseInt(sAna.menyanyi_lagu_nasional)||0, parseInt(sAna.melafalkan_surat_pendek_doa_harian)||0, parseInt(sAna.interview)||0];
         const pointColors = dataVals.map(v => v <= 40 ? '#ef4444' : v <= 80 ? '#22c55e' : '#3b82f6');
@@ -2579,13 +2579,13 @@
                 pl.no_ppdb = no_ppdb; 
                 pl.tahun_ajaran = activeTahunAjaran; 
                 await apiRequest(`${SUPABASE_URL}perlengkapan`, 'POST', pl); 
-            } 
-            showToast("Perlengkapan Disimpan"); closeModal('modal-perlengkapan'); loadData(); 
-        } catch(e) { showToast(e.message, true); } 
-        btn.disabled = false; btn.innerHTML = 'Simpan Checklist';
-    }
+        } 
+        showToast("Perlengkapan Disimpan"); closeModal('modal-perlengkapan'); loadData(); 
+    } catch(e) { showToast(e.message, true); } 
+    btn.disabled = false; btn.innerHTML = 'Simpan Checklist';
+}
 
-    function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
+function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
         document.getElementById('dp-nama').innerText = nama_murid; const p = perkapData.find(x => x.no_ppdb === no_ppdb) || {};
         const rItem = (label, isDone) => `<div class="flex justify-between items-center p-2.5 bg-gray-50 border rounded-lg text-sm"><span class="font-medium text-brand-navy">${label}</span>${isDone ? '<i class="ph-fill ph-check-circle text-green-500 text-xl"></i>' : '<i class="ph-bold ph-x text-red-400 text-lg"></i>'}</div>`;
         const html = `<h3 class="text-xs font-bold text-gray-500 uppercase mt-2 mb-2">Souvenir</h3>${rItem('Souvenir / Marchandise', p.ambil_souvenir)}<h3 class="text-xs font-bold text-gray-500 uppercase mt-4 mb-2">Seragam Identitas</h3><div class="grid grid-cols-2 gap-2">${rItem('Merah Putih', p.s_merah_putih)}${rItem('Batik IPM', p.s_batik_ipm)}${rItem('Bawahan IPM', p.s_bawahan_ipm)}${rItem('Identitas Biru', p.s_identitas_biru)}${rItem('Identitas Abu', p.s_identitas_abu)}${rItem('Hizbul Wathan', p.s_hw)}${rItem('Olah Raga', p.s_olahraga)}</div><h3 class="text-xs font-bold text-gray-500 uppercase mt-4 mb-2">Atribut Pendukung</h3><div class="grid grid-cols-2 gap-2 mb-4">${rItem('Rompi', p.s_rompi)}${rItem('Topi', p.s_topi)}${rItem('Sabuk', p.s_sabuk)}${rItem('Dasi', p.s_dasi)}${rItem('Hasduk', p.s_hasduk)}${rItem('Kolong', p.s_kolong)}</div>`;
