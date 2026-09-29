@@ -1294,6 +1294,13 @@
         try { 
             await apiRequest(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, 'PATCH', payload); 
             showToast(`${tipeData} berhasil diperbarui`); 
+            if(tipeData === 'tahun') {
+                setTimeout(() => { window.location.reload(); }, 1000); 
+            } else if (tipeData === 'tk') {
+                populateDropdownTK(document.getElementById('pg-daftar-tk').value.trim());
+            }
+        } catch(e) { showToast(e.message, true); } 
+    }
             
     function updateTimelineLabelsUI() { const v1 = document.getElementById('tl-1').value || 'Pendaftaran'; const v2 = document.getElementById('tl-2').value || 'Dokumen'; const v3 = document.getElementById('tl-3').value || 'Verifikasi'; const v4 = document.getElementById('tl-4').value || 'Lulus'; document.querySelectorAll('.lbl-tl-1').forEach(el => el.innerText = v1); document.querySelectorAll('.lbl-tl-2').forEach(el => el.innerText = v2); document.querySelectorAll('.lbl-tl-3').forEach(el => el.innerText = v3); document.querySelectorAll('.lbl-tl-4').forEach(el => el.innerText = v4); }
 
