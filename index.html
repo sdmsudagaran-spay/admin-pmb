@@ -1066,19 +1066,26 @@
                 } 
             } catch(e) {}
 
-            // 2. Tarik daftar unik semua Tahun Ajaran yang pernah ada (Tanpa membebani Egress)
-            try {
-                const resTahun = await apiRequest(`${SUPABASE_URL}pendaftar?select=tahun_ajaran`, 'GET');
-                const dataTahun = await resTahun.json();
-                const unikTahun = [...new Set(dataTahun.map(item => item.tahun_ajaran).filter(Boolean))];
-                if (!unikTahun.includes(activeTahunAjaran)) unikTahun.push(activeTahunAjaran);
+            // 2. Generator Tahun Ajaran Instan (Nol Beban Database & Memori)
+            const selTahun = document.getElementById('filter-tahun-master');
+            if (selTahun) {
+                // Ambil angka tahun awal dari tahun aktif (Misal: "2027/2028" diekstrak menjadi 2027)
+                let baseYear = parseInt(activeTahunAjaran.split('/')[0]) || new Date().getFullYear();
+                let listTahun = [];
                 
-                const selTahun = document.getElementById('filter-tahun-master');
-                if (selTahun) {
-                    selTahun.innerHTML = unikTahun.sort().reverse().map(t => `<option value="${t}">${t === activeTahunAjaran ? `TA Aktif (${t})` : `Lihat TA ${t}`}</option>`).join('');
-                    selTahun.value = viewTahunAjaran;
+                // Generate otomatis 3 tahun ke belakang, tahun aktif, dan 1 tahun ke depan
+                for (let i = -3; i <= 1; i++) {
+                    let y1 = baseYear + i;
+                    listTahun.push(`${y1}/${y1 + 1}`);
                 }
-            } catch(e) {}
+                
+                listTahun.reverse(); // Urutkan dari tahun terbaru
+                
+                selTahun.innerHTML = listTahun.map(t => 
+                    `<option value="${t}">${t === activeTahunAjaran ? \`TA Aktif (\${t})\` : \`Lihat TA \${t}\`}</option>`
+                ).join('');
+                selTahun.value = viewTahunAjaran;
+            }
 
             // 3. Muat Data Utama Berdasarkan Tahun yang Sedang DILIHAT (viewTahunAjaran)
             const filterTahun = `&tahun_ajaran=eq.${encodeURIComponent(viewTahunAjaran)}`;
