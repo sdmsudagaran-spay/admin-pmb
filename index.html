@@ -2139,12 +2139,13 @@
     }
 
     function setRealtimeDate() {
-        const tglSekarang = getLocalYYYYMMDD(new Date());
         const fAwal = document.getElementById('filter-tgl-awal');
         const fAkhir = document.getElementById('filter-tgl-akhir');
         
+        // Biarkan kosong secara default agar menampilkan SEMUA data (Satu Tahun Ajaran)
+        // Jika Bendahara ingin melihat per hari, mereka bisa memfilternya manual.
         if(fAwal) fAwal.value = ''; 
-        if(fAkhir) fAkhir.value = tglSekarang;
+        if(fAkhir) fAkhir.value = '';
         
         if(typeof hitungRekapBendahara === 'function') hitungRekapBendahara();
     }
