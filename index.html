@@ -965,7 +965,6 @@
     let activeSubBendahara = 'tunai';       
     let currentDataKasir = null;            
 
-    const allPanelsDef = [
         const allPanelsDef = [
         { id: 'panel-dashboard', role: 'dashboard', icon: 'ph-chart-line-up', text: 'Dasbor Utama' },
         { id: 'panel-akun-progress', role: 'admin', icon: 'ph-users-three', text: 'Akun & Progres' },
@@ -1076,10 +1075,7 @@
 
     // Variabel Global untuk menyimpan tahun aktif
     let activeTahunAjaran = '2027/2028'; 
-
-    // Variabel Global Baru untuk Multi-Tahun
-    let activeTahunAjaran = '2027/2028'; 
-    let viewTahunAjaran = null; // Tahun yang sedang dilihat oleh admin saat ini
+    let viewTahunAjaran = null;
 
     async function loadData() {
         try {
