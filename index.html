@@ -1427,8 +1427,7 @@
         const no_ppdb = document.getElementById('analisis-id').value; const getVal = (elId) => { const v = parseInt(document.getElementById(elId).value); return isNaN(v) ? null : v * 20; };
         const pl = { mengenal_huruf: getVal('val-huruf'), mengenal_bilangan: getVal('val-bilangan'), menggunting_dan_menempel_puzzel: getVal('val-motorik'), menyanyi_lagu_nasional: getVal('val-lagu'), melafalkan_surat_pendek_doa_harian: getVal('val-doa'), interview: getVal('val-interview'), ket_mengenal_huruf: document.getElementById('ket-huruf').value, ket_mengenal_bilangan: document.getElementById('ket-bilangan').value, ket_menggunting_dan_menempel_puzzel: document.getElementById('ket-motorik').value, ket_menyanyi_lagu_nasional: document.getElementById('ket-lagu').value, ket_melafalkan_surat_pendek_doa_harian: document.getElementById('ket-doa').value, ket_interview: document.getElementById('ket-interview').value };
         const btn = document.getElementById('btn-simpan-analisis'); btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
-        try { const exists = analisisData.find(x => x.no_ppdb === no_ppdb); if (exists && exists.id) await apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl); else { pl.no_ppdb = no_ppdb; await apiRequest(`${SUPABASE_URL}analisis`, 'POST', pl); } showToast("Nilai Tersimpan"); closeModal('modal-analisis'); loadData(); } catch(e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Nilai & Deskripsi';
-    }
+        try { const exists = analisisData.find(x => x.no_ppdb === no_ppdb); if (exists && exists.id) await apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl); else { pl.no_ppdb = no_ppdb; pl.tahun_ajaran = activeTahunAjaran; await apiRequest(`${SUPABASE_URL}analisis`, 'POST', pl); }
 
     function bukaModalGrafik(no_ppdb) {
         const sAna = analisisData.find(x => x.no_ppdb === no_ppdb) || {}; 
@@ -1611,7 +1610,7 @@
         
         try { 
             if (exists && exists.id) await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl); 
-            else { pl.no_ppdb = no_ppdb; await apiRequest(`${SUPABASE_URL}keuangan`, 'POST', pl); } 
+            else { pl.no_ppdb = no_ppdb; pl.tahun_ajaran = activeTahunAjaran; await apiRequest(`${SUPABASE_URL}keuangan`, 'POST', pl); }
             showToast("Biaya Tersimpan"); closeModal('modal-pewawancara'); loadData(); 
         } catch (e) { 
             if(e.message.includes("type boolean") || e.message.includes("Angsuran")) {
@@ -2345,7 +2344,7 @@
                     else if (itemKat.startsWith('bopd')) { pl[`konf_${itemKat}`] = true; pl[`tgl_bayar_${itemKat}`] = nowLocalStr; pl[`kasir_${itemKat}`] = currentUsername; }
                     await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no}`, 'PATCH', pl);
                 } else {
-                    const plAngsuran = { no_ppdb: no, kategori: itemKat, nominal: nominalMasuk, metode: 'Tunai', tgl_bayar: nowLocalStr, kasir: currentUsername };
+                    const plAngsuran = { no_ppdb: no, kategori: itemKat, nominal: nominalMasuk, metode: 'Tunai', tgl_bayar: nowLocalStr, kasir: currentUsername, tahun_ajaran: activeTahunAjaran };
                     await apiRequest(`${SUPABASE_URL}angsuran`, 'POST', plAngsuran);
 
                     if (isLunasPenuh) {
@@ -2473,8 +2472,7 @@
         // PENTING: Gunakan ambil_souvenir di payload untuk database
         const pl = { ambil_souvenir: document.getElementById('chk-souvenir').checked, s_merah_putih: document.getElementById('chk-s1').checked, s_batik_ipm: document.getElementById('chk-s2').checked, s_bawahan_ipm: document.getElementById('chk-s3').checked, s_identitas_biru: document.getElementById('chk-s4').checked, s_identitas_abu: document.getElementById('chk-s5').checked, s_hw: document.getElementById('chk-s6').checked, s_olahraga: document.getElementById('chk-s7').checked, s_rompi: document.getElementById('chk-s8').checked, s_topi: document.getElementById('chk-s9').checked, s_sabuk: document.getElementById('chk-s10').checked, s_dasi: document.getElementById('chk-s11').checked, s_hasduk: document.getElementById('chk-s12').checked, s_kolong: document.getElementById('chk-s13').checked };
         const btn = document.getElementById('btn-simpan-perkap'); btn.disabled = true; btn.innerHTML = 'Processing...';
-        try { const exists = perkapData.find(x => x.no_ppdb === no_ppdb); if (exists && exists.id) await apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl); else { pl.no_ppdb = no_ppdb; await apiRequest(`${SUPABASE_URL}perlengkapan`, 'POST', pl); } showToast("Perlengkapan Disimpan"); closeModal('modal-perlengkapan'); loadData(); } catch(e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Checklist';
-    }
+        try { const exists = perkapData.find(x => x.no_ppdb === no_ppdb); if (exists && exists.id) await apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'PATCH', pl); else { pl.no_ppdb = no_ppdb; pl.tahun_ajaran = activeTahunAjaran; await apiRequest(`${SUPABASE_URL}perlengkapan`, 'POST', pl); }
 
     function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
         document.getElementById('dp-nama').innerText = nama_murid; const p = perkapData.find(x => x.no_ppdb === no_ppdb) || {};
