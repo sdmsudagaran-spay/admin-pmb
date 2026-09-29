@@ -185,6 +185,14 @@
                         </div>
                     </div>
                     <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
+                        <div class="bg-white rounded-[24px] p-6 border border-brand-gold shadow-sm mb-6">
+                        <div class="flex items-center gap-2 mb-4"><i class="ph-fill ph-calendar-check text-brand-gold text-2xl"></i><h2 class="font-heading font-semibold text-lg text-brand-navy">Tahun Ajaran Aktif (Sakelar Sistem)</h2></div>
+                        <div class="space-y-3">
+                            <p class="text-xs text-gray-500 mb-2">Mengubah tahun ajaran di sini akan mengubah seluruh tampilan Dashboard, Kasir, dan Riwayat untuk berfokus pada data tahun tersebut.</p>
+                            <div><input type="text" id="pg-tahun-aktif" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-3 px-4 text-sm font-bold text-center focus:border-brand-gold outline-none" placeholder="Contoh: 2027/2028"></div>
+                            <button onclick="simpanPengaturanDB('tahun')" class="btn-press w-full bg-brand-gold hover:bg-yellow-500 text-brand-navy rounded-lg py-2.5 text-sm mt-2 font-bold transition-colors">Kunci Tahun Ajaran</button>
+                        </div>
+                    </div>
                         <div class="flex items-center gap-2 mb-4"><i class="ph-fill ph-megaphone text-brand-gold text-2xl"></i><h2 class="font-heading font-semibold text-lg text-brand-navy">Broadcast Pengumuman</h2></div>
                         <div class="space-y-3">
                             <div><label class="text-xs font-medium text-brand-navy block mb-1">Pesan Pengumuman</label><textarea id="teks-pengumuman" rows="3" class="w-full bg-brand-bg border border-gray-200 rounded-lg py-2 px-3 text-sm resize-none"></textarea></div>
@@ -945,28 +953,54 @@
         loadData();
     }
 
+    // Variabel Global untuk menyimpan tahun aktif
+    let activeTahunAjaran = '2027/2028'; 
+
     async function loadData() {
         try {
+            // 1. MENGAMBIL PENGATURAN GLOBAL TERLEBIH DAHULU (Sebagai Sakelar)
+            try { 
+                const r3 = await apiRequest(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, 'GET'); 
+                const sett = await r3.json(); 
+                if(sett.length > 0) { 
+                    activeTahunAjaran = sett[0].tahun_ajaran_aktif || '2027/2028';
+                    
+                    document.getElementById('tl-1').value = sett[0].tl_1 || 'Pendaftaran'; 
+                    document.getElementById('tl-2').value = sett[0].tl_2 || 'Dokumen'; 
+                    document.getElementById('tl-3').value = sett[0].tl_3 || 'Verifikasi'; 
+                    document.getElementById('tl-4').value = sett[0].tl_4 || 'Lulus'; 
+                    
+                    if(document.getElementById('pg-tahun-aktif')) document.getElementById('pg-tahun-aktif').value = activeTahunAjaran;
+                    if(document.getElementById('pg-tipe')) document.getElementById('pg-tipe').value = sett[0].pg_tipe || 'Info';
+                    if(document.getElementById('pg-waktu')) document.getElementById('pg-waktu').value = sett[0].pg_waktu || '';
+                    if(document.getElementById('pg-judul')) document.getElementById('pg-judul').value = sett[0].pg_judul || '';
+                    if(document.getElementById('pg-isi')) document.getElementById('pg-isi').value = sett[0].pg_isi || '';
+                    if(document.getElementById('status-pengumuman')) document.getElementById('status-pengumuman').checked = sett[0].is_pengumuman_aktif;
+                } 
+            } catch(e) {}
+
+            // 2. MEMBUAT QUERY FILTER EGRESS
+            const filterTahun = `&tahun_ajaran=eq.${encodeURIComponent(activeTahunAjaran)}`;
+
+            // 3. MENGUNDUH DATA SECARA SPESIFIK HANYA UNTUK TAHUN AKTIF
             const [resMaster, resUang, resAnalisis, resPerkap] = await Promise.all([
-                apiRequest(`${SUPABASE_URL}pendaftar?select=*`, 'GET'), 
-                apiRequest(`${SUPABASE_URL}keuangan?select=*`, 'GET'), 
-                apiRequest(`${SUPABASE_URL}analisis?select=*`, 'GET'), 
-                apiRequest(`${SUPABASE_URL}perlengkapan?select=*`, 'GET')
+                apiRequest(`${SUPABASE_URL}pendaftar?select=*${filterTahun}`, 'GET'), 
+                apiRequest(`${SUPABASE_URL}keuangan?select=*${filterTahun}`, 'GET'), 
+                apiRequest(`${SUPABASE_URL}analisis?select=*${filterTahun}`, 'GET'), 
+                apiRequest(`${SUPABASE_URL}perlengkapan?select=*${filterTahun}`, 'GET')
             ]);
+            
             masterData = await resMaster.json(); keuanganData = await resUang.json(); 
             analisisData = await resAnalisis.json(); perkapData = await resPerkap.json();
 
-            try { const resAngs = await apiRequest(`${SUPABASE_URL}angsuran?select=*`, 'GET'); angsuranData = await resAngs.json(); } catch(e) { angsuranData = []; }
-            try { const r3 = await apiRequest(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, 'GET'); const sett = await r3.json(); if(sett.length > 0) { 
-                document.getElementById('tl-1').value = sett[0].tl_1 || 'Pendaftaran'; document.getElementById('tl-2').value = sett[0].tl_2 || 'Dokumen'; document.getElementById('tl-3').value = sett[0].tl_3 || 'Verifikasi'; document.getElementById('tl-4').value = sett[0].tl_4 || 'Lulus'; 
-                if(document.getElementById('pg-tipe')) document.getElementById('pg-tipe').value = sett[0].pg_tipe || 'Info';
-                if(document.getElementById('pg-waktu')) document.getElementById('pg-waktu').value = sett[0].pg_waktu || '';
-                if(document.getElementById('pg-judul')) document.getElementById('pg-judul').value = sett[0].pg_judul || '';
-                if(document.getElementById('pg-isi')) document.getElementById('pg-isi').value = sett[0].pg_isi || '';
-                if(document.getElementById('status-pengumuman')) document.getElementById('status-pengumuman').checked = sett[0].is_pengumuman_aktif;
-            } } catch(e) {}
+            try { 
+                const resAngs = await apiRequest(`${SUPABASE_URL}angsuran?select=*${filterTahun}`, 'GET'); 
+                angsuranData = await resAngs.json(); 
+            } catch(e) { angsuranData = []; }
+            
             try { const r2 = await apiRequest(`${SUPABASE_URL}menu_aplikasi?select=*`, 'GET'); menuAppData = await r2.json(); } catch(e) {}
-            updateTimelineLabelsUI(); renderAll(); showToast("Sinkronisasi Data Berhasil");
+            
+            updateTimelineLabelsUI(); renderAll(); showToast(`Sinkronisasi Data ${activeTahunAjaran} Berhasil`);
         } catch(e) { console.error(e); showToast(`Gagal memuat data: ${e.message}`, true); }
     }
 
@@ -1002,8 +1036,28 @@
     async function simpanPengaturanDB(tipeData) {
         let payload = {};
         if(tipeData === 'timeline') { payload = { tl_1: document.getElementById('tl-1').value || 'Pendaftaran', tl_2: document.getElementById('tl-2').value || 'Dokumen', tl_3: document.getElementById('tl-3').value || 'Verifikasi', tl_4: document.getElementById('tl-4').value || 'Lulus' }; updateTimelineLabelsUI(); } 
-        if(tipeData === 'pengumuman') { payload = { teks_pengumuman: document.getElementById('teks-pengumuman').value, is_pengumuman_aktif: document.getElementById('status-pengumuman').checked }; }
-        try { await apiRequest(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, 'PATCH', payload); showToast(`${tipeData} berhasil disimpan`); } catch(e) { showToast(e.message, true); } 
+        if(tipeData === 'pengumuman') { 
+            payload = { 
+                pg_tipe: document.getElementById('pg-tipe').value, 
+                pg_waktu: document.getElementById('pg-waktu').value, 
+                pg_judul: document.getElementById('pg-judul').value.trim(), 
+                pg_isi: document.getElementById('pg-isi').value.trim(), 
+                is_pengumuman_aktif: document.getElementById('status-pengumuman').checked 
+            }; 
+        }
+        if(tipeData === 'tahun') {
+            const val = document.getElementById('pg-tahun-aktif').value.trim();
+            if(!val) return showToast("Tahun ajaran tidak boleh kosong!", true);
+            payload = { tahun_ajaran_aktif: val };
+        }
+
+        try { 
+            await apiRequest(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, 'PATCH', payload); 
+            showToast(`${tipeData} berhasil diperbarui`); 
+            if(tipeData === 'tahun') {
+                setTimeout(() => { window.location.reload(); }, 1000); // Paksa reload agar seluruh sistem mengunduh ulang data tahun yang baru
+            }
+        } catch(e) { showToast(e.message, true); } 
     }
     function updateTimelineLabelsUI() { const v1 = document.getElementById('tl-1').value || 'Pendaftaran'; const v2 = document.getElementById('tl-2').value || 'Dokumen'; const v3 = document.getElementById('tl-3').value || 'Verifikasi'; const v4 = document.getElementById('tl-4').value || 'Lulus'; document.querySelectorAll('.lbl-tl-1').forEach(el => el.innerText = v1); document.querySelectorAll('.lbl-tl-2').forEach(el => el.innerText = v2); document.querySelectorAll('.lbl-tl-3').forEach(el => el.innerText = v3); document.querySelectorAll('.lbl-tl-4').forEach(el => el.innerText = v4); }
 
