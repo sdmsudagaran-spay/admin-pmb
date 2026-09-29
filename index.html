@@ -1055,7 +1055,11 @@
 
     async function simpanPengaturanDB(tipeData) {
         let payload = {};
-        if(tipeData === 'timeline') { payload = { tl_1: document.getElementById('tl-1').value || 'Pendaftaran', tl_2: document.getElementById('tl-2').value || 'Dokumen', tl_3: document.getElementById('tl-3').value || 'Verifikasi', tl_4: document.getElementById('tl-4').value || 'Lulus' }; updateTimelineLabelsUI(); } 
+        
+        if(tipeData === 'timeline') { 
+            payload = { tl_1: document.getElementById('tl-1').value || 'Pendaftaran', tl_2: document.getElementById('tl-2').value || 'Dokumen', tl_3: document.getElementById('tl-3').value || 'Verifikasi', tl_4: document.getElementById('tl-4').value || 'Lulus' }; 
+            updateTimelineLabelsUI(); 
+        } 
         else if(tipeData === 'pengumuman') { 
             payload = { 
                 pg_tipe: document.getElementById('pg-tipe').value, 
@@ -1078,24 +1082,11 @@
         try { 
             await apiRequest(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, 'PATCH', payload); 
             showToast(`${tipeData} berhasil diperbarui`); 
+            
             if(tipeData === 'tahun') {
                 setTimeout(() => { window.location.reload(); }, 1000); 
             } else if (tipeData === 'tk') {
                 populateDropdownTK(document.getElementById('pg-daftar-tk').value.trim());
-            }
-        } catch(e) { showToast(e.message, true); } 
-    }
-        if(tipeData === 'tahun') {
-            const val = document.getElementById('pg-tahun-aktif').value.trim();
-            if(!val) return showToast("Tahun ajaran tidak boleh kosong!", true);
-            payload = { tahun_ajaran_aktif: val };
-        }
-
-        try { 
-            await apiRequest(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, 'PATCH', payload); 
-            showToast(`${tipeData} berhasil diperbarui`); 
-            if(tipeData === 'tahun') {
-                setTimeout(() => { window.location.reload(); }, 1000); // Paksa reload agar seluruh sistem mengunduh ulang data tahun yang baru
             }
         } catch(e) { showToast(e.message, true); } 
     }
