@@ -1134,9 +1134,9 @@
             const trxDU = getValidTransactions(s, su, 'daftarulang');
             const trxBOPD = getValidTransactions(s, su, 'bopd');
             
-            trxDaftar.forEach(t => { if(!t.isTransfer || (t.isTransfer && t.buktiOriginal)) sumPendaftaran += t.nominal; });
-            trxDU.forEach(t => { if(!t.isTransfer || (t.isTransfer && t.buktiOriginal)) sumDU += t.nominal; });
-            trxBOPD.forEach(t => { if(!t.isTransfer || (t.isTransfer && t.buktiOriginal)) sumBOPD += t.nominal; });
+            trxDaftar.forEach(t => sumPendaftaran += t.nominal);
+            trxDU.forEach(t => sumDU += t.nominal);
+            trxBOPD.forEach(t => sumBOPD += t.nominal);
         });
 
         document.getElementById('dash-uang-pendaftaran').innerText = formatRp(sumPendaftaran);
