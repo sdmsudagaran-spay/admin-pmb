@@ -1716,6 +1716,11 @@ function bukaModalGrafik(no_ppdb) {
             bopd1: nominalBopd1, bopd2: nominalBopd2, bopd3: nominalBopd3,
             pewawancara: currentUsername
         };
+
+        // Kunci Tanggal: Hanya isi dengan hari ini jika di database belum ada
+        if (!exists || !exists.tgl_pendaftaran) {
+            pl.tgl_pendaftaran = getLocalYYYYMMDD(new Date());
+        };
         
         const btn = document.getElementById('btn-simpan-pewa'); 
         btn.disabled = true; btn.innerHTML = 'Processing...';
@@ -2446,12 +2451,15 @@ function bukaModalGrafik(no_ppdb) {
         const btn = document.getElementById('btn-bayar-dyn'); btn.disabled = true; btn.innerHTML = 'Memproses...';
 
         try {
+            const sUangCache = keuanganData.find(x => x.no_ppdb === no) || {};
             if (itemKat === 'pendaftaran') {
                 const pl = { konf_pendaftaran: true, pendaftaran: 300000, tgl_bayar_pendaftaran: nowLocalStr, kasir_pendaftaran: currentUsername };
+                if (!sUangCache.tgl_pendaftaran) pl.tgl_pendaftaran = nowLocalStr;
                 await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no}`, 'PATCH', pl);
             } else {
                 if (currentDataKasir.tipeBayar === 'cash') {
                     const pl = {};
+                    if (!sUangCache.tgl_pendaftaran) pl.tgl_pendaftaran = nowLocalStr;
                     if(itemKat === 'daftar_ulang') { pl.konf_daftar_ulang = true; pl.tgl_bayar_daftar_ulang = nowLocalStr; pl.kasir_daftar_ulang = currentUsername; }
                     else if (itemKat === 'bopd_lunas') { pl.konfirmasi_bopd = true; pl.tgl_bayar_bopd_lunas = nowLocalStr; pl.kasir_bopd_lunas = currentUsername; }
                     else if (itemKat.startsWith('bopd')) { pl[`konf_${itemKat}`] = true; pl[`tgl_bayar_${itemKat}`] = nowLocalStr; pl[`kasir_${itemKat}`] = currentUsername; }
@@ -2462,6 +2470,7 @@ function bukaModalGrafik(no_ppdb) {
 
                     if (isLunasPenuh) {
                         const pl = {};
+                        if (!sUangCache.tgl_pendaftaran) pl.tgl_pendaftaran = nowLocalStr;
                         if(itemKat === 'daftar_ulang') { pl.konf_daftar_ulang = true; pl.tgl_bayar_daftar_ulang = nowLocalStr; pl.kasir_daftar_ulang = currentUsername; }
                         else if (itemKat === 'bopd_lunas') { pl.konfirmasi_bopd = true; pl.tgl_bayar_bopd_lunas = nowLocalStr; pl.kasir_bopd_lunas = currentUsername; }
                         else if (itemKat.startsWith('bopd')) { pl[`konf_${itemKat}`] = true; pl[`tgl_bayar_${itemKat}`] = nowLocalStr; pl[`kasir_${itemKat}`] = currentUsername; }
@@ -2492,10 +2501,16 @@ function bukaModalGrafik(no_ppdb) {
 
     async function prosesTransfer(isLunas) {
         const no = currentDataKasir.no_ppdb; const pl = {};
+        const sUangCache = keuanganData.find(x => x.no_ppdb === no) || {};
         
         const d = new Date();
         const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); const day = String(d.getDate()).padStart(2,'0');
         const nowLocalStr = `${y}-${m}-${day}`;
+
+        // Cek dan kunci tanggal pendaftaran jika tervalidasi lunas pertama kali
+        if (!sUangCache.tgl_pendaftaran && isLunas) {
+            pl.tgl_pendaftaran = nowLocalStr;
+        }
 
         if(activeKatBendahara === 'pendaftaran') { 
             pl.konf_pendaftaran = isLunas; 
