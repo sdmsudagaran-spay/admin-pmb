@@ -140,7 +140,29 @@
         </header>
 
         <div id="panel-container" class="flex-1 overflow-y-auto p-4 sm:p-8 pb-24 relative z-0">
-            <!-- PANEL DASHBOARD EKSEKUTIF -->
+            <div id="panel-input-siswa" class="panel-view hidden space-y-6">
+                <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm max-w-3xl mx-auto">
+                    <div class="flex items-center gap-3 mb-6 border-b pb-4">
+                        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><i class="ph-bold ph-user-plus text-2xl"></i></div>
+                        <div><h2 class="font-heading font-bold text-xl text-brand-navy">Input Murid Baru</h2><p class="text-xs text-brand-muted">Formulir pendaftaran cepat. Data akan langsung masuk ke Master Siswa.</p></div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 mb-4">
+                            <label class="text-xs font-bold text-brand-navy block mb-1">Pilih Tahun Ajaran Daftar:</label>
+                            <select id="fib-tahun" class="w-full border-2 border-brand-navy rounded-lg p-2.5 text-sm bg-white font-bold outline-none"></select>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2"><label class="text-xs font-medium text-brand-navy block mb-1">Nama Lengkap (Wajib)</label><input type="text" id="fib-nama" oninput="if(this.value.trim().length > 0) { document.getElementById('fib-no').value = 'sdm-' + Math.floor(100 + Math.random() * 900); }" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></div>
+                            <div><label class="text-xs font-medium text-brand-navy block mb-1">No PPDB (Wajib)</label><input type="text" id="fib-noppdb" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></div>
+                            <div><label class="text-xs font-bold text-blue-600 block mb-1">Password (Otomatis)</label><input type="text" id="fib-no" class="w-full border border-blue-300 bg-blue-50 rounded-lg p-2.5 text-sm font-bold" readonly></div>
+                            <div><label class="text-xs font-medium text-brand-navy block mb-1">Jenis Kelamin</label><select id="fib-jk" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"><option value="L">Laki-laki (L)</option><option value="P">Perempuan (P)</option></select></div>
+                            <div><label class="text-xs font-medium text-brand-navy block mb-1">Asal TK / PAUD</label><select id="fib-tk" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-brand-bg focus:border-brand-gold outline-none font-medium"><option value="">-- Pilih Asal TK --</option></select></div>
+                        </div>
+                        <button onclick="simpanInputBaru()" id="btn-simpan-baru" class="w-full bg-brand-navy hover:bg-brand-gold transition-colors text-white py-4 rounded-xl font-bold shadow-lg mt-6 text-lg">Simpan Pendaftar Baru</button>
+                    </div>
+                </div>
+            </div>
             <!-- PANEL DASHBOARD EKSEKUTIF -->
             <div id="panel-dashboard" class="panel-view hidden space-y-6">
                 <div class="flex items-center gap-2 mb-2">
@@ -638,6 +660,10 @@
         <div class="flex-1 overflow-y-auto no-scrollbar space-y-4 px-1 pb-4">
             <input type="hidden" id="fs-id">
             <h3 class="font-bold text-brand-gold text-sm border-b border-gray-100 pb-1 mt-2 uppercase tracking-wide">Data Pribadi & Akses</h3>
+            <div class="md:col-span-2 mb-2">
+    <label class="text-xs font-bold text-red-500 block mb-1">Tahun Ajaran Masuk (Penting)</label>
+    <select id="fs-tahun" class="w-full border-2 border-brand-navy rounded-lg p-2.5 text-sm bg-brand-goldlight font-bold outline-none"></select>
+</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="md:col-span-2"><label class="text-xs font-medium text-brand-navy block mb-1">Nama Lengkap (Wajib)</label><input type="text" id="fs-nama" oninput="autoGenerateAkses()" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></div>
                 <div><label class="text-xs font-medium text-brand-navy block mb-1">No PPDB (Wajib)</label><input type="text" id="fs-noppdb" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></div>
@@ -1083,25 +1109,28 @@
                 } 
             } catch(e) {}
 
-            // 2. Generator Tahun Ajaran Instan (Nol Beban Database & Memori)
+            // 2. Mapping Tahun Ajaran dari Pengaturan Database
+            let daftarTahunStr = sett[0].daftar_tahun_ajaran || activeTahunAjaran;
+            let listTahun = daftarTahunStr.split(',').map(s => s.trim()).filter(s => s !== '');
+            
             const selTahun = document.getElementById('filter-tahun-master');
             if (selTahun) {
-                // Ambil angka tahun awal dari tahun aktif (Misal: "2027/2028" diekstrak menjadi 2027)
-                let baseYear = parseInt(activeTahunAjaran.split('/')[0]) || new Date().getFullYear();
-                let listTahun = [];
-                
-                // Generate otomatis 3 tahun ke belakang, tahun aktif, dan 1 tahun ke depan
-                for (let i = -3; i <= 1; i++) {
-                    let y1 = baseYear + i;
-                    listTahun.push(`${y1}/${y1 + 1}`);
-                }
-                
-                listTahun.reverse(); // Urutkan dari tahun terbaru
-                
                 selTahun.innerHTML = listTahun.map(t => 
                     `<option value="${t}">${t === activeTahunAjaran ? 'TA Aktif (' + t + ')' : 'Lihat TA ' + t}</option>`
                 ).join('');
                 selTahun.value = viewTahunAjaran;
+            }
+
+            // Tembakkan opsi ke Dropdown Form Master & Form Input Baru
+            const optTahun = listTahun.map(t => `<option value="${t}">${t}</option>`).join('');
+            if(document.getElementById('fs-tahun')) document.getElementById('fs-tahun').innerHTML = optTahun;
+            if(document.getElementById('fib-tahun')) document.getElementById('fib-tahun').innerHTML = optTahun;
+            if(document.getElementById('pg-tahun-aktif')) document.getElementById('pg-tahun-aktif').value = daftarTahunStr;
+            
+            // Tembakkan Master TK ke Form Input Baru juga
+            if(document.getElementById('fib-tk')) {
+                const arrTK = (sett[0].daftar_tk || '').split(',').map(s => s.trim()).filter(s => s !== '');
+                document.getElementById('fib-tk').innerHTML = '<option value="">-- Pilih Asal TK --</option>' + arrTK.map(tk => `<option value="${tk}">${tk}</option>`).join('');
             }
 
             // 3. Muat Data Utama Berdasarkan Tahun yang Sedang DILIHAT (viewTahunAjaran)
@@ -1285,8 +1314,9 @@
         }
         else if(tipeData === 'tahun') {
             const val = document.getElementById('pg-tahun-aktif').value.trim();
-            if(!val) return showToast("Tahun ajaran tidak boleh kosong!", true);
-            payload = { tahun_ajaran_aktif: val };
+            if(!val) return showToast("Daftar Tahun ajaran tidak boleh kosong!", true);
+            const arrTahun = val.split(',').map(s=>s.trim()).filter(s=>s!=='');
+            payload = { tahun_ajaran_aktif: arrTahun[0], daftar_tahun_ajaran: val }; // Tahun pertama otomatis jadi sakelar utama
         }
         else if(tipeData === 'tk') {
             const val = document.getElementById('pg-daftar-tk').value.trim();
@@ -1393,7 +1423,8 @@
         const btn = document.getElementById('btn-simpan-siswa'); btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
         try { 
             if(id) { await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl); } 
-            else { pl.tgl_pendaftaran = new Date().toISOString().split('T')[0]; pl.tahun_ajaran = activeTahunAjaran; await apiRequest(`${SUPABASE_URL}pendaftar`, 'POST', pl); }
+            else { pl.tgl_pendaftaran = new Date().toISOString().split('T')[0]; 
+            pl.tahun_ajaran = document.getElementById('fs-tahun').value; // Mengambil dari dropdown await apiRequest(`${SUPABASE_URL}pendaftar`, 'POST', pl); }
             showToast("Data Siswa Disimpan"); closeModal('modal-form-siswa'); loadData();
         } catch(e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Data Siswa';
     }
