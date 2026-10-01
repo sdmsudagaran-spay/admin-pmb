@@ -1413,126 +1413,7 @@
                 loadData();
             } catch(e) { showToast(e.message, true); }
         });
-    }
-
-    function autoGenerateAkses() { const nm = document.getElementById('fs-nama').value.trim(); if(nm.length > 0 && !document.getElementById('fs-id').value) { document.getElementById('fs-no').value = 'sdm-' + Math.floor(100 + Math.random() * 900); } }
-
-    function bukaModalFormSiswa(id = null) {
-        document.getElementById('modal-siswa-title').innerText = id ? "Edit Data Siswa" : "Tambah Siswa Baru"; document.getElementById('fs-id').value = id || '';
-        const s = id ? masterData.find(x => x.id == id) : {};
-        const mapping = { 'noppdb': 'no_ppdb', 'no': 'password', 'nama': 'nama_murid', 'tk': 'tk', 'tmplahir': 'tempat_lahir', 'tgllahir': 'tgl_lahir', 'alamat': 'alamat', 'ayah': 'ayah', 'agayah': 'agama_ayah', 'pendayah': 'pend_ayah', 'krjayah': 'pekrj_ayah', 'ibu': 'ibu', 'agibu': 'agama_ibu', 'pendibu': 'pend_ibu', 'krjibu': 'pekrj_ibu' };
-        for (const [keyHtml, keyDb] of Object.entries(mapping)) { document.getElementById(`fs-${keyHtml}`).value = s[keyDb] || ''; }
-        document.getElementById('fs-jk').value = s.jk || 'L'; if(!id) { document.getElementById('fs-agayah').value = 'Islam'; document.getElementById('fs-agibu').value = 'Islam'; }
-        document.getElementById('modal-form-siswa').classList.replace('hidden', 'flex');
-    }
-
-    async function simpanDataSiswa() {
-        const id = document.getElementById('fs-id').value; 
-        const no_ppdb = document.getElementById('fs-noppdb').value.trim(); 
-        const nama_murid = document.getElementById('fs-nama').value.trim().toUpperCase();
-        if(!nama_murid || !no_ppdb) return showToast("Nama Lengkap dan No PPDB wajib!", true);
-
-        // LOGIKA ABSOLUT: Tahun Ajaran langsung dikunci di payload utama
-        const pl = { 
-            no_ppdb: no_ppdb, password: document.getElementById('fs-no').value.trim(), 
-            nama_murid: nama_murid, jk: document.getElementById('fs-jk').value, 
-            tk: document.getElementById('fs-tk').value.trim(), 
-            tempat_lahir: document.getElementById('fs-tmplahir').value.trim(), 
-            alamat: document.getElementById('fs-alamat').value.trim(), 
-            ayah: document.getElementById('fs-ayah').value.trim(), 
-            agama_ayah: document.getElementById('fs-agayah').value.trim(), 
-            pend_ayah: document.getElementById('fs-pendayah').value.trim(), 
-            pekrj_ayah: document.getElementById('fs-krjayah').value.trim(), 
-            ibu: document.getElementById('fs-ibu').value.trim(), 
-            agama_ibu: document.getElementById('fs-agibu').value.trim(), 
-            pend_ibu: document.getElementById('fs-pendibu').value.trim(), 
-            pekrj_ibu: document.getElementById('fs-krjibu').value.trim(),
-            tahun_ajaran: document.getElementById('fs-tahun').value // Menarik data dari form
-        };
-        
-        const tgl = document.getElementById('fs-tgllahir').value; 
-        if(tgl) pl.tgl_lahir = tgl; else pl.tgl_lahir = null;
-        
-        const btn = document.getElementById('btn-simpan-siswa'); 
-        btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
-        
-        try { 
-            if(id) { 
-                await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl); 
-            } else { 
-                pl.tgl_pendaftaran = new Date().toISOString().split('T')[0]; 
-                await apiRequest(`${SUPABASE_URL}pendaftar`, 'POST', pl); 
-            }
-            showToast("Data Siswa Disimpan"); 
-            closeModal('modal-form-siswa'); 
-            loadData();
-        } catch(e) { 
-            showToast(e.message, true); 
-        } 
-        btn.disabled = false; btn.innerHTML = 'Simpan Data Siswa';
-    }
-    function hapusSiswa(id, no_ppdb) { 
-        askConfirm(`Hapus permanen data siswa ini dari SEMUA TABEL?`, async () => {
-            try { 
-                await Promise.all([ 
-                    apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'DELETE'), 
-                    apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'DELETE'), 
-                    apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'DELETE'), 
-                    apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'DELETE') 
-                ]); 
-                showToast("Siswa Dihapus"); loadData(); 
-            } catch(e) { showToast(e.message, true); } 
-        });
-    }
-
-    function autoGenerateAkses() { const nm = document.getElementById('fs-nama').value.trim(); if(nm.length > 0 && !document.getElementById('fs-id').value) { document.getElementById('fs-no').value = 'sdm-' + Math.floor(100 + Math.random() * 900); } }
-
-    function bukaModalFormSiswa(id = null) {
-        document.getElementById('modal-siswa-title').innerText = id ? "Edit Data Siswa" : "Tambah Siswa Baru"; document.getElementById('fs-id').value = id || '';
-        const s = id ? masterData.find(x => x.id == id) : {};
-        const mapping = { 'noppdb': 'no_ppdb', 'no': 'password', 'nama': 'nama_murid', 'tk': 'tk', 'tmplahir': 'tempat_lahir', 'tgllahir': 'tgl_lahir', 'alamat': 'alamat', 'ayah': 'ayah', 'agayah': 'agama_ayah', 'pendayah': 'pend_ayah', 'krjayah': 'pekrj_ayah', 'ibu': 'ibu', 'agibu': 'agama_ibu', 'pendibu': 'pend_ibu', 'krjibu': 'pekrj_ibu' };
-        for (const [keyHtml, keyDb] of Object.entries(mapping)) { document.getElementById(`fs-${keyHtml}`).value = s[keyDb] || ''; }
-        document.getElementById('fs-jk').value = s.jk || 'L'; if(!id) { document.getElementById('fs-agayah').value = 'Islam'; document.getElementById('fs-agibu').value = 'Islam'; }
-        document.getElementById('modal-form-siswa').classList.replace('hidden', 'flex');
-    }
-
-    async function simpanDataSiswa() {
-        const id = document.getElementById('fs-id').value; const no_ppdb = document.getElementById('fs-noppdb').value.trim(); const nama_murid = document.getElementById('fs-nama').value.trim().toUpperCase();
-        if(!nama_murid || !no_ppdb) return showToast("Nama Lengkap dan No PPDB wajib!", true);
-
-        const pl = { no_ppdb: no_ppdb, password: document.getElementById('fs-no').value.trim(), nama_murid: nama_murid, jk: document.getElementById('fs-jk').value, tk: document.getElementById('fs-tk').value.trim(), tempat_lahir: document.getElementById('fs-tmplahir').value.trim(), alamat: document.getElementById('fs-alamat').value.trim(), ayah: document.getElementById('fs-ayah').value.trim(), agama_ayah: document.getElementById('fs-agayah').value.trim(), pend_ayah: document.getElementById('fs-pendayah').value.trim(), pekrj_ayah: document.getElementById('fs-krjayah').value.trim(), ibu: document.getElementById('fs-ibu').value.trim(), agama_ibu: document.getElementById('fs-agibu').value.trim(), pend_ibu: document.getElementById('fs-pendibu').value.trim(), pekrj_ibu: document.getElementById('fs-krjibu').value.trim() };
-        const tgl = document.getElementById('fs-tgllahir').value; if(tgl) pl.tgl_lahir = tgl; else pl.tgl_lahir = null;
-        
-        const btn = document.getElementById('btn-simpan-siswa'); btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
-        try { 
-            if(id) { await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl); } 
-            else { pl.tgl_pendaftaran = new Date().toISOString().split('T')[0]; await apiRequest(`${SUPABASE_URL}pendaftar`, 'POST', pl); }
-            showToast("Data Siswa Disimpan"); closeModal('modal-form-siswa'); loadData();
-        } catch(e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Data Siswa';
-    }
-
-    function hapusSiswa(id, no_ppdb) { 
-        askConfirm(`Hapus permanen data siswa ini dari SEMUA TABEL?`, async () => {
-            try { 
-                await Promise.all([ 
-                    apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'DELETE'), 
-                    apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'DELETE'), 
-                    apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'DELETE'), 
-                    apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'DELETE') 
-                ]); 
-                showToast("Siswa Dihapus"); loadData(); 
-            } catch(e) { showToast(e.message, true); } 
-        });
-    }
-
-    function bukaModalBiodata(id) {
-        const s = masterData.find(x => x.id == id); if(!s) return;
-        const canManageBiaya = currentUserRoleArr.includes('admin') || currentUserRoleArr.includes('pewawancara');
-        const btnBiaya = canManageBiaya ? `<div class="mt-4 pt-4 border-t border-gray-100"><button onclick="closeModal('modal-biodata'); setTimeout(() => bukaModalPewawancara('${s.no_ppdb}'), 300)" class="w-full bg-brand-gold hover:bg-yellow-600 text-white py-3 rounded-xl font-bold shadow-md flex items-center justify-center gap-2 transition-colors"><i class="ph-bold ph-money text-lg"></i> Kelola Biaya / Wawancara</button></div>` : '';
-
-        document.getElementById('content-biodata').innerHTML = `<div class="space-y-4"><div class="bg-gray-50 p-4 border rounded-xl"><p class="text-[10px] uppercase font-bold text-gray-500">Data Pribadi</p><p class="text-base font-bold text-brand-navy mt-1">${s.nama_murid || '-'}</p><div class="grid grid-cols-2 gap-2 mt-2 text-xs"><div><span class="text-brand-muted block">No PPDB:</span><span class="font-medium">${s.no_ppdb||'-'}</span></div><div><span class="text-brand-muted block">Password (No):</span><span class="font-bold text-blue-600">${s.password||'-'}</span></div><div><span class="text-brand-muted block">Gender:</span><span class="font-medium">${s.jk === 'L' ? 'Laki-laki' : s.jk === 'P' ? 'Perempuan' : '-'}</span></div><div><span class="text-brand-muted block">Asal TK:</span><span class="font-medium">${s.tk||'-'}</span></div><div class="col-span-2"><span class="text-brand-muted block">TTL:</span><span class="font-medium">${s.tempat_lahir||'-'}, ${s.tgl_lahir||'-'}</span></div><div class="col-span-2"><span class="text-brand-muted block">Alamat:</span><span class="font-medium">${s.alamat||'-'}</span></div></div></div><div class="grid grid-cols-2 gap-3"><div class="bg-blue-50 p-3 border border-blue-100 rounded-xl"><p class="text-[10px] uppercase font-bold text-blue-500">Ayah</p><p class="text-sm font-semibold text-brand-navy mt-1">${s.ayah||'-'}</p><p class="text-xs text-brand-muted mt-1">Pend: ${s.pend_ayah||'-'}</p><p class="text-xs text-brand-muted">Kerja: ${s.pekrj_ayah||'-'}</p></div><div class="bg-pink-50 p-3 border border-pink-100 rounded-xl"><p class="text-[10px] uppercase font-bold text-pink-500">Ibu</p><p class="text-sm font-semibold text-brand-navy mt-1">${s.ibu||'-'}</p><p class="text-xs text-brand-muted mt-1">Pend: ${s.pend_ibu||'-'}</p><p class="text-xs text-brand-muted">Kerja: ${s.pekrj_ibu||'-'}</p></div></div>${btnBiaya}</div>`;
-        document.getElementById('modal-biodata').classList.replace('hidden', 'flex');
-    }
+    }  
 
     function renderPenganalisisFilter() {
         const sel = document.getElementById('filter-ruang-analisis'); const rCache = sel.value; sel.innerHTML = '<option value="all">Semua Ruang</option>';
@@ -2944,6 +2825,100 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
         btn.disabled = false; btn.innerHTML = 'Simpan Pendaftar Baru';
     }
     // ------------------------
+    // ==========================================
+    // BLOK MANAJEMEN SISWA (PASTIKAN HANYA ADA 1 DI FILE ANDA)
+    // ==========================================
+    function autoGenerateAkses() { 
+        const nm = document.getElementById('fs-nama').value.trim(); 
+        if(nm.length > 0 && !document.getElementById('fs-id').value) { 
+            document.getElementById('fs-no').value = 'sdm-' + Math.floor(100 + Math.random() * 900); 
+        } 
+    }
+
+    function bukaModalFormSiswa(id = null) {
+        document.getElementById('modal-siswa-title').innerText = id ? "Edit Data Siswa" : "Tambah Siswa Baru"; 
+        document.getElementById('fs-id').value = id || '';
+        const s = id ? masterData.find(x => x.id == id) : {};
+        const mapping = { 'noppdb': 'no_ppdb', 'no': 'password', 'nama': 'nama_murid', 'tk': 'tk', 'tmplahir': 'tempat_lahir', 'tgllahir': 'tgl_lahir', 'alamat': 'alamat', 'ayah': 'ayah', 'agayah': 'agama_ayah', 'pendayah': 'pend_ayah', 'krjayah': 'pekrj_ayah', 'ibu': 'ibu', 'agibu': 'agama_ibu', 'pendibu': 'pend_ibu', 'krjibu': 'pekrj_ibu' };
+        
+        for (const [keyHtml, keyDb] of Object.entries(mapping)) { 
+            document.getElementById(`fs-${keyHtml}`).value = s[keyDb] || ''; 
+        }
+        
+        document.getElementById('fs-jk').value = s.jk || 'L'; 
+        
+        if(!id) { 
+            document.getElementById('fs-agayah').value = 'Islam'; 
+            document.getElementById('fs-agibu').value = 'Islam'; 
+            if(document.getElementById('fs-tahun')) document.getElementById('fs-tahun').value = viewTahunAjaran;
+        } else {
+            // MENGUNCI TAHUN AJARAN SAAT EDIT AGAR SISWA TIDAK TERLEMPAR
+            if(document.getElementById('fs-tahun')) document.getElementById('fs-tahun').value = s.tahun_ajaran || activeTahunAjaran;
+        }
+        document.getElementById('modal-form-siswa').classList.replace('hidden', 'flex');
+    }
+
+    async function simpanDataSiswa() {
+        const id = document.getElementById('fs-id').value; 
+        const no_ppdb = document.getElementById('fs-noppdb').value.trim(); 
+        const nama_murid = document.getElementById('fs-nama').value.trim().toUpperCase();
+        
+        if(!nama_murid || !no_ppdb) return showToast("Nama Lengkap dan No PPDB wajib!", true);
+
+        // LOGIKA ABSOLUT: Tahun Ajaran langsung dikunci di payload
+        const pl = { 
+            no_ppdb: no_ppdb, password: document.getElementById('fs-no').value.trim(), 
+            nama_murid: nama_murid, jk: document.getElementById('fs-jk').value, 
+            tk: document.getElementById('fs-tk').value.trim(), 
+            tempat_lahir: document.getElementById('fs-tmplahir').value.trim(), 
+            alamat: document.getElementById('fs-alamat').value.trim(), 
+            ayah: document.getElementById('fs-ayah').value.trim(), 
+            agama_ayah: document.getElementById('fs-agayah').value.trim(), 
+            pend_ayah: document.getElementById('fs-pendayah').value.trim(), 
+            pekrj_ayah: document.getElementById('fs-krjayah').value.trim(), 
+            ibu: document.getElementById('fs-ibu').value.trim(), 
+            agama_ibu: document.getElementById('fs-agibu').value.trim(), 
+            pend_ibu: document.getElementById('fs-pendibu').value.trim(), 
+            pekrj_ibu: document.getElementById('fs-krjibu').value.trim(),
+            tahun_ajaran: document.getElementById('fs-tahun').value // Murni ditarik dari form
+        };
+        
+        const tgl = document.getElementById('fs-tgllahir').value; 
+        if(tgl) pl.tgl_lahir = tgl; else pl.tgl_lahir = null;
+        
+        const btn = document.getElementById('btn-simpan-siswa'); 
+        btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
+        
+        try { 
+            if(id) { 
+                await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl); 
+            } else { 
+                pl.tgl_pendaftaran = new Date().toISOString().split('T')[0]; 
+                await apiRequest(`${SUPABASE_URL}pendaftar`, 'POST', pl); 
+            }
+            showToast("Data Siswa Disimpan"); 
+            closeModal('modal-form-siswa'); 
+            loadData();
+        } catch(e) { 
+            showToast(e.message, true); 
+        } 
+        btn.disabled = false; btn.innerHTML = 'Simpan Data Siswa';
+    }
+
+    function hapusSiswa(id, no_ppdb) { 
+        askConfirm(`Hapus permanen data siswa ini dari SEMUA TABEL?`, async () => {
+            try { 
+                await Promise.all([ 
+                    apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'DELETE'), 
+                    apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no_ppdb}`, 'DELETE'), 
+                    apiRequest(`${SUPABASE_URL}analisis?no_ppdb=eq.${no_ppdb}`, 'DELETE'), 
+                    apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'DELETE') 
+                ]); 
+                showToast("Siswa Dihapus"); loadData(); 
+            } catch(e) { showToast(e.message, true); } 
+        });
+    }
+    // ==========================================
     window.onload = () => { fetchStaffAccounts(); setRealtimeDate(); };
     // Registrasi PWA Service Worker
     if ('serviceWorker' in navigator) {
