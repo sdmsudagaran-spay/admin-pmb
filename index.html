@@ -44,6 +44,10 @@
             .sidebar-mobile-open { transform: translateX(0); }
         }
     </style>
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0F2747">
+    <link rel="apple-touch-icon" href="https://iili.io/nuUTLcN.md.png">
 </head>
 <body class="overflow-hidden">
 
@@ -2838,6 +2842,14 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
         const w = window.open('','_blank'); w.document.write(html); w.document.close();
     }
     window.onload = () => { fetchStaffAccounts(); setRealtimeDate(); };
+    // Registrasi PWA Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('PWA Service Worker Aktif. Jaringan Supabase di-bypass.', reg.scope))
+                .catch(err => console.log('PWA Gagal Inisialisasi:', err));
+        });
+    }
 </script>
 </body>
 </html>
