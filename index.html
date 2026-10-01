@@ -1085,7 +1085,7 @@
 
     async function loadData() {
         try {
-            // DEKLARASI GLOBAL DI DALAM FUNGSI AGAR BISA DIBACA SEMUA LANGKAH
+            // DEKLARASI GLOBAL DI DALAM FUNGSI (PENTING! Jangan dihapus)
             let sett = []; 
             
             // 1. Tarik Pengaturan Sistem (Sekali saja saat awal)
@@ -1096,21 +1096,23 @@
                     activeTahunAjaran = sett[0].tahun_ajaran_aktif || '2027/2028';
                     if (!viewTahunAjaran) viewTahunAjaran = activeTahunAjaran; 
                     
-                    document.getElementById('tl-1').value = sett[0].tl_1 || 'Pendaftaran'; 
-                    document.getElementById('tl-2').value = sett[0].tl_2 || 'Dokumen'; 
-                    document.getElementById('tl-3').value = sett[0].tl_3 || 'Verifikasi'; 
-                    document.getElementById('tl-4').value = sett[0].tl_4 || 'Lulus';
+                    if(document.getElementById('tl-1')) document.getElementById('tl-1').value = sett[0].tl_1 || 'Pendaftaran'; 
+                    if(document.getElementById('tl-2')) document.getElementById('tl-2').value = sett[0].tl_2 || 'Dokumen'; 
+                    if(document.getElementById('tl-3')) document.getElementById('tl-3').value = sett[0].tl_3 || 'Verifikasi'; 
+                    if(document.getElementById('tl-4')) document.getElementById('tl-4').value = sett[0].tl_4 || 'Lulus';
                     if(document.getElementById('pg-daftar-tk')) document.getElementById('pg-daftar-tk').value = sett[0].daftar_tk || '';
                     populateDropdownTK(sett[0].daftar_tk || '');
                     
-                    if(document.getElementById('pg-tahun-aktif')) document.getElementById('pg-tahun-aktif').value = activeTahunAjaran;
+                    if(document.getElementById('pg-tahun-aktif')) document.getElementById('pg-tahun-aktif').value = sett[0].daftar_tahun_ajaran || activeTahunAjaran;
                     if(document.getElementById('pg-tipe')) document.getElementById('pg-tipe').value = sett[0].pg_tipe || 'Info';
                     if(document.getElementById('pg-waktu')) document.getElementById('pg-waktu').value = sett[0].pg_waktu || '';
                     if(document.getElementById('pg-judul')) document.getElementById('pg-judul').value = sett[0].pg_judul || '';
                     if(document.getElementById('pg-isi')) document.getElementById('pg-isi').value = sett[0].pg_isi || '';
                     if(document.getElementById('status-pengumuman')) document.getElementById('status-pengumuman').checked = sett[0].is_pengumuman_aktif;
                 } 
-            } catch(e) {}
+            } catch(e) {
+                console.warn("Pengaturan sistem gagal dimuat", e);
+            }
 
             // 2. Mapping Tahun Ajaran dari Pengaturan Database (Aman dari Scope Error)
             let daftarTahunStr = activeTahunAjaran;
@@ -1134,14 +1136,13 @@
             const optTahun = listTahun.map(t => `<option value="${t}">${t}</option>`).join('');
             if(document.getElementById('fs-tahun')) document.getElementById('fs-tahun').innerHTML = optTahun;
             if(document.getElementById('fib-tahun')) document.getElementById('fib-tahun').innerHTML = optTahun;
-            if(document.getElementById('pg-tahun-aktif')) document.getElementById('pg-tahun-aktif').value = daftarTahunStr;
             
             // Tembakkan Master TK ke Form Input Baru juga
             if(document.getElementById('fib-tk')) {
                 const arrTK = daftarTkStr.split(',').map(s => s.trim()).filter(s => s !== '');
                 document.getElementById('fib-tk').innerHTML = '<option value="">-- Pilih Asal TK --</option>' + arrTK.map(tk => `<option value="${tk}">${tk}</option>`).join('');
             }
-            
+
             // 3. Muat Data Utama Berdasarkan Tahun yang Sedang DILIHAT (viewTahunAjaran)
             const filterTahun = `&tahun_ajaran=eq.${encodeURIComponent(viewTahunAjaran)}`;
 
@@ -1162,7 +1163,10 @@
             try { const r2 = await apiRequest(`${SUPABASE_URL}menu_aplikasi?select=*`, 'GET'); menuAppData = await r2.json(); } catch(e) {}
             
             updateTimelineLabelsUI(); renderAll(); showToast(`Sistem memuat data TA: ${viewTahunAjaran}`);
-        } catch(e) { console.error(e); showToast(`Gagal memuat data: ${e.message}`, true); }
+        } catch(e) { 
+            console.error(e); 
+            showToast(`Gagal memuat data: ${e.message}`, true); 
+        }
     }
 
     // Fungsi Trigger Ganti Tahun di Panel Master Siswa
