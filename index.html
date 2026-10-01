@@ -1085,13 +1085,16 @@
 
     async function loadData() {
         try {
+            // DEKLARASI GLOBAL DI DALAM FUNGSI AGAR BISA DIBACA SEMUA LANGKAH
+            let sett = []; 
+            
             // 1. Tarik Pengaturan Sistem (Sekali saja saat awal)
             try { 
                 const r3 = await apiRequest(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, 'GET'); 
-                const sett = await r3.json(); 
+                sett = await r3.json(); 
                 if(sett.length > 0) { 
                     activeTahunAjaran = sett[0].tahun_ajaran_aktif || '2027/2028';
-                    if (!viewTahunAjaran) viewTahunAjaran = activeTahunAjaran; // Set default view ke tahun aktif
+                    if (!viewTahunAjaran) viewTahunAjaran = activeTahunAjaran; 
                     
                     document.getElementById('tl-1').value = sett[0].tl_1 || 'Pendaftaran'; 
                     document.getElementById('tl-2').value = sett[0].tl_2 || 'Dokumen'; 
@@ -1109,8 +1112,14 @@
                 } 
             } catch(e) {}
 
-            // 2. Mapping Tahun Ajaran dari Pengaturan Database
-            let daftarTahunStr = sett[0].daftar_tahun_ajaran || activeTahunAjaran;
+            // 2. Mapping Tahun Ajaran dari Pengaturan Database (Aman dari Scope Error)
+            let daftarTahunStr = activeTahunAjaran;
+            let daftarTkStr = '';
+            if (sett.length > 0) {
+                daftarTahunStr = sett[0].daftar_tahun_ajaran || activeTahunAjaran;
+                daftarTkStr = sett[0].daftar_tk || '';
+            }
+
             let listTahun = daftarTahunStr.split(',').map(s => s.trim()).filter(s => s !== '');
             
             const selTahun = document.getElementById('filter-tahun-master');
@@ -1129,10 +1138,10 @@
             
             // Tembakkan Master TK ke Form Input Baru juga
             if(document.getElementById('fib-tk')) {
-                const arrTK = (sett[0].daftar_tk || '').split(',').map(s => s.trim()).filter(s => s !== '');
+                const arrTK = daftarTkStr.split(',').map(s => s.trim()).filter(s => s !== '');
                 document.getElementById('fib-tk').innerHTML = '<option value="">-- Pilih Asal TK --</option>' + arrTK.map(tk => `<option value="${tk}">${tk}</option>`).join('');
             }
-
+            
             // 3. Muat Data Utama Berdasarkan Tahun yang Sedang DILIHAT (viewTahunAjaran)
             const filterTahun = `&tahun_ajaran=eq.${encodeURIComponent(viewTahunAjaran)}`;
 
