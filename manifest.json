@@ -1,6 +1,6 @@
 {
-  "name": "Smart PMB Sudagaran",
-  "short_name": "Smart PMB",
+  "name": "Admin S-PMB",
+  "short_name": "Admin S-PMB",
   "description": "Sistem Pengelolaan Terpadu Penerimaan Murid Baru",
   "start_url": "./index.html",
   "display": "standalone",
