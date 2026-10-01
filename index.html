@@ -1414,21 +1414,49 @@
     }
 
     async function simpanDataSiswa() {
-        const id = document.getElementById('fs-id').value; const no_ppdb = document.getElementById('fs-noppdb').value.trim(); const nama_murid = document.getElementById('fs-nama').value.trim().toUpperCase();
+        const id = document.getElementById('fs-id').value; 
+        const no_ppdb = document.getElementById('fs-noppdb').value.trim(); 
+        const nama_murid = document.getElementById('fs-nama').value.trim().toUpperCase();
         if(!nama_murid || !no_ppdb) return showToast("Nama Lengkap dan No PPDB wajib!", true);
 
-        const pl = { no_ppdb: no_ppdb, password: document.getElementById('fs-no').value.trim(), nama_murid: nama_murid, jk: document.getElementById('fs-jk').value, tk: document.getElementById('fs-tk').value.trim(), tempat_lahir: document.getElementById('fs-tmplahir').value.trim(), alamat: document.getElementById('fs-alamat').value.trim(), ayah: document.getElementById('fs-ayah').value.trim(), agama_ayah: document.getElementById('fs-agayah').value.trim(), pend_ayah: document.getElementById('fs-pendayah').value.trim(), pekrj_ayah: document.getElementById('fs-krjayah').value.trim(), ibu: document.getElementById('fs-ibu').value.trim(), agama_ibu: document.getElementById('fs-agibu').value.trim(), pend_ibu: document.getElementById('fs-pendibu').value.trim(), pekrj_ibu: document.getElementById('fs-krjibu').value.trim() };
-        const tgl = document.getElementById('fs-tgllahir').value; if(tgl) pl.tgl_lahir = tgl; else pl.tgl_lahir = null;
+        const pl = { 
+            no_ppdb: no_ppdb, password: document.getElementById('fs-no').value.trim(), 
+            nama_murid: nama_murid, jk: document.getElementById('fs-jk').value, 
+            tk: document.getElementById('fs-tk').value.trim(), 
+            tempat_lahir: document.getElementById('fs-tmplahir').value.trim(), 
+            alamat: document.getElementById('fs-alamat').value.trim(), 
+            ayah: document.getElementById('fs-ayah').value.trim(), 
+            agama_ayah: document.getElementById('fs-agayah').value.trim(), 
+            pend_ayah: document.getElementById('fs-pendayah').value.trim(), 
+            pekrj_ayah: document.getElementById('fs-krjayah').value.trim(), 
+            ibu: document.getElementById('fs-ibu').value.trim(), 
+            agama_ibu: document.getElementById('fs-agibu').value.trim(), 
+            pend_ibu: document.getElementById('fs-pendibu').value.trim(), 
+            pekrj_ibu: document.getElementById('fs-krjibu').value.trim() 
+        };
         
-        const btn = document.getElementById('btn-simpan-siswa'); btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
+        const tgl = document.getElementById('fs-tgllahir').value; 
+        if(tgl) pl.tgl_lahir = tgl; else pl.tgl_lahir = null;
+        
+        const btn = document.getElementById('btn-simpan-siswa'); 
+        btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Processing...';
+        
         try { 
-            if(id) { await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl); } 
-            else { pl.tgl_pendaftaran = new Date().toISOString().split('T')[0]; 
-            pl.tahun_ajaran = document.getElementById('fs-tahun').value; // Mengambil dari dropdown await apiRequest(`${SUPABASE_URL}pendaftar`, 'POST', pl); }
-            showToast("Data Siswa Disimpan"); closeModal('modal-form-siswa'); loadData();
-        } catch(e) { showToast(e.message, true); } btn.disabled = false; btn.innerHTML = 'Simpan Data Siswa';
+            if(id) { 
+                await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl); 
+            } else { 
+                pl.tgl_pendaftaran = new Date().toISOString().split('T')[0]; 
+                pl.tahun_ajaran = document.getElementById('fs-tahun').value;
+                await apiRequest(`${SUPABASE_URL}pendaftar`, 'POST', pl); 
+            }
+            showToast("Data Siswa Disimpan"); 
+            closeModal('modal-form-siswa'); 
+            loadData();
+        } catch(e) { 
+            showToast(e.message, true); 
+        } 
+        btn.disabled = false; btn.innerHTML = 'Simpan Data Siswa';
     }
-
     function hapusSiswa(id, no_ppdb) { 
         askConfirm(`Hapus permanen data siswa ini dari SEMUA TABEL?`, async () => {
             try { 
@@ -2877,10 +2905,7 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
         const html = `<!DOCTYPE html><html><head><title>Laporan Analisis Kesiapan Belajar</title><style>@page { size: 215.9mm 330.2mm; margin: 1.5cm; } body { font-family: 'Times New Roman', Times, serif; font-size: 12px; } table { width: 100%; border-collapse: collapse; margin-top: 20px; } th, td { border: 1px solid #000; padding: 6px; } th { background-color: #f3f4f6; } .text-center { text-align: center; } @media print { .no-print { display: none !important; } } .print-btn { position: fixed; bottom: 30px; right: 30px; background: #0F2747; color: white; padding: 15px 25px; border-radius: 12px; cursor: pointer; border: none; font-size: 16px; }</style></head><body><button class="no-print print-btn" onclick="window.print()">🖨️ Cetak Dokumen</button><h2 class="text-center" style="margin-bottom:5px;">LAPORAN HASIL KESIAPAN BELAJAR</h2><h3 class="text-center" style="margin-top:0;">SDM SUDAGARAN</h3><p class="text-center">Filter: Ruang (${fltRuang}) - Status (${statusFlt})</p><table><thead><tr><th>No</th><th>No PPDB</th><th>Nama Siswa</th><th>Ruang</th><th>Rata-rata Skor</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
         const w = window.open('','_blank'); w.document.write(html); w.document.close();
     }
-    function hapusSiswa(id, no_ppdb) { 
-        // ... (isi kode hapus siswa) ...
-    }
-
+    
     // --- SISIPKAN DI SINI ---
     async function simpanInputBaru() {
         const no_ppdb = document.getElementById('fib-noppdb').value.trim(); 
