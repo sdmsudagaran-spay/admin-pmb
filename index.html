@@ -2877,6 +2877,34 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
         const html = `<!DOCTYPE html><html><head><title>Laporan Analisis Kesiapan Belajar</title><style>@page { size: 215.9mm 330.2mm; margin: 1.5cm; } body { font-family: 'Times New Roman', Times, serif; font-size: 12px; } table { width: 100%; border-collapse: collapse; margin-top: 20px; } th, td { border: 1px solid #000; padding: 6px; } th { background-color: #f3f4f6; } .text-center { text-align: center; } @media print { .no-print { display: none !important; } } .print-btn { position: fixed; bottom: 30px; right: 30px; background: #0F2747; color: white; padding: 15px 25px; border-radius: 12px; cursor: pointer; border: none; font-size: 16px; }</style></head><body><button class="no-print print-btn" onclick="window.print()">🖨️ Cetak Dokumen</button><h2 class="text-center" style="margin-bottom:5px;">LAPORAN HASIL KESIAPAN BELAJAR</h2><h3 class="text-center" style="margin-top:0;">SDM SUDAGARAN</h3><p class="text-center">Filter: Ruang (${fltRuang}) - Status (${statusFlt})</p><table><thead><tr><th>No</th><th>No PPDB</th><th>Nama Siswa</th><th>Ruang</th><th>Rata-rata Skor</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
         const w = window.open('','_blank'); w.document.write(html); w.document.close();
     }
+    function hapusSiswa(id, no_ppdb) { 
+        // ... (isi kode hapus siswa) ...
+    }
+
+    // --- SISIPKAN DI SINI ---
+    async function simpanInputBaru() {
+        const no_ppdb = document.getElementById('fib-noppdb').value.trim(); 
+        const nama_murid = document.getElementById('fib-nama').value.trim().toUpperCase();
+        if(!nama_murid || !no_ppdb) return showToast("Nama Lengkap dan No PPDB wajib diisi!", true);
+
+        const pl = { 
+            no_ppdb: no_ppdb, password: document.getElementById('fib-no').value.trim(), 
+            nama_murid: nama_murid, jk: document.getElementById('fib-jk').value, 
+            tk: document.getElementById('fib-tk').value.trim(), 
+            tgl_pendaftaran: new Date().toISOString().split('T')[0],
+            tahun_ajaran: document.getElementById('fib-tahun').value // Diambil dari dropdown form
+        };
+        
+        const btn = document.getElementById('btn-simpan-baru'); btn.disabled = true; btn.innerHTML = 'Memproses...';
+        try { 
+            await apiRequest(`${SUPABASE_URL}pendaftar`, 'POST', pl);
+            showToast("Pendaftar Baru Berhasil Disimpan!"); 
+            document.getElementById('fib-noppdb').value = ''; document.getElementById('fib-nama').value = ''; document.getElementById('fib-no').value = '';
+            loadData();
+        } catch(e) { showToast(e.message, true); } 
+        btn.disabled = false; btn.innerHTML = 'Simpan Pendaftar Baru';
+    }
+    // ------------------------
     window.onload = () => { fetchStaffAccounts(); setRealtimeDate(); };
     // Registrasi PWA Service Worker
     if ('serviceWorker' in navigator) {
