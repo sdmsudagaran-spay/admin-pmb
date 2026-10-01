@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smartpmb-cache-v2';
+const CACHE_NAME = 'smartpmb-cache-v4';
 const STATIC_ASSETS = [
     './',
     './index.html',
