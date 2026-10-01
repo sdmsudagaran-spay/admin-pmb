@@ -1432,6 +1432,7 @@
         const nama_murid = document.getElementById('fs-nama').value.trim().toUpperCase();
         if(!nama_murid || !no_ppdb) return showToast("Nama Lengkap dan No PPDB wajib!", true);
 
+        // LOGIKA ABSOLUT: Tahun Ajaran langsung dikunci di payload utama
         const pl = { 
             no_ppdb: no_ppdb, password: document.getElementById('fs-no').value.trim(), 
             nama_murid: nama_murid, jk: document.getElementById('fs-jk').value, 
@@ -1445,7 +1446,8 @@
             ibu: document.getElementById('fs-ibu').value.trim(), 
             agama_ibu: document.getElementById('fs-agibu').value.trim(), 
             pend_ibu: document.getElementById('fs-pendibu').value.trim(), 
-            pekrj_ibu: document.getElementById('fs-krjibu').value.trim() 
+            pekrj_ibu: document.getElementById('fs-krjibu').value.trim(),
+            tahun_ajaran: document.getElementById('fs-tahun').value // Menarik data dari form
         };
         
         const tgl = document.getElementById('fs-tgllahir').value; 
@@ -1459,7 +1461,6 @@
                 await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', pl); 
             } else { 
                 pl.tgl_pendaftaran = new Date().toISOString().split('T')[0]; 
-                pl.tahun_ajaran = document.getElementById('fs-tahun').value;
                 await apiRequest(`${SUPABASE_URL}pendaftar`, 'POST', pl); 
             }
             showToast("Data Siswa Disimpan"); 
