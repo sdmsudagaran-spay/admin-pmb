@@ -2081,12 +2081,17 @@ function bukaModalGrafik(no_ppdb) {
                     }
                 }
 
-                const item = { tgl: formattedDate, nama: s.nama_murid, nominal: trx.nominal, ket: trx.isTransfer ? 'TRANSFER' : 'TUNAI', kasir: trx.kasir };
+                // Injeksi rawTgl untuk keperluan pengurutan matematis
+                const item = { rawTgl: d || '', tgl: formattedDate, nama: s.nama_murid, nominal: trx.nominal, ket: trx.isTransfer ? 'TRANSFER' : 'TUNAI', kasir: trx.kasir };
                 
                 if (trx.isTransfer) { listTransfer.push(item); totalTransfer += trx.nominal; } 
                 else { listTunai.push(item); totalTunai += trx.nominal; }
             });
         });
+
+        // PENGURUTAN KRONOLOGIS (Dari hari terlama ke terbaru)
+        listTunai.sort((a, b) => a.rawTgl.localeCompare(b.rawTgl));
+        listTransfer.sort((a, b) => a.rawTgl.localeCompare(b.rawTgl));
 
         const renderRows = (arr) => arr.map((x, i) => `<tr><td class="text-center">${i+1}</td><td class="text-center">${x.tgl}</td><td>${x.nama}</td><td class="text-right">${formatRp(x.nominal)}</td><td class="text-center uppercase font-bold">${x.kasir}</td><td class="text-center text-xs font-bold ${x.ket==='TRANSFER'?'text-blue-600':'text-green-600'}">${x.ket}</td></tr>`).join('');
         const emptyRow = `<tr><td colspan="6" class="text-center text-gray-500 py-4">Tidak ada data transaksi pada rentang tanggal ini.</td></tr>`;
