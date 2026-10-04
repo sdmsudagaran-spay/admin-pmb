@@ -1081,10 +1081,14 @@
             // Trik Konversi: Mengubah username murni (admin) menjadi email (admin@smartpmb.com) agar diterima sistem Auth
             const sysEmail = `${u}@smartpmb.com`;
 
-            // 1. Tembak Kredensial ke Server Auth Supabase
+            // 1. Tembak Kredensial ke Server Auth Supabase (DIPERBAIKI)
             const res = await fetch(`https://ckbarwrfpktcdoydbjzy.supabase.co/auth/v1/token?grant_type=password`, {
                 method: 'POST',
-                headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+                headers: { 
+                    'apikey': SUPABASE_KEY, 
+                    'Authorization': `Bearer ${SUPABASE_KEY}`, // <- Identitas mutlak yang terlewat
+                    'Content-Type': 'application/json' 
+                },
                 body: JSON.stringify({ email: sysEmail, password: p })
             });
 
