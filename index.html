@@ -1105,7 +1105,17 @@
 
             // SIMULASI LOGIN BERHASIL
             currentUsername = akun.username; 
-            currentUserRoleArr = akun.role || ['admin']; 
+            
+            // Perbaikan Parsing Role: Jika role masih string, ubah ke array.
+            try {
+                if(typeof akun.role === 'string') {
+                    currentUserRoleArr = JSON.parse(akun.role);
+                } else {
+                    currentUserRoleArr = akun.role || ['admin'];
+                }
+            } catch(e) {
+                currentUserRoleArr = ['admin'];
+            }
             
             // JADIKAN SERVICE_KEY SEBAGAI SESSION SEMENTARA AGAR DASBOR TIDAK KOSONG
             sessionToken = SERVICE_KEY;
