@@ -1009,18 +1009,17 @@
     function closeConfirm() { document.getElementById('modal-confirm').classList.replace('flex', 'hidden'); confirmActionCallback = null; }
     document.getElementById('btn-confirm-yes').addEventListener('click', () => { if (confirmActionCallback) confirmActionCallback(); closeConfirm(); });
 
-    // Kunci Brankas Digital (JWT)
+    // Kunci Brankas Digital
     let sessionToken = ''; 
     let isLoginStep2 = false;
 
-    // Pengawal API: Otomatis menyuntikkan Token JWT ke setiap request
+    // 1. ENGINE API REQUEST (DIKEMBALIKAN KE JALUR AMAN TANPA BEARER)
     async function apiRequest(url, method, body = null) {
         const options = { 
             method: method, 
             headers: { 
-                'apikey': SUPABASE_KEY, 
-                // Logika Absolut: Jika punya token, pakai token. Jika tidak, pakai key publik biasa.
-                'Authorization': sessionToken ? `Bearer ${sessionToken}` : `Bearer ${SUPABASE_KEY}` 
+                'apikey': SUPABASE_KEY 
+                // Header Authorization Bearer Dihapus agar kunci sb_publishable diterima server
             } 
         };
         if (body) { options.headers['Content-Type'] = 'application/json'; options.body = JSON.stringify(body); }
@@ -1028,9 +1027,6 @@
         const res = await fetch(url, options);
         
         if (!res.ok) {
-            if (res.status === 401 || res.status === 403) { 
-                logout(); throw new Error("Akses Ditolak Database (RLS). Silakan login ulang."); 
-            }
             let errMsg = `Gagal (HTTP ${res.status})`;
             try { const errData = await res.json(); errMsg = errData.message || errData.details || errData.hint || errMsg; } catch(ex) {}
             throw new Error(errMsg);
@@ -1038,7 +1034,7 @@
         return res.status === 204 ? {} : res; 
     }
 
-    // Kontrol Animasi UI
+    // 2. KONTROL ANIMASI UI LOGIN
     function aksiLoginDinamis() {
         const u = document.getElementById('login-username').value.trim();
         const err = document.getElementById('login-error');
@@ -1064,15 +1060,12 @@
         }
     }
 
-    // Engine Login Bypass (Menembus RLS)
+    // 3. ENGINE LOGIN LANGSUNG KE TABEL KELOLA_AKSES (SESUAI REQUEST FINAL)
     async function handleLogin() {
         const u = document.getElementById('login-username').value.trim(); 
         const p = document.getElementById('login-password').value.trim(); 
         const err = document.getElementById('login-error');
         const btn = document.getElementById('btn-login-action');
-        
-        // GANTI 'ISI_DENGAN_SERVICE_ROLE_KEY' DENGAN KUNCI SERVICE_ROLE DARI SUPABASE ANDA
-        const SERVICE_KEY = 'ISI_DENGAN_SERVICE_ROLE_KEY_YANG_DIAWALI_eyJ';
         
         if(!u || !p) { err.innerText = "Username dan Password wajib diisi!"; err.classList.remove('hidden'); return; }
         
@@ -1081,16 +1074,13 @@
         btn.disabled = true;
 
         try {
-            // Tarik data akun dengan kunci yang kebal RLS
+            // Murni menggunakan APIKEY ke tabel kelola_akses
             const res = await fetch(`${SUPABASE_URL}kelola_akses?username=eq.${encodeURIComponent(u)}&select=*`, {
                 method: 'GET',
-                headers: { 
-                    'apikey': SERVICE_KEY, 
-                    'Authorization': `Bearer ${SERVICE_KEY}` 
-                }
+                headers: { 'apikey': SUPABASE_KEY }
             });
 
-            if (!res.ok) throw new Error("Gagal terhubung ke database.");
+            if (!res.ok) throw new Error("Gagal terhubung ke database. Cek koneksi Anda.");
             const data = await res.json();
 
             if (data.length === 0) {
@@ -1103,10 +1093,10 @@
                 throw new Error("Akses Ditolak: Password salah.");
             }
 
-            // SIMULASI LOGIN BERHASIL
+            // Login Berhasil
             currentUsername = akun.username; 
             
-            // Perbaikan Parsing Role: Jika role masih string, ubah ke array.
+            // Konversi Role Akun Database
             try {
                 if(typeof akun.role === 'string') {
                     currentUserRoleArr = JSON.parse(akun.role);
@@ -1116,9 +1106,6 @@
             } catch(e) {
                 currentUserRoleArr = ['admin'];
             }
-            
-            // JADIKAN SERVICE_KEY SEBAGAI SESSION SEMENTARA AGAR DASBOR TIDAK KOSONG
-            sessionToken = SERVICE_KEY;
             
             document.getElementById('view-login').style.opacity = '0';
             setTimeout(() => { 
@@ -1136,11 +1123,11 @@
         btn.disabled = false;
     }
 
+    // 4. ENGINE LOGOUT
     function logout() { 
-        sessionToken = ''; // Hancurkan Token
+        sessionToken = ''; 
         currentUserRoleArr = []; isLoginStep2 = false;
         
-        // Reset UI Animasi Login
         document.getElementById('view-dashboard').classList.add('hidden'); 
         document.getElementById('view-login').classList.remove('hidden'); 
         requestAnimationFrame(() => document.getElementById('view-login').style.opacity = '1'); 
