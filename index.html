@@ -988,6 +988,59 @@
         { id: 'panel-bendahara', role: 'bendahara', icon: 'ph-wallet', text: 'Pembayaran' },
         { id: 'panel-perlengkapan', role: 'perlengkapan', icon: 'ph-t-shirt', text: 'Perlengkapan' }
     ];
+    // ========================================================
+    // ENGINE INIT DASHBOARD (ANTI-BLANK & KEBAL FORMAT HURUF)
+    // ========================================================
+    function initDash() {
+        if(document.getElementById('user-role-display')) {
+            document.getElementById('user-role-display').innerText = currentUsername;
+        }
+        
+        const nav = document.getElementById('nav-menu'); 
+        if(nav) nav.innerHTML = '';
+        
+        let roleString = "";
+        try {
+            roleString = JSON.stringify(currentUserRoleArr).toLowerCase();
+        } catch(e) {
+            roleString = "admin";
+        }
+        
+        const isAdmin = roleString.includes('admin') || roleString.includes('semua'); 
+        
+        let allowed = [];
+        if (typeof allPanelsDef !== 'undefined') {
+            allPanelsDef.forEach(m => { 
+                if(isAdmin || roleString.includes((m.role || '').toLowerCase())) {
+                    allowed.push(m); 
+                }
+            });
+            // JARING PENGAMAN: Paksa beri menu jika tidak ada yang cocok agar tidak blank
+            if (allowed.length === 0 && allPanelsDef.length > 0) {
+                allowed.push(allPanelsDef[0]);
+            }
+        }
+
+        if(nav) {
+            allowed.forEach((m, idx) => {
+                const b = document.createElement('button'); 
+                b.dataset.target = m.id;
+                b.className = `w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-left transition-colors mb-1 ${idx===0 ? 'bg-white/10 border-l-4 border-brand-gold' : 'opacity-70 hover:bg-white/5'}`;
+                b.innerHTML = `<i class="ph-bold ${m.icon} text-xl shrink-0"></i> <span class="whitespace-nowrap">${m.text}</span>`;
+                b.onclick = () => { switchPanel(m.id, m.text); };
+                nav.appendChild(b);
+            });
+        }
+        
+        if(allowed.length > 0) {
+            switchPanel(allowed[0].id, allowed[0].text);
+        }
+        
+        if(typeof loadData === 'function') {
+            loadData();
+        }
+    }
+    // ========================================================
 
     function formatRp(angka) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka || 0); }
     function formatInputRibuan(e) { let val = e.value.replace(/[^0-9]/g, ''); if(val !== "") { e.value = new Intl.NumberFormat('id-ID').format(val); } else { e.value = ''; } }
