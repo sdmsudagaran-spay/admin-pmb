@@ -73,15 +73,12 @@
         <!-- Container Utama Login Dibuat Statis agar tidak lompat -->
         <div id="login-form-container" class="relative transition-all duration-500 ease-in-out">
             
-            <!-- STEP 1: Kotak Username (Diturunkan Keamanannya) -->
+            <!-- STEP 1: Kotak Username -->
             <div id="step-1-container" class="transition-all duration-500 ease-out transform">
-                <label class="block text-sm font-medium text-brand-navy mb-1">Pilih Username</label>
+                <label class="block text-sm font-medium text-brand-navy mb-1">Username Staf</label>
                 <div class="relative">
-                    <i class="ph-bold ph-users absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-                    <select id="login-username" onchange="if(this.value) aksiLoginDinamis()" class="w-full bg-brand-bg border border-gray-200 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 transition-all font-semibold text-brand-navy shadow-inner cursor-pointer appearance-none">
-                        <option value="">Memuat staf...</option>
-                    </select>
-                    <i class="ph-bold ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    <i class="ph-bold ph-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="login-username" onkeydown="if(event.key === 'Enter') aksiLoginDinamis()" class="w-full bg-brand-bg border border-gray-200 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 transition-all font-semibold text-brand-navy shadow-inner" placeholder="Ketik username (contoh: admin)">
                 </div>
             </div>
 
@@ -1135,7 +1132,6 @@
     }
     
     function togglePassword() { const inp = document.getElementById('login-password'); const icon = document.getElementById('icon-toggle-password'); if(inp.type === 'password') { inp.type = 'text'; icon.classList.replace('ph-eye', 'ph-eye-closed'); } else { inp.type = 'password'; icon.classList.replace('ph-eye-closed', 'ph-eye'); } }
-    function logout() { currentUserRoleArr = []; document.getElementById('view-dashboard').classList.add('hidden'); document.getElementById('view-login').classList.remove('hidden'); requestAnimationFrame(() => document.getElementById('view-login').style.opacity = '1'); document.getElementById('login-password').value = ''; }
     function toggleSidebar() { const s = document.getElementById('sidebar'); const o = document.getElementById('sidebar-overlay'); if (window.innerWidth < 640) { if(s.classList.contains('sidebar-mobile-closed')) { s.classList.replace('sidebar-mobile-closed', 'sidebar-mobile-open'); o.classList.remove('hidden'); } else { s.classList.replace('sidebar-mobile-open', 'sidebar-mobile-closed'); o.classList.add('hidden'); } } else { s.classList.toggle('sidebar-closed'); } }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
 
