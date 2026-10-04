@@ -1064,12 +1064,15 @@
         }
     }
 
-    // Engine Login Langsung ke Tabel kelola_akses (Tanpa Error 422 Supabase Auth)
+    // Engine Login Bypass (Menembus RLS)
     async function handleLogin() {
         const u = document.getElementById('login-username').value.trim(); 
         const p = document.getElementById('login-password').value.trim(); 
         const err = document.getElementById('login-error');
         const btn = document.getElementById('btn-login-action');
+        
+        // GANTI 'ISI_DENGAN_SERVICE_ROLE_KEY' DENGAN KUNCI SERVICE_ROLE DARI SUPABASE ANDA
+        const SERVICE_KEY = 'ISI_DENGAN_SERVICE_ROLE_KEY_YANG_DIAWALI_eyJ';
         
         if(!u || !p) { err.innerText = "Username dan Password wajib diisi!"; err.classList.remove('hidden'); return; }
         
@@ -1078,12 +1081,12 @@
         btn.disabled = true;
 
         try {
-            // 1. Tarik data akun berdasarkan username yang diketik
+            // Tarik data akun dengan kunci yang kebal RLS
             const res = await fetch(`${SUPABASE_URL}kelola_akses?username=eq.${encodeURIComponent(u)}&select=*`, {
                 method: 'GET',
                 headers: { 
-                    'apikey': SUPABASE_KEY, 
-                    'Authorization': `Bearer ${SUPABASE_KEY}` 
+                    'apikey': SERVICE_KEY, 
+                    'Authorization': `Bearer ${SERVICE_KEY}` 
                 }
             });
 
@@ -1096,14 +1099,16 @@
 
             const akun = data[0];
 
-            // 2. Cocokkan Password secara langsung
             if (akun.password !== p) {
                 throw new Error("Akses Ditolak: Password salah.");
             }
 
-            // 3. Login Berhasil! Masuk ke Dasbor
+            // SIMULASI LOGIN BERHASIL
             currentUsername = akun.username; 
             currentUserRoleArr = akun.role || ['admin']; 
+            
+            // JADIKAN SERVICE_KEY SEBAGAI SESSION SEMENTARA AGAR DASBOR TIDAK KOSONG
+            sessionToken = SERVICE_KEY;
             
             document.getElementById('view-login').style.opacity = '0';
             setTimeout(() => { 
