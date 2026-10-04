@@ -70,29 +70,37 @@
             <h1 class="font-heading font-bold text-2xl text-brand-navy">Admin</h1>
             <p class="text-sm text-brand-muted mt-1">Smart PMB Sudagaran</p>
         </div>
-        <div class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-brand-navy mb-1">Username</label>
-                <select id="login-username" class="w-full bg-brand-bg border border-gray-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-brand-gold transition-colors cursor-pointer appearance-none font-semibold text-brand-navy">
-                    <option value="">Memuat data staf...</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-brand-navy mb-1">Password</label>
+        <!-- Container Utama Login Dibuat Statis agar tidak lompat -->
+        <div id="login-form-container" class="relative transition-all duration-500 ease-in-out">
+            
+            <!-- STEP 1: Kotak Username -->
+            <div id="step-1-container" class="transition-all duration-500 ease-out transform">
+                <label class="block text-sm font-medium text-brand-navy mb-1">Username Staf</label>
                 <div class="relative">
-                    <input type="password" id="login-password" onkeydown="if(event.key === 'Enter') handleLogin()" class="w-full bg-brand-bg border border-gray-200 rounded-xl py-3 pl-4 pr-10 text-sm focus:outline-none focus:border-brand-gold transition-colors" placeholder="Ketik password">
+                    <i class="ph-bold ph-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="login-username" onkeydown="if(event.key === 'Enter') aksiLoginDinamis()" class="w-full bg-brand-bg border border-gray-200 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 transition-all font-semibold text-brand-navy shadow-inner" placeholder="Ketik username...">
+                </div>
+            </div>
+
+            <!-- STEP 2: Kotak Password (Awalnya Tersembunyi, Max-Height 0) -->
+            <div id="step-2-container" class="opacity-0 max-h-0 overflow-hidden -translate-y-4 transition-all duration-500 ease-in-out mt-0">
+                <label class="block text-sm font-medium text-brand-navy mb-1">Password Sistem</label>
+                <div class="relative">
+                    <i class="ph-bold ph-lock-key absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="password" id="login-password" onkeydown="if(event.key === 'Enter') aksiLoginDinamis()" class="w-full bg-brand-bg border border-gray-200 rounded-xl py-3 pl-10 pr-10 text-sm focus:outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 transition-all shadow-inner" placeholder="Ketik password...">
                     <button type="button" onclick="togglePassword()" tabindex="-1" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-brand-navy transition-colors focus:outline-none">
                         <i id="icon-toggle-password" class="ph-bold ph-eye text-lg"></i>
                     </button>
                 </div>
             </div>
-            <div id="login-error" class="hidden bg-red-50 text-red-500 text-xs p-3 rounded-xl border border-red-100 text-center font-medium">Username atau Password salah!</div>
-            <button onclick="handleLogin()" class="btn-press w-full bg-brand-navy text-white font-medium rounded-xl py-3.5 shadow-lg flex justify-center items-center gap-2 mt-2 hover:bg-opacity-90">
-                Masuk Sistem
+
+            <div id="login-error" class="hidden bg-red-50 text-red-500 text-xs p-3 rounded-xl border border-red-100 text-center font-medium mt-4 shadow-sm"></div>
+
+            <!-- Tombol Aksi Dibuat Dinamis -->
+            <button id="btn-login-action" onclick="aksiLoginDinamis()" class="w-full bg-brand-navy text-white font-bold rounded-xl py-3.5 shadow-[0_4px_14px_0_rgba(15,39,71,0.39)] flex justify-center items-center gap-2 mt-6 hover:bg-brand-gold hover:text-brand-navy hover:shadow-[0_4px_14px_0_rgba(217,164,65,0.39)] transition-all duration-300 transform hover:-translate-y-0.5">
+                Lanjutkan <i class="ph-bold ph-arrow-right text-lg"></i>
             </button>
         </div>
-    </div>
-</div>
 
 <div id="view-dashboard" class="hidden h-screen w-full flex overflow-hidden">
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden sm:hidden"></div>
@@ -1031,6 +1039,48 @@
         sel.innerHTML = '<option value="">Pilih Username...</option>' + staffAccounts.map(s => `<option value="${s.username.toLowerCase()}">${s.username}</option>`).join('');
     }
 
+    // Kontrol State Login Dua Langkah
+    let isLoginStep2 = false;
+
+    function aksiLoginDinamis() {
+        const u = document.getElementById('login-username').value.trim();
+        const err = document.getElementById('login-error');
+        
+        if (!isLoginStep2) {
+            if (u.length < 3) {
+                err.innerText = "Masukkan username yang valid!"; err.classList.remove('hidden');
+                document.getElementById('login-username').focus();
+                return;
+            }
+            err.classList.add('hidden');
+            
+            // Eksekusi Animasi Expand & Fade-in
+            isLoginStep2 = true;
+            const step2 = document.getElementById('step-2-container');
+            const btn = document.getElementById('btn-login-action');
+            const inpUser = document.getElementById('login-username');
+
+            // Membuka form password dengan halus
+            step2.classList.remove('opacity-0', 'max-h-0', '-translate-y-4', 'mt-0');
+            step2.classList.add('opacity-100', 'max-h-[200px]', 'mt-5', 'translate-y-0');
+
+            // Mengubah identitas tombol
+            btn.innerHTML = 'Verifikasi & Masuk <i class="ph-bold ph-sign-in text-lg"></i>';
+            
+            // Mengunci username agar fokus visual pindah ke password
+            inpUser.classList.add('opacity-60', 'bg-gray-100');
+            inpUser.setAttribute('readonly', true);
+
+            // Auto-focus ke kolom password setelah animasi selesai
+            setTimeout(() => { document.getElementById('login-password').focus(); }, 400);
+        } else {
+            // Jika sudah di step 2, tembak ke fungsi login keamanan Supabase
+            handleLogin();
+        }
+    }
+
+    // Tambahkan perbaikan kecil pada handleLogin untuk reset tombol jika gagal
+    // (Timpa tombol di dalam catch block handleLogin Anda sebelumnya jika perlu)
     function handleLogin() {
         const u = document.getElementById('login-username').value.trim().toLowerCase(); 
         const p = document.getElementById('login-password').value.trim(); 
