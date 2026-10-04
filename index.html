@@ -73,12 +73,15 @@
         <!-- Container Utama Login Dibuat Statis agar tidak lompat -->
         <div id="login-form-container" class="relative transition-all duration-500 ease-in-out">
             
-            <!-- STEP 1: Kotak Username -->
+            <!-- STEP 1: Kotak Username (Diturunkan Keamanannya) -->
             <div id="step-1-container" class="transition-all duration-500 ease-out transform">
-                <label class="block text-sm font-medium text-brand-navy mb-1">Username Staf</label>
+                <label class="block text-sm font-medium text-brand-navy mb-1">Pilih Username</label>
                 <div class="relative">
-                    <i class="ph-bold ph-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    <input type="text" id="login-username" onkeydown="if(event.key === 'Enter') aksiLoginDinamis()" class="w-full bg-brand-bg border border-gray-200 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 transition-all font-semibold text-brand-navy shadow-inner" placeholder="Ketik username...">
+                    <i class="ph-bold ph-users absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    <select id="login-username" onchange="if(this.value) aksiLoginDinamis()" class="w-full bg-brand-bg border border-gray-200 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 transition-all font-semibold text-brand-navy shadow-inner cursor-pointer appearance-none">
+                        <option value="">Memuat staf...</option>
+                    </select>
+                    <i class="ph-bold ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                 </div>
             </div>
 
@@ -2989,9 +2992,29 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
         
         document.getElementById('modal-biodata').classList.replace('hidden', 'flex');
     }
+    let staffAccountsList = [];
+
+    // Mengambil data secara anonim (Tanpa Token)
+    async function fetchStaffAccountsLogin() {
+        try {
+            const res = await fetch(`${SUPABASE_URL}kelola_akses?select=username`, { 
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } 
+            });
+            if(!res.ok) throw new Error("Gagal");
+            staffAccountsList = await res.json();
+            
+            const sel = document.getElementById('login-username');
+            if(sel) {
+                sel.innerHTML = '<option value="">-- Pilih Username --</option>' + staffAccountsList.map(s => `<option value="${s.username}">${s.username}</option>`).join('');
+            }
+        } catch(e) {
+            const sel = document.getElementById('login-username');
+            if(sel) sel.innerHTML = '<option value="">Gagal memuat. Ketik manual (F12)</option>';
+        }
+    }
 
     // ==========================================
-    window.onload = () => { fetchStaffAccounts(); setRealtimeDate(); };
+    window.onload = () => { fetchStaffAccountsLogin(); setRealtimeDate(); };
     // Registrasi PWA Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
