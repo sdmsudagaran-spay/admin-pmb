@@ -73,12 +73,15 @@
         <!-- Container Utama Login Dibuat Statis agar tidak lompat -->
         <div id="login-form-container" class="relative transition-all duration-500 ease-in-out">
             
-            <!-- STEP 1: Kotak Username -->
+            <!-- STEP 1: Kotak Username (Sistem Dropdown Tabel) -->
             <div id="step-1-container" class="transition-all duration-500 ease-out transform">
-                <label class="block text-sm font-medium text-brand-navy mb-1">Username Staf</label>
+                <label class="block text-sm font-medium text-brand-navy mb-1">Pilih Username</label>
                 <div class="relative">
-                    <i class="ph-bold ph-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    <input type="text" id="login-username" onkeydown="if(event.key === 'Enter') aksiLoginDinamis()" class="w-full bg-brand-bg border border-gray-200 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 transition-all font-semibold text-brand-navy shadow-inner" placeholder="Ketik username (contoh: admin)">
+                    <i class="ph-bold ph-users absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    <select id="login-username" onchange="if(this.value) aksiLoginDinamis()" class="w-full bg-brand-bg border border-gray-200 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 transition-all font-semibold text-brand-navy shadow-inner cursor-pointer appearance-none">
+                        <option value="">Memuat staf...</option>
+                    </select>
+                    <i class="ph-bold ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                 </div>
             </div>
 
@@ -1009,41 +1012,43 @@
     function closeConfirm() { document.getElementById('modal-confirm').classList.replace('flex', 'hidden'); confirmActionCallback = null; }
     document.getElementById('btn-confirm-yes').addEventListener('click', () => { if (confirmActionCallback) confirmActionCallback(); closeConfirm(); });
 
-    // Kunci Brankas Digital
+    // Variabel Global
     let sessionToken = ''; 
     let isLoginStep2 = false;
+    let staffAccountsList = []; // Penyimpan data dari tabel kelola_akses
 
-    // 1. ENGINE API REQUEST (DIKEMBALIKAN KE JALUR AMAN TANPA BEARER)
+    // 1. ENGINE API REQUEST (Klasik Tanpa Bearer Token)
     async function apiRequest(url, method, body = null) {
-        const options = { 
-            method: method, 
-            headers: { 
-                'apikey': SUPABASE_KEY 
-                // Header Authorization Bearer Dihapus agar kunci sb_publishable diterima server
-            } 
-        };
+        const options = { method: method, headers: { 'apikey': SUPABASE_KEY } };
         if (body) { options.headers['Content-Type'] = 'application/json'; options.body = JSON.stringify(body); }
-        
         const res = await fetch(url, options);
-        
-        if (!res.ok) {
-            let errMsg = `Gagal (HTTP ${res.status})`;
-            try { const errData = await res.json(); errMsg = errData.message || errData.details || errData.hint || errMsg; } catch(ex) {}
-            throw new Error(errMsg);
-        }
+        if (!res.ok) throw new Error(`Gagal (HTTP ${res.status})`);
         return res.status === 204 ? {} : res; 
     }
 
-    // 2. KONTROL ANIMASI UI LOGIN
+    // 2. PENARIK DATA DROPDOWN
+    async function fetchStaffAccountsLogin() {
+        try {
+            const res = await apiRequest(`${SUPABASE_URL}kelola_akses?select=username,password,role`, 'GET');
+            staffAccountsList = await res.json();
+            const sel = document.getElementById('login-username');
+            if(sel) {
+                sel.innerHTML = '<option value="">-- Pilih Username --</option>' + 
+                    staffAccountsList.map(s => `<option value="${s.username}">${s.username}</option>`).join('');
+            }
+        } catch (e) {
+            const sel = document.getElementById('login-username');
+            if(sel) sel.innerHTML = '<option value="">Gagal: RLS Aktif / Cek Koneksi</option>';
+        }
+    }
+
+    // 3. KONTROL ANIMASI UI
     function aksiLoginDinamis() {
-        const u = document.getElementById('login-username').value.trim();
+        const u = document.getElementById('login-username').value;
         const err = document.getElementById('login-error');
         
         if (!isLoginStep2) {
-            if (u.length < 3) {
-                err.innerText = "Masukkan username yang valid!"; err.classList.remove('hidden');
-                document.getElementById('login-username').focus(); return;
-            }
+            if (!u) return;
             err.classList.add('hidden');
             isLoginStep2 = true;
             const step2 = document.getElementById('step-2-container');
@@ -1053,17 +1058,17 @@
             step2.classList.remove('opacity-0', 'max-h-0', '-translate-y-4', 'mt-0');
             step2.classList.add('opacity-100', 'max-h-[200px]', 'mt-5', 'translate-y-0');
             btn.innerHTML = 'Verifikasi & Masuk <i class="ph-bold ph-sign-in text-lg"></i>';
-            inpUser.classList.add('opacity-60', 'bg-gray-100'); inpUser.setAttribute('readonly', true);
+            inpUser.classList.add('opacity-60', 'bg-gray-100', 'pointer-events-none');
             setTimeout(() => { document.getElementById('login-password').focus(); }, 400);
         } else {
             handleLogin();
         }
     }
 
-    // 3. ENGINE LOGIN LANGSUNG KE TABEL KELOLA_AKSES (SESUAI REQUEST FINAL)
-    async function handleLogin() {
-        const u = document.getElementById('login-username').value.trim(); 
-        const p = document.getElementById('login-password').value.trim(); 
+    // 4. ENGINE LOGIN KLASIK (Validasi dari Array)
+    function handleLogin() {
+        const u = document.getElementById('login-username').value; 
+        const p = document.getElementById('login-password').value; 
         const err = document.getElementById('login-error');
         const btn = document.getElementById('btn-login-action');
         
@@ -1073,301 +1078,54 @@
         btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Memverifikasi...';
         btn.disabled = true;
 
-        try {
-            // Murni menggunakan APIKEY ke tabel kelola_akses
-            const res = await fetch(`${SUPABASE_URL}kelola_akses?username=eq.${encodeURIComponent(u)}&select=*`, {
-                method: 'GET',
-                headers: { 'apikey': SUPABASE_KEY }
-            });
-
-            if (!res.ok) throw new Error("Gagal terhubung ke database. Cek koneksi Anda.");
-            const data = await res.json();
-
-            if (data.length === 0) {
-                throw new Error("Akses Ditolak: Username tidak terdaftar.");
-            }
-
-            const akun = data[0];
-
-            if (akun.password !== p) {
-                throw new Error("Akses Ditolak: Password salah.");
-            }
-
-            // Login Berhasil
-            currentUsername = akun.username; 
-            
-            // Konversi Role Akun Database
-            try {
-                if(typeof akun.role === 'string') {
-                    currentUserRoleArr = JSON.parse(akun.role);
-                } else {
-                    currentUserRoleArr = akun.role || ['admin'];
-                }
-            } catch(e) {
-                currentUserRoleArr = ['admin'];
-            }
-            
-            document.getElementById('view-login').style.opacity = '0';
-            setTimeout(() => { 
-                document.getElementById('view-login').classList.add('hidden'); 
-                document.getElementById('view-dashboard').classList.remove('hidden'); 
-                initDash(); 
-            }, 500);
-
-        } catch (error) {
-            err.innerText = error.message; 
-            err.classList.remove('hidden');
+        const akun = staffAccountsList.find(x => x.username === u);
+        if (!akun) {
+            err.innerText = "Username tidak valid."; err.classList.remove('hidden');
+            btn.innerHTML = 'Verifikasi & Masuk <i class="ph-bold ph-sign-in text-lg"></i>'; btn.disabled = false; return;
         }
+
+        if (akun.password !== p) {
+            err.innerText = "Password salah!"; err.classList.remove('hidden');
+            btn.innerHTML = 'Verifikasi & Masuk <i class="ph-bold ph-sign-in text-lg"></i>'; btn.disabled = false; return;
+        }
+
+        currentUsername = akun.username; 
+        try {
+            currentUserRoleArr = (typeof akun.role === 'string') ? JSON.parse(akun.role) : (akun.role || ['admin']);
+        } catch(e) { currentUserRoleArr = ['admin']; }
         
+        document.getElementById('view-login').style.opacity = '0';
+        setTimeout(() => { 
+            document.getElementById('view-login').classList.add('hidden'); 
+            document.getElementById('view-dashboard').classList.remove('hidden'); 
+            initDash(); 
+        }, 500);
+
         btn.innerHTML = 'Verifikasi & Masuk <i class="ph-bold ph-sign-in text-lg"></i>';
         btn.disabled = false;
     }
 
-    // 4. ENGINE LOGOUT
     function logout() { 
-        sessionToken = ''; 
-        currentUserRoleArr = []; isLoginStep2 = false;
-        
+        sessionToken = ''; currentUserRoleArr = []; isLoginStep2 = false;
         document.getElementById('view-dashboard').classList.add('hidden'); 
         document.getElementById('view-login').classList.remove('hidden'); 
         requestAnimationFrame(() => document.getElementById('view-login').style.opacity = '1'); 
         
         document.getElementById('login-username').value = ''; 
         document.getElementById('login-password').value = '';
-        document.getElementById('login-username').classList.remove('opacity-60', 'bg-gray-100');
-        document.getElementById('login-username').removeAttribute('readonly');
+        document.getElementById('login-username').classList.remove('opacity-60', 'bg-gray-100', 'pointer-events-none');
         
         const step2 = document.getElementById('step-2-container');
         step2.classList.add('opacity-0', 'max-h-0', '-translate-y-4', 'mt-0');
         step2.classList.remove('opacity-100', 'max-h-[200px]', 'mt-5', 'translate-y-0');
         document.getElementById('btn-login-action').innerHTML = 'Lanjutkan <i class="ph-bold ph-arrow-right text-lg"></i>';
     }
-    
-    function togglePassword() { const inp = document.getElementById('login-password'); const icon = document.getElementById('icon-toggle-password'); if(inp.type === 'password') { inp.type = 'text'; icon.classList.replace('ph-eye', 'ph-eye-closed'); } else { inp.type = 'password'; icon.classList.replace('ph-eye-closed', 'ph-eye'); } }
-    function toggleSidebar() { const s = document.getElementById('sidebar'); const o = document.getElementById('sidebar-overlay'); if (window.innerWidth < 640) { if(s.classList.contains('sidebar-mobile-closed')) { s.classList.replace('sidebar-mobile-closed', 'sidebar-mobile-open'); o.classList.remove('hidden'); } else { s.classList.replace('sidebar-mobile-open', 'sidebar-mobile-closed'); o.classList.add('hidden'); } } else { s.classList.toggle('sidebar-closed'); } }
-    function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
 
-    function switchPanel(id, title) {
-        document.querySelectorAll('.panel-view').forEach(p => p.classList.add('hidden')); 
-        document.getElementById(id)?.classList.remove('hidden');
-        if(document.getElementById('desktop-title')) document.getElementById('desktop-title').innerText = title;
-        document.querySelectorAll('#nav-menu button').forEach(b => { 
-            b.classList.remove('bg-white/10', 'border-l-4', 'border-brand-gold', 'opacity-70'); 
-            b.dataset.target === id ? b.classList.add('bg-white/10', 'border-l-4', 'border-brand-gold') : b.classList.add('opacity-70'); 
-        });
-        
-        // Panggil render() SETELAH jendela aktif diputuskan
-        renderAll();
-        
-        if(id === 'panel-bendahara') hitungRekapBendahara();
-        if(window.innerWidth < 640 && document.getElementById('sidebar').classList.contains('sidebar-mobile-open')) toggleSidebar();
-    }
-
-    function initDash() {
-        document.getElementById('user-role-display').innerText = currentUsername;
-        const nav = document.getElementById('nav-menu'); nav.innerHTML = '';
-        const isAdmin = currentUserRoleArr.includes('admin'); let allowed = [];
-        allPanelsDef.forEach(m => { if(isAdmin || currentUserRoleArr.includes(m.role)) allowed.push(m); });
-        allowed.forEach((m, idx) => {
-            const b = document.createElement('button'); b.dataset.target = m.id;
-            b.className = `w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-left transition-colors mb-1 ${idx===0 ? 'bg-white/10 border-l-4 border-brand-gold' : 'opacity-70 hover:bg-white/5'}`;
-            b.innerHTML = `<i class="ph-bold ${m.icon} text-xl shrink-0"></i> <span class="whitespace-nowrap">${m.text}</span>`;
-            b.onclick = () => switchPanel(m.id, m.text); nav.appendChild(b);
-        });
-        if(allowed.length > 0) switchPanel(allowed[0].id, allowed[0].text);
-        loadData();
-    }
-
-    // Variabel Global untuk menyimpan tahun aktif
-    let activeTahunAjaran = '2027/2028'; 
-    let viewTahunAjaran = null;
-
-    async function loadData() {
-        try {
-            // DEKLARASI GLOBAL DI DALAM FUNGSI (PENTING! Jangan dihapus)
-            let sett = []; 
-            
-            // 1. Tarik Pengaturan Sistem (Sekali saja saat awal)
-            try { 
-                const r3 = await apiRequest(`${SUPABASE_URL}pengaturan_sistem?id=eq.1`, 'GET'); 
-                sett = await r3.json(); 
-                if(sett.length > 0) { 
-                    activeTahunAjaran = sett[0].tahun_ajaran_aktif || '2027/2028';
-                    if (!viewTahunAjaran) viewTahunAjaran = activeTahunAjaran; 
-                    
-                    if(document.getElementById('tl-1')) document.getElementById('tl-1').value = sett[0].tl_1 || 'Pendaftaran'; 
-                    if(document.getElementById('tl-2')) document.getElementById('tl-2').value = sett[0].tl_2 || 'Dokumen'; 
-                    if(document.getElementById('tl-3')) document.getElementById('tl-3').value = sett[0].tl_3 || 'Verifikasi'; 
-                    if(document.getElementById('tl-4')) document.getElementById('tl-4').value = sett[0].tl_4 || 'Lulus';
-                    if(document.getElementById('pg-daftar-tk')) document.getElementById('pg-daftar-tk').value = sett[0].daftar_tk || '';
-                    populateDropdownTK(sett[0].daftar_tk || '');
-                    
-                    if(document.getElementById('pg-tahun-aktif')) document.getElementById('pg-tahun-aktif').value = sett[0].daftar_tahun_ajaran || activeTahunAjaran;
-                    if(document.getElementById('pg-tipe')) document.getElementById('pg-tipe').value = sett[0].pg_tipe || 'Info';
-                    if(document.getElementById('pg-waktu')) document.getElementById('pg-waktu').value = sett[0].pg_waktu || '';
-                    if(document.getElementById('pg-judul')) document.getElementById('pg-judul').value = sett[0].pg_judul || '';
-                    if(document.getElementById('pg-isi')) document.getElementById('pg-isi').value = sett[0].pg_isi || '';
-                    if(document.getElementById('status-pengumuman')) document.getElementById('status-pengumuman').checked = sett[0].is_pengumuman_aktif;
-                } 
-            } catch(e) {
-                console.warn("Pengaturan sistem gagal dimuat", e);
-            }
-
-            // 2. Mapping Tahun Ajaran dari Pengaturan Database (Aman dari Scope Error)
-            let daftarTahunStr = activeTahunAjaran;
-            let daftarTkStr = '';
-            if (sett.length > 0) {
-                daftarTahunStr = sett[0].daftar_tahun_ajaran || activeTahunAjaran;
-                daftarTkStr = sett[0].daftar_tk || '';
-            }
-
-            let listTahun = daftarTahunStr.split(',').map(s => s.trim()).filter(s => s !== '');
-            
-            const selTahun = document.getElementById('filter-tahun-master');
-            if (selTahun) {
-                selTahun.innerHTML = listTahun.map(t => 
-                    `<option value="${t}">${t === activeTahunAjaran ? 'TA Aktif (' + t + ')' : 'Lihat TA ' + t}</option>`
-                ).join('');
-                selTahun.value = viewTahunAjaran;
-            }
-
-            // Tembakkan opsi ke Dropdown Form Master & Form Input Baru
-            const optTahun = listTahun.map(t => `<option value="${t}">${t}</option>`).join('');
-            if(document.getElementById('fs-tahun')) document.getElementById('fs-tahun').innerHTML = optTahun;
-            if(document.getElementById('fib-tahun')) document.getElementById('fib-tahun').innerHTML = optTahun;
-            
-            // Tembakkan Master TK ke Form Input Baru juga
-            if(document.getElementById('fib-tk')) {
-                const arrTK = daftarTkStr.split(',').map(s => s.trim()).filter(s => s !== '');
-                document.getElementById('fib-tk').innerHTML = '<option value="">-- Pilih Asal TK --</option>' + arrTK.map(tk => `<option value="${tk}">${tk}</option>`).join('');
-            }
-
-            // 3. Muat Data Utama Berdasarkan Tahun yang Sedang DILIHAT (viewTahunAjaran)
-            const filterTahun = `&tahun_ajaran=eq.${encodeURIComponent(viewTahunAjaran)}`;
-
-            const [resMaster, resUang, resAnalisis, resPerkap] = await Promise.all([
-                apiRequest(`${SUPABASE_URL}pendaftar?select=*${filterTahun}`, 'GET'), 
-                apiRequest(`${SUPABASE_URL}keuangan?select=*${filterTahun}`, 'GET'), 
-                apiRequest(`${SUPABASE_URL}analisis?select=*${filterTahun}`, 'GET'), 
-                apiRequest(`${SUPABASE_URL}perlengkapan?select=*${filterTahun}`, 'GET')
-            ]);
-            
-            masterData = await resMaster.json(); keuanganData = await resUang.json(); 
-            analisisData = await resAnalisis.json(); perkapData = await resPerkap.json();
-
-            try { 
-                const resAngs = await apiRequest(`${SUPABASE_URL}angsuran?select=*${filterTahun}`, 'GET'); 
-                angsuranData = await resAngs.json(); 
-            } catch(e) { angsuranData = []; }
-            try { const r2 = await apiRequest(`${SUPABASE_URL}menu_aplikasi?select=*`, 'GET'); menuAppData = await r2.json(); } catch(e) {}
-            
-            updateTimelineLabelsUI(); renderAll(); showToast(`Sistem memuat data TA: ${viewTahunAjaran}`);
-        } catch(e) { 
-            console.error(e); 
-            showToast(`Gagal memuat data: ${e.message}`, true); 
-        }
-    }
-
-    // Fungsi Trigger Ganti Tahun di Panel Master Siswa
-    function ubahTahunView(val) {
-        if(!val) return;
-        viewTahunAjaran = val;
-        // Kosongkan array lama agar loading terlihat
-        masterData = []; renderAll(); 
-        loadData();
-    }
-
-    let chartAsalTKInstance = null;
-
-    function renderDashboardEksekutif() {
-        if(!masterData || masterData.length === 0) return;
-
-        let countDU = 0; let countWawancara = 0; let countMundur = 0;
-
-        // 1. Hitung Calon Murid, Wawancara, DU, & Mundur
-        masterData.forEach(s => {
-            if(s.is_mundur === true || String(s.is_mundur) === 'true') {
-                countMundur++; // Hitung yang mundur
-            } else {
-                // Yang mundur TIDAK dihitung dalam daftar ulang dan wawancara
-                const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
-                if(isTrue(su.konf_daftar_ulang)) countDU++;
-                if(!!su.pewawancara || (su.daftar_ulang != null && su.daftar_ulang > 0)) countWawancara++;
-            }
-        });
-        
-        if(document.getElementById('dash-total-pendaftar')) document.getElementById('dash-total-pendaftar').innerText = masterData.length;
-        if(document.getElementById('dash-total-du')) document.getElementById('dash-total-du').innerText = countDU;
-        if(document.getElementById('dash-total-wawancara')) document.getElementById('dash-total-wawancara').innerText = countWawancara;
-        if(document.getElementById('dash-total-mundur')) document.getElementById('dash-total-mundur').innerText = countMundur;
-
-        // Tarik angka jumlah siswa tahun lain TANPA mendownload isinya sama sekali (Super Ringan)
-        fetch(`${SUPABASE_URL}pendaftar?tahun_ajaran=neq.${encodeURIComponent(viewTahunAjaran)}`, {
-            method: 'HEAD',
-            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'count=exact' }
-        }).then(res => {
-            const range = res.headers.get('content-range');
-            const count = range ? range.split('/')[1] : 0;
-            if(document.getElementById('dash-total-other-year')) document.getElementById('dash-total-other-year').innerText = count;
-        }).catch(() => {});
-
-        // 2. Hitung Uang Masuk Rekapitulasi
-        let sumPendaftaran = 0, sumDU = 0, sumBOPD = 0;
-        masterData.forEach(s => {
-            const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
-            const trxDaftar = getValidTransactions(s, su, 'pendaftaran');
-            const trxDU = getValidTransactions(s, su, 'daftarulang');
-            const trxBOPD = getValidTransactions(s, su, 'bopd');
-            
-            trxDaftar.forEach(t => sumPendaftaran += t.nominal);
-            trxDU.forEach(t => sumDU += t.nominal);
-            trxBOPD.forEach(t => sumBOPD += t.nominal);
-        });
-
-        document.getElementById('dash-uang-pendaftaran').innerText = formatRp(sumPendaftaran);
-        document.getElementById('dash-uang-du').innerText = formatRp(sumDU);
-        document.getElementById('dash-uang-bopd').innerText = formatRp(sumBOPD);
-
-        // 3. Grafik Asal TK & Analisis AI
-        let tkCounts = {};
-        masterData.forEach(s => {
-            let tk = (s.tk || '').trim();
-            if(!tk || tk === '-' || tk === 'Lainnya') tk = 'Tidak Diketahui';
-            tkCounts[tk] = (tkCounts[tk] || 0) + 1;
-        });
-
-        const sortedTK = Object.entries(tkCounts).sort((a, b) => b[1] - a[1]);
-        const labels = sortedTK.map(x => x[0]);
-        const dataVals = sortedTK.map(x => x[1]);
-
-        const ctx = document.getElementById('chart-asal-tk');
-        if(ctx) {
-            if(chartAsalTKInstance) chartAsalTKInstance.destroy();
-            chartAsalTKInstance = new Chart(ctx, {
-                type: 'bar',
-                data: { labels: labels, datasets: [{ label: 'Pendaftar', data: dataVals, backgroundColor: '#D9A441', borderRadius: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
-            });
-        }
-
-        // Render Analisis AI Strategis
-        if (sortedTK.length > 0) {
-            const topTK = sortedTK.slice(0, 2).filter(x => x[0] !== 'Tidak Diketahui');
-            const bottomTK = sortedTK.slice(-2).filter(x => x[0] !== 'Tidak Diketahui' && x[1] > 0 && !topTK.includes(x));
-
-            let htmlTop = topTK.length > 0 ? `<div class="p-3 bg-white border border-blue-200 rounded-xl shadow-sm"><h4 class="text-sm font-bold text-blue-800 mb-1">🔥 TK Potensial Teratas</h4><p class="text-xs text-gray-600 leading-relaxed">Siswa terbanyak berasal dari <b>${topTK.map(x => `${x[0]} (${x[1]})`).join(', ')}</b>.</p><p class="text-[10px] mt-2 font-bold text-blue-700 bg-blue-50 p-1.5 rounded">Strategi: Prioritaskan kuota PPDB/Brosur VIP tahun depan ke sekolah ini.</p></div>` : '<p class="text-xs text-gray-500">Data belum memadai.</p>';
-            let htmlBottom = bottomTK.length > 0 ? `<div class="p-3 bg-white border border-orange-200 rounded-xl shadow-sm"><h4 class="text-sm font-bold text-orange-800 mb-1">⚠️ TK Belum Maksimal</h4><p class="text-xs text-gray-600 leading-relaxed">Pendaftar minim dari <b>${bottomTK.map(x => `${x[0]} (${x[1]})`).join(', ')}</b>.</p><p class="text-[10px] mt-2 font-bold text-orange-700 bg-orange-50 p-1.5 rounded">Strategi: Jadwalkan kunjungan humas atau tawarkan Trial Class SD.</p></div>` : '';
-
-            document.getElementById('analisis-tk-potensial').innerHTML = htmlTop;
-            document.getElementById('analisis-tk-lemah').innerHTML = htmlBottom;
-        }
-    }
-
+    // 5. PERBAIKAN FATAL RENDER ALL (Solusi Layar Blank)
     function renderAll() {
-        if(!masterData || masterData.length === 0) return;
+        // Baris `if(!masterData || masterData.length === 0) return;` telah dihapus agar UI tetap ter-render saat data kosong.
         const isAdmin = currentUserRoleArr.includes('admin');
         
-        // LAZY RENDERING: Hanya paksa render tabel yang JENDELANYA SEDANG TERBUKA (Tidak hidden)
         if(!document.getElementById('panel-sekretaris').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('sekretaris'))) renderSekretaris();
         if(!document.getElementById('panel-penganalisis').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('penganalisis'))) renderPenganalisisFilter();
         if(!document.getElementById('panel-pewawancara').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('pewawancara'))) renderPewawancara();
@@ -3038,7 +2796,10 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
     }
      
     // ==========================================
-    window.onload = () => { setRealtimeDate(); };
+    window.onload = () => { 
+        fetchStaffAccountsLogin(); 
+        setRealtimeDate(); 
+    };
     // Registrasi PWA Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
