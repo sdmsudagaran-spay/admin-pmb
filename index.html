@@ -1268,18 +1268,25 @@
 
     function renderAll() {
         if(!masterData || masterData.length === 0) return;
-        const isAdmin = currentUserRoleArr.includes('admin');
         
-        // LAZY RENDERING: Hanya paksa render tabel yang JENDELANYA SEDANG TERBUKA (Tidak hidden)
-        if(!document.getElementById('panel-sekretaris').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('sekretaris'))) renderSekretaris();
-        if(!document.getElementById('panel-penganalisis').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('penganalisis'))) renderPenganalisisFilter();
-        if(!document.getElementById('panel-pewawancara').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('pewawancara'))) renderPewawancara();
-        if(!document.getElementById('panel-bendahara').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('bendahara'))) { renderTableBendahara(); updateBendaharaBadges(); }
-        if(!document.getElementById('panel-perlengkapan').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('perlengkapan'))) renderPerlengkapan();
+        // 1. Amankan Array Role
+        let roleString = "";
+        try { roleString = JSON.stringify(currentUserRoleArr).toLowerCase(); } catch(e) { roleString = "admin"; }
+        
+        const isAdmin = roleString.includes('admin') || roleString.includes('semua');
+        
+        // LAZY RENDERING
+        if(!document.getElementById('panel-sekretaris').classList.contains('hidden') && (isAdmin || roleString.includes('sekretaris'))) renderSekretaris();
+        if(!document.getElementById('panel-penganalisis').classList.contains('hidden') && (isAdmin || roleString.includes('penganalisis'))) renderPenganalisisFilter();
+        if(!document.getElementById('panel-pewawancara').classList.contains('hidden') && (isAdmin || roleString.includes('pewawancara'))) renderPewawancara();
+        if(!document.getElementById('panel-bendahara').classList.contains('hidden') && (isAdmin || roleString.includes('bendahara'))) { renderTableBendahara(); updateBendaharaBadges(); }
+        if(!document.getElementById('panel-perlengkapan').classList.contains('hidden') && (isAdmin || roleString.includes('perlengkapan'))) renderPerlengkapan();
         if(!document.getElementById('panel-akun-progress').classList.contains('hidden') && isAdmin) renderAkunProgress();
         if(!document.getElementById('panel-kelola-akses').classList.contains('hidden') && isAdmin) renderStaf();
         if(!document.getElementById('panel-menu-app').classList.contains('hidden') && isAdmin) renderMenuApp();
-        if(!document.getElementById('panel-dashboard').classList.contains('hidden') && isAdmin) renderDashboardEksekutif();
+        
+        // PERBAIKAN 2: Izinkan Role 'Dashboard' untuk merender Dasbor Eksekutif (bukan cuma Admin)
+        if(!document.getElementById('panel-dashboard').classList.contains('hidden') && (isAdmin || roleString.includes('dashboard'))) renderDashboardEksekutif();
     }
     function renderAkunProgress() {
         const tbody = document.getElementById('tbody-akun-progress'); if(!tbody) return;
@@ -2612,7 +2619,7 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
         document.getElementById('modal-staf').classList.replace('hidden', 'flex');
     }
 
-    async function simpanStaf() { const id = document.getElementById('staf-id').value; const roles = Array.from(document.querySelectorAll('.chk-role:checked')).map(c => c.value); const pl = { username: document.getElementById('staf-username').value.trim(), password: document.getElementById('staf-password').value.trim(), role: roles }; try { if (id) await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'PATCH', pl); else await apiRequest(`${SUPABASE_URL}kelola_akses`, 'POST', pl); showToast("Staf Tersimpan"); closeModal('modal-staf'); fetchStaffAccounts(); } catch(e) { showToast(e.message, true); } }
+    async function simpanStaf() { const id = document.getElementById('staf-id').value; const roles = Array.from(document.querySelectorAll('.chk-role:checked')).map(c => c.value); const pl = { username: document.getElementById('staf-username').value.trim(), password: document.getElementById('staf-password').value.trim(), role: JSON.stringify(roles) }; try { if (id) await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'PATCH', pl); else await apiRequest(`${SUPABASE_URL}kelola_akses`, 'POST', pl); showToast("Staf Tersimpan"); closeModal('modal-staf'); fetchStaffAccountsLogin(); } catch(e) { showToast(e.message, true); } }
     function hapusStaf(id) { askConfirm("Hapus akun staf ini?", async () => { try { await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'DELETE'); showToast("Staf Dihapus"); fetchStaffAccounts(); } catch(e) { showToast(e.message, true); } }); }
 
     function cetakAnalisis(no_ppdb) {
