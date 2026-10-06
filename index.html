@@ -1015,14 +1015,22 @@
 
     async function fetchStaffAccounts() {
         try {
-            const res = await fetch(`${SUPABASE_URL}kelola_akses?select=*`, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
-            if(!res.ok) throw new Error("Tabel tidak ditemukan.");
+            // ANTI-CACHE: Tambahkan timestamp agar Service Worker PWA selalu mengambil data fresh dari Supabase
+            const urlBypassCache = `${SUPABASE_URL}kelola_akses?select=*&t=${Date.now()}`;
+            const res = await fetch(urlBypassCache, { 
+                method: 'GET',
+                cache: 'no-store', // Paksa browser tembus ke server
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } 
+            });
             staffAccounts = await res.json();
-            if(staffAccounts.length === 0) throw new Error("Kosong");
             initLoginDropdown();
+            
+            // PENTING: Segarkan tabel di UI jika sedang terbuka
+            if (typeof renderStaf === 'function') renderStaf();
         } catch(e) {
-            staffAccounts = [ { id: 1, username: 'admin', role: ['admin','sekretaris','bendahara','penganalisis','pewawancara','perlengkapan'], password: 'berkah' } ];
+            staffAccounts = [ { id: 1, username: 'admin', role: ['admin'], password: 'berkah' } ];
             initLoginDropdown();
+            if (typeof renderStaf === 'function') renderStaf();
         }
     }
 
@@ -2614,50 +2622,30 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
     }
 
     async function simpanStaf() { 
-    // Matikan tombol sementara agar tidak diklik dua kali
-    const btn = document.querySelector('button[onclick="simpanStaf()"]');
-    const textAwal = btn.innerHTML;
-    btn.innerHTML = 'Menyimpan...';
-    btn.disabled = true;
-
-    const id = document.getElementById('staf-id').value; 
-    
-    // Ambil semua centang dan jadikan Array murni (mutlak untuk kolom jsonb)
-    const roles = Array.from(document.querySelectorAll('.chk-role:checked')).map(c => c.value); 
-    
-    const pl = { 
-        username: document.getElementById('staf-username').value.trim(), 
-        password: document.getElementById('staf-password').value.trim(), 
-        role: roles 
-    }; 
-    
-    try { 
-        // 1. Lempar data ke Supabase
-        if (id) {
-            await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'PATCH', pl); 
-        } else {
-            await apiRequest(`${SUPABASE_URL}kelola_akses`, 'POST', pl); 
-        }
+        const id = document.getElementById('staf-id').value; 
+        const roles = Array.from(document.querySelectorAll('.chk-role:checked')).map(c => c.value); 
         
-        showToast("Staf Tersimpan & Diperbarui"); 
-        closeModal('modal-staf'); 
+        // FORMAT MURNI: Jangan di-stringify agar Supabase menerimanya sebagai JSONB tulen (seperti di gambar Anda)
+        const pl = { 
+            username: document.getElementById('staf-username').value.trim(), 
+            password: document.getElementById('staf-password').value.trim(), 
+            role: roles 
+        }; 
         
-        // 2. ANTI-CACHE: Paksa browser menarik data paling baru dari database
-        const antiCacheUrl = `${SUPABASE_URL}kelola_akses?select=*&t=${Date.now()}`;
-        const res = await fetch(antiCacheUrl, { 
-            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } 
-        });
-        
-        if(!res.ok) throw new Error("Gagal menyinkronkan data baru.");
-        staffAccounts = await res.json();
-        
-        // 3. Render ulang semua elemen yang bergantung pada akses staf
-        initLoginDropdown();
-        if (typeof renderStaf === 'function') renderStaf();
-        
-    } catch(e) { 
-        showToast(e.message, true); 
-    } 
+        try { 
+            if (id) await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'PATCH', pl); 
+            else await apiRequest(`${SUPABASE_URL}kelola_akses`, 'POST', pl); 
+            
+            showToast("Sukses: Hak Akses Disimpan ke Supabase!"); 
+            closeModal('modal-staf'); 
+            
+            // Panggil paksa data baru tanpa kena tipu Service Worker
+            await fetchStaffAccounts(); 
+            
+        } catch(e) { 
+            showToast("Gagal: " + e.message, true); 
+        } 
+    }
     
     // Kembalikan status tombol
     btn.innerHTML = textAwal;
