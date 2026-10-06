@@ -2614,10 +2614,17 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
     }
 
     async function simpanStaf() { 
+    // Matikan tombol sementara agar tidak diklik dua kali
+    const btn = document.querySelector('button[onclick="simpanStaf()"]');
+    const textAwal = btn.innerHTML;
+    btn.innerHTML = 'Menyimpan...';
+    btn.disabled = true;
+
     const id = document.getElementById('staf-id').value; 
+    
+    // Ambil semua centang dan jadikan Array murni (mutlak untuk kolom jsonb)
     const roles = Array.from(document.querySelectorAll('.chk-role:checked')).map(c => c.value); 
     
-    // Kembalikan ke format Array asli agar tidak ditolak Supabase
     const pl = { 
         username: document.getElementById('staf-username').value.trim(), 
         password: document.getElementById('staf-password').value.trim(), 
@@ -2625,19 +2632,36 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
     }; 
     
     try { 
-        if (id) await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'PATCH', pl); 
-        else await apiRequest(`${SUPABASE_URL}kelola_akses`, 'POST', pl); 
+        // 1. Lempar data ke Supabase
+        if (id) {
+            await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'PATCH', pl); 
+        } else {
+            await apiRequest(`${SUPABASE_URL}kelola_akses`, 'POST', pl); 
+        }
         
-        showToast("Staf Tersimpan"); 
+        showToast("Staf Tersimpan & Diperbarui"); 
         closeModal('modal-staf'); 
         
-        // Panggil fungsi yang benar dan langsung paksa tabel update di layar
-        await fetchStaffAccounts(); 
+        // 2. ANTI-CACHE: Paksa browser menarik data paling baru dari database
+        const antiCacheUrl = `${SUPABASE_URL}kelola_akses?select=*&t=${Date.now()}`;
+        const res = await fetch(antiCacheUrl, { 
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } 
+        });
+        
+        if(!res.ok) throw new Error("Gagal menyinkronkan data baru.");
+        staffAccounts = await res.json();
+        
+        // 3. Render ulang semua elemen yang bergantung pada akses staf
+        initLoginDropdown();
         if (typeof renderStaf === 'function') renderStaf();
         
     } catch(e) { 
         showToast(e.message, true); 
     } 
+    
+    // Kembalikan status tombol
+    btn.innerHTML = textAwal;
+    btn.disabled = false;
 }
     function hapusStaf(id) { askConfirm("Hapus akun staf ini?", async () => { try { await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'DELETE'); showToast("Staf Dihapus"); fetchStaffAccounts(); } catch(e) { showToast(e.message, true); } }); }
 
