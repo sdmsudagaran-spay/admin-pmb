@@ -2619,7 +2619,7 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
         document.getElementById('modal-staf').classList.replace('hidden', 'flex');
     }
 
-    async function simpanStaf() { const id = document.getElementById('staf-id').value; const roles = Array.from(document.querySelectorAll('.chk-role:checked')).map(c => c.value); const pl = { username: document.getElementById('staf-username').value.trim(), password: document.getElementById('staf-password').value.trim(), role: JSON.stringify(roles) }; try { if (id) await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'PATCH', pl); else await apiRequest(`${SUPABASE_URL}kelola_akses`, 'POST', pl); showToast("Staf Tersimpan"); closeModal('modal-staf'); fetchStaffAccountsLogin(); } catch(e) { showToast(e.message, true); } }
+    async function simpanStaf() { const id = document.getElementById('staf-id').value; const roles = Array.from(document.querySelectorAll('.chk-role:checked')).map(c => c.value); const pl = { username: document.getElementById('staf-username').value.trim(), password: document.getElementById('staf-password').value.trim(), role: JSON.stringify(roles) }; try { if (id) await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'PATCH', pl); else await apiRequest(`${SUPABASE_URL}kelola_akses`, 'POST', pl); showToast("Staf Tersimpan"); closeModal('modal-staf'); await fetchStaffAccounts(); if (typeof renderStaf === 'function') renderStaf(); } catch(e) { showToast(e.message, true); } }
     function hapusStaf(id) { askConfirm("Hapus akun staf ini?", async () => { try { await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'DELETE'); showToast("Staf Dihapus"); fetchStaffAccounts(); } catch(e) { showToast(e.message, true); } }); }
 
     function cetakAnalisis(no_ppdb) {
