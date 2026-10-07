@@ -1015,33 +1015,49 @@
 
     async function fetchStaffAccounts() {
         try {
-            // ANTI-CACHE: Tambahkan timestamp agar Service Worker PWA selalu mengambil data fresh dari Supabase
             const urlBypassCache = `${SUPABASE_URL}kelola_akses?select=*&t=${Date.now()}`;
             const res = await fetch(urlBypassCache, { 
                 method: 'GET',
-                cache: 'no-store', // Paksa browser tembus ke server
+                cache: 'no-store', // Tembus Service Worker
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } 
             });
-            staffAccounts = await res.json();
-            initLoginDropdown();
+
+            // PENGAMANAN 1: Cegah crash jika HTTP Error (Misal RLS salah atau API ditolak)
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.message || `HTTP ${res.status}`);
+            }
+
+            const data = await res.json();
             
-            // PENTING: Segarkan tabel di UI jika sedang terbuka
+            // PENGAMANAN 2: Pastikan data murni Array, bukan Object Error
+            if (!Array.isArray(data)) throw new Error("Data dari Supabase bukan format Array.");
+            
+            staffAccounts = data;
+            initLoginDropdown();
+
             if (typeof renderStaf === 'function') renderStaf();
         } catch(e) {
+            // Jika Supabase Error, JANGAN FREEZE. Munculkan peringatannya langsung di Dropdown!
+            const sel = document.getElementById('login-username');
+            if(sel) sel.innerHTML = `<option value="">ERROR SUPABASE: ${e.message}</option>`;
+            
+            // Masukkan akun darurat agar Anda tetap bisa masuk untuk mengecek tabel
             staffAccounts = [ { id: 1, username: 'admin', role: ['admin'], password: 'berkah' } ];
-            initLoginDropdown();
-            if (typeof renderStaf === 'function') renderStaf();
         }
     }
 
     function initLoginDropdown() {
-        const sel = document.getElementById('login-username'); if(!sel) return;
-        
-        // PENGAMANAN FATAL: Mencegah crash jika ada username yang null di Supabase
-        sel.innerHTML = '<option value="">Pilih Username...</option>' + staffAccounts.map(s => {
-            const safeName = s.username || 'Akun Tanpa Nama';
+        const sel = document.getElementById('login-username'); 
+        if(!sel) return;
+
+        // PENGAMANAN 3: Jangan crash hanya karena ada staf yang namanya kosong (null) di Database
+        const optionsHtml = staffAccounts.map(s => {
+            const safeName = s.username ? String(s.username) : 'Akun Tanpa Nama';
             return `<option value="${safeName.toLowerCase()}">${safeName}</option>`;
         }).join('');
+
+        sel.innerHTML = '<option value="">Pilih Username...</option>' + optionsHtml;
     }
 
     function handleLogin() {
