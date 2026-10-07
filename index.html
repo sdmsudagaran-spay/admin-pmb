@@ -2918,7 +2918,11 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
                     apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'DELETE') 
                 ]); 
                 showToast("Siswa Dihapus"); loadData(); 
-            } catch(e) { showToast(e.message,     function bukaModalBiodata(id) {
+            } catch(e) { showToast(e.message, true); } 
+        });
+    }
+
+    function bukaModalBiodata(id) {
         const s = masterData.find(x => x.id == id); if(!s) return;
         const canManageBiaya = currentUserRoleArr.includes('admin') || currentUserRoleArr.includes('pewawancara');
         const btnBiaya = canManageBiaya ? `<div class="mt-4 pt-4 border-t border-gray-100"><button onclick="closeModal('modal-biodata'); setTimeout(() => bukaModalPewawancara('${s.no_ppdb}'), 300)" class="w-full bg-brand-gold hover:bg-yellow-600 text-white py-3 rounded-xl font-bold shadow-md flex items-center justify-center gap-2 transition-colors"><i class="ph-bold ph-money text-lg"></i> Kelola Biaya / Wawancara</button></div>` : '';
