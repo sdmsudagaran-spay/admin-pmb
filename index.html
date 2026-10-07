@@ -1015,47 +1015,20 @@
 
     async function fetchStaffAccounts() {
         try {
-            const urlBypassCache = `${SUPABASE_URL}kelola_akses?select=*&t=${Date.now()}`;
-            const res = await fetch(urlBypassCache, { 
-                method: 'GET',
-                cache: 'no-store', // Tembus Service Worker
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } 
-            });
-
-            // PENGAMANAN 1: Cegah crash jika HTTP Error (Misal RLS salah atau API ditolak)
-            if (!res.ok) {
-                const errData = await res.json();
-                throw new Error(errData.message || `HTTP ${res.status}`);
-            }
-
-            const data = await res.json();
-            
-            // PENGAMANAN 2: Pastikan data murni Array, bukan Object Error
-            if (!Array.isArray(data)) throw new Error("Data dari Supabase bukan format Array.");
-            
-            staffAccounts = data;
+            const res = await fetch(`${SUPABASE_URL}kelola_akses?select=*`, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
+            if(!res.ok) throw new Error("Tabel tidak ditemukan.");
+            staffAccounts = await res.json();
+            if(staffAccounts.length === 0) throw new Error("Kosong");
             initLoginDropdown();
-
-            if (typeof renderStaf === 'function') renderStaf();
         } catch(e) {
-            // Jika Supabase Error, JANGAN FREEZE. Munculkan peringatannya langsung di Dropdown!
-            const sel = document.getElementById('login-username');
-            if(sel) sel.innerHTML = `<option value="">ERROR SUPABASE: ${e.message}</option>`;
-            
-            // Masukkan akun darurat agar Anda tetap bisa masuk untuk mengecek tabel
-            staffAccounts = [ { id: 1, username: 'admin', role: ['admin'], password: 'berkah' } ];
+            staffAccounts = [ { id: 1, username: 'admin', role: ['admin','sekretaris','bendahara','penganalisis','pewawancara','perlengkapan'], password: 'berkah' } ];
+            initLoginDropdown();
         }
     }
 
     function initLoginDropdown() {
-        const sel = document.getElementById('login-username'); 
-        if(!sel) return;
-
-        // PENGAMANAN INTI: Jika di database ada username yang kosong/null, tidak akan crash
-        sel.innerHTML = '<option value="">Pilih Username...</option>' + staffAccounts.map(s => {
-            const safeName = s.username ? String(s.username) : 'Akun Darurat';
-            return `<option value="${safeName.toLowerCase()}">${safeName}</option>`;
-        }).join('');
+        const sel = document.getElementById('login-username'); if(!sel) return;
+        sel.innerHTML = '<option value="">Pilih Username...</option>' + staffAccounts.map(s => `<option value="${s.username.toLowerCase()}">${s.username}</option>`).join('');
     }
 
     function handleLogin() {
@@ -1294,21 +1267,20 @@
     }
 
     function renderAll() {
-    if(!masterData || masterData.length === 0) return;
-    const isAdmin = currentUserRoleArr.includes('admin');
-    
-    if(!document.getElementById('panel-sekretaris').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('sekretaris'))) renderSekretaris();
-    if(!document.getElementById('panel-penganalisis').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('penganalisis'))) renderPenganalisisFilter();
-    if(!document.getElementById('panel-pewawancara').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('pewawancara'))) renderPewawancara();
-    if(!document.getElementById('panel-bendahara').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('bendahara'))) { renderTableBendahara(); updateBendaharaBadges(); }
-    if(!document.getElementById('panel-perlengkapan').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('perlengkapan'))) renderPerlengkapan();
-    if(!document.getElementById('panel-akun-progress').classList.contains('hidden') && isAdmin) renderAkunProgress();
-    if(!document.getElementById('panel-kelola-akses').classList.contains('hidden') && isAdmin) renderStaf();
-    if(!document.getElementById('panel-menu-app').classList.contains('hidden') && isAdmin) renderMenuApp();
-    
-    // Buka gembok logika di sini: Izinkan pemegang role 'dashboard' untuk merender grafik
-    if(!document.getElementById('panel-dashboard').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('dashboard'))) renderDashboardEksekutif();
-}
+        if(!masterData || masterData.length === 0) return;
+        const isAdmin = currentUserRoleArr.includes('admin');
+        
+        // LAZY RENDERING: Hanya paksa render tabel yang JENDELANYA SEDANG TERBUKA (Tidak hidden)
+        if(!document.getElementById('panel-sekretaris').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('sekretaris'))) renderSekretaris();
+        if(!document.getElementById('panel-penganalisis').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('penganalisis'))) renderPenganalisisFilter();
+        if(!document.getElementById('panel-pewawancara').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('pewawancara'))) renderPewawancara();
+        if(!document.getElementById('panel-bendahara').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('bendahara'))) { renderTableBendahara(); updateBendaharaBadges(); }
+        if(!document.getElementById('panel-perlengkapan').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('perlengkapan'))) renderPerlengkapan();
+        if(!document.getElementById('panel-akun-progress').classList.contains('hidden') && isAdmin) renderAkunProgress();
+        if(!document.getElementById('panel-kelola-akses').classList.contains('hidden') && isAdmin) renderStaf();
+        if(!document.getElementById('panel-menu-app').classList.contains('hidden') && isAdmin) renderMenuApp();
+        if(!document.getElementById('panel-dashboard').classList.contains('hidden') && isAdmin) renderDashboardEksekutif();
+    }
     function renderAkunProgress() {
         const tbody = document.getElementById('tbody-akun-progress'); if(!tbody) return;
         const flt = document.getElementById('filter-ruang-akun')?.value || 'all'; const q = (document.getElementById('filter-cari-akun')?.value || '').toLowerCase();
@@ -2640,39 +2612,7 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
         document.getElementById('modal-staf').classList.replace('hidden', 'flex');
     }
 
-    async function simpanStaf() { 
-        const id = document.getElementById('staf-id').value; 
-        const roles = Array.from(document.querySelectorAll('.chk-role:checked')).map(c => c.value); 
-        
-        // FORMAT MURNI: Jangan di-stringify agar Supabase menerimanya sebagai JSONB tulen (seperti di gambar Anda)
-        const pl = { 
-            username: document.getElementById('staf-username').value.trim(), 
-            password: document.getElementById('staf-password').value.trim(), 
-            role: roles 
-        }; 
-        
-        try { 
-            if (id) await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'PATCH', pl); 
-            else await apiRequest(`${SUPABASE_URL}kelola_akses`, 'POST', pl); 
-            
-            showToast("Sukses: Hak Akses Disimpan ke Supabase!"); 
-            closeModal('modal-staf'); 
-            
-            // Panggil paksa data baru tanpa kena tipu Service Worker
-            await fetchStaffAccounts(); 
-            
-        } catch(e) { 
-            showToast("Gagal: " + e.message, true); 
-        } 
-    }
-   
-    async function simpanStaf() { 
-        // ... (isi fungsi)
-    }
-
-    function hapusStaf(id) { 
-        // ... (isi fungsi)
-    }
+    async function simpanStaf() { const id = document.getElementById('staf-id').value; const roles = Array.from(document.querySelectorAll('.chk-role:checked')).map(c => c.value); const pl = { username: document.getElementById('staf-username').value.trim(), password: document.getElementById('staf-password').value.trim(), role: roles }; try { if (id) await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'PATCH', pl); else await apiRequest(`${SUPABASE_URL}kelola_akses`, 'POST', pl); showToast("Staf Tersimpan"); closeModal('modal-staf'); fetchStaffAccounts(); } catch(e) { showToast(e.message, true); } }
     function hapusStaf(id) { askConfirm("Hapus akun staf ini?", async () => { try { await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'DELETE'); showToast("Staf Dihapus"); fetchStaffAccounts(); } catch(e) { showToast(e.message, true); } }); }
 
     function cetakAnalisis(no_ppdb) {
@@ -2978,9 +2918,14 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
                     apiRequest(`${SUPABASE_URL}perlengkapan?no_ppdb=eq.${no_ppdb}`, 'DELETE') 
                 ]); 
                 showToast("Siswa Dihapus"); loadData(); 
-            } catch(e) { showToast(e.message, true); } 
-        });
-    
+            } catch(e) { showToast(e.message,     function bukaModalBiodata(id) {
+        const s = masterData.find(x => x.id == id); if(!s) return;
+        const canManageBiaya = currentUserRoleArr.includes('admin') || currentUserRoleArr.includes('pewawancara');
+        const btnBiaya = canManageBiaya ? `<div class="mt-4 pt-4 border-t border-gray-100"><button onclick="closeModal('modal-biodata'); setTimeout(() => bukaModalPewawancara('${s.no_ppdb}'), 300)" class="w-full bg-brand-gold hover:bg-yellow-600 text-white py-3 rounded-xl font-bold shadow-md flex items-center justify-center gap-2 transition-colors"><i class="ph-bold ph-money text-lg"></i> Kelola Biaya / Wawancara</button></div>` : '';
+
+        document.getElementById('content-biodata').innerHTML = `<div class="space-y-4"><div class="bg-gray-50 p-4 border rounded-xl"><p class="text-[10px] uppercase font-bold text-gray-500">Data Pribadi</p><p class="text-base font-bold text-brand-navy mt-1">${s.nama_murid || '-'}</p><div class="grid grid-cols-2 gap-2 mt-2 text-xs"><div><span class="text-brand-muted block">No PPDB:</span><span class="font-medium">${s.no_ppdb||'-'}</span></div><div><span class="text-brand-muted block">Password (No):</span><span class="font-bold text-blue-600">${s.password||'-'}</span></div><div><span class="text-brand-muted block">Gender:</span><span class="font-medium">${s.jk === 'L' ? 'Laki-laki' : s.jk === 'P' ? 'Perempuan' : '-'}</span></div><div><span class="text-brand-muted block">Asal TK:</span><span class="font-medium">${s.tk||'-'}</span></div><div class="col-span-2"><span class="text-brand-muted block">TTL:</span><span class="font-medium">${s.tempat_lahir||'-'}, ${s.tgl_lahir||'-'}</span></div><div class="col-span-2"><span class="text-brand-muted block">Alamat:</span><span class="font-medium">${s.alamat||'-'}</span></div></div></div><div class="grid grid-cols-2 gap-3"><div class="bg-blue-50 p-3 border border-blue-100 rounded-xl"><p class="text-[10px] uppercase font-bold text-blue-500">Ayah</p><p class="text-sm font-semibold text-brand-navy mt-1">${s.ayah||'-'}</p><p class="text-xs text-brand-muted mt-1">Pend: ${s.pend_ayah||'-'}</p><p class="text-xs text-brand-muted">Kerja: ${s.pekrj_ayah||'-'}</p></div><div class="bg-pink-50 p-3 border border-pink-100 rounded-xl"><p class="text-[10px] uppercase font-bold text-pink-500">Ibu</p><p class="text-sm font-semibold text-brand-navy mt-1">${s.ibu||'-'}</p><p class="text-xs text-brand-muted mt-1">Pend: ${s.pend_ibu||'-'}</p><p class="text-xs text-brand-muted">Kerja: ${s.pekrj_ibu||'-'}</p></div></div>${btnBiaya}</div>`;
+        document.getElementById('modal-biodata').classList.replace('hidden', 'flex');
+    }
     function bukaModalBiodata(id) {
         const s = masterData.find(x => x.id == id); if(!s) return;
         const canManageBiaya = currentUserRoleArr.includes('admin') || currentUserRoleArr.includes('pewawancara');
