@@ -1036,7 +1036,12 @@
 
     function initLoginDropdown() {
         const sel = document.getElementById('login-username'); if(!sel) return;
-        sel.innerHTML = '<option value="">Pilih Username...</option>' + staffAccounts.map(s => `<option value="${s.username.toLowerCase()}">${s.username}</option>`).join('');
+        
+        // PENGAMANAN FATAL: Mencegah crash jika ada username yang null di Supabase
+        sel.innerHTML = '<option value="">Pilih Username...</option>' + staffAccounts.map(s => {
+            const safeName = s.username || 'Akun Tanpa Nama';
+            return `<option value="${safeName.toLowerCase()}">${safeName}</option>`;
+        }).join('');
     }
 
     function handleLogin() {
