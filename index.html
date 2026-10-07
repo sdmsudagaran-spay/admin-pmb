@@ -1051,7 +1051,7 @@
         const sel = document.getElementById('login-username'); 
         if(!sel) return;
 
-        // PENGAMANAN 3: Jangan crash hanya karena ada staf yang namanya kosong (null) di Database
+        // PENGAMANAN MUTLAK: Jika ada nama yang kosong/rusak di database, sistem tidak akan crash
         const optionsHtml = staffAccounts.map(s => {
             const safeName = s.username ? String(s.username) : 'Akun Tanpa Nama';
             return `<option value="${safeName.toLowerCase()}">${safeName}</option>`;
