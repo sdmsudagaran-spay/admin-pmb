@@ -1051,13 +1051,11 @@
         const sel = document.getElementById('login-username'); 
         if(!sel) return;
 
-        // PENGAMANAN MUTLAK: Jika ada nama yang kosong/rusak di database, sistem tidak akan crash
-        const optionsHtml = staffAccounts.map(s => {
-            const safeName = s.username ? String(s.username) : 'Akun Tanpa Nama';
+        // PENGAMANAN INTI: Jika di database ada username yang kosong/null, tidak akan crash
+        sel.innerHTML = '<option value="">Pilih Username...</option>' + staffAccounts.map(s => {
+            const safeName = s.username ? String(s.username) : 'Akun Darurat';
             return `<option value="${safeName.toLowerCase()}">${safeName}</option>`;
         }).join('');
-
-        sel.innerHTML = '<option value="">Pilih Username...</option>' + optionsHtml;
     }
 
     function handleLogin() {
