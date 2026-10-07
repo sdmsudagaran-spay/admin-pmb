@@ -2665,11 +2665,14 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
             showToast("Gagal: " + e.message, true); 
         } 
     }
-    
-    // Kembalikan status tombol
-    btn.innerHTML = textAwal;
-    btn.disabled = false;
-}
+   
+    async function simpanStaf() { 
+        // ... (isi fungsi)
+    }
+
+    function hapusStaf(id) { 
+        // ... (isi fungsi)
+    }
     function hapusStaf(id) { askConfirm("Hapus akun staf ini?", async () => { try { await apiRequest(`${SUPABASE_URL}kelola_akses?id=eq.${id}`, 'DELETE'); showToast("Staf Dihapus"); fetchStaffAccounts(); } catch(e) { showToast(e.message, true); } }); }
 
     function cetakAnalisis(no_ppdb) {
