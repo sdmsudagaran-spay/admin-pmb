@@ -1945,7 +1945,14 @@ function bukaModalGrafik(no_ppdb) {
                 const s = item.siswa; const trx = item.trx;
                 const ketMetode = trx.isTransfer ? `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-bold border border-blue-200">Transfer</span>` : `<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold border border-green-200">Tunai</span>`;
                 const btnBukti = trx.isTransfer && trx.buktiOriginal ? `<button onclick="bukaZoomBuktiCustom('${trx.buktiOriginal}')" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-2 py-1.5 rounded text-[10px] font-bold transition-colors border border-blue-200" title="Lihat Bukti Transfer"><i class="ph-bold ph-image"></i></button>` : '';
-                const btnStruk = `<button onclick="cetakStrukBendahara('${s.no_ppdb}')" class="bg-gray-800 text-white hover:bg-gray-700 px-2 py-1.5 rounded text-[10px] font-bold transition-colors" title="Cetak Struk POS"><i class="ph-bold ph-printer"></i></button>`;
+                
+                let judulStruk = activeKatBendahara === 'pendaftaran' ? 'Pendaftaran' : activeKatBendahara === 'daftarulang' ? 'Daftar Ulang' : 'BOPD';
+                if(trx.idTrx.startsWith('bopd1')) judulStruk = 'BOPD (Tahap 1)';
+                if(trx.idTrx.startsWith('bopd2')) judulStruk = 'BOPD (Tahap 2)';
+                if(trx.idTrx.startsWith('bopd3')) judulStruk = 'BOPD (Tahap 3)';
+                if(trx.idTrx.startsWith('angsuran')) judulStruk = 'Angsuran ' + activeKatBendahara.toUpperCase();
+
+                const btnStruk = `<button onclick="cetakStrukBendahara('${s.no_ppdb}', '${judulStruk}', ${trx.nominal}, ${trx.isTransfer}, '${trx.tglTrx}')" class="bg-gray-800 text-white hover:bg-gray-700 px-2 py-1.5 rounded text-[10px] font-bold transition-colors" title="Cetak Struk POS"><i class="ph-bold ph-printer"></i></button>`;
                 
                 let btnBatal = '';
                 if(!trx.idTrx.startsWith('angsuran_')) {
@@ -2131,20 +2138,21 @@ function bukaModalGrafik(no_ppdb) {
         }
     }
 
-    function cetakStrukBendahara(no_ppdb) {
+    function cetakStrukBendahara(no_ppdb, judul_pembayaran, nominal, isTransfer, tanggalStr = null) {
         const sMaster = masterData.find(x => x.no_ppdb === no_ppdb);
-        const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb);
-        if(!sMaster || !sUang) return showToast("Data tidak valid", true);
+        if(!sMaster) return showToast("Data siswa tidak valid", true);
 
-        const info = getKeuanganInfo(sUang);
-        let title = activeKatBendahara === 'pendaftaran' ? "PENDAFTARAN" : activeKatBendahara === 'daftarulang' ? "DAFTAR ULANG" : "BIAYA BOPD";
-        const metode = info.isTransfer ? "TRANSFER" : "TUNAI / CASH";
+        const metode = isTransfer ? "TRANSFER" : "TUNAI / CASH";
         
-        const d = new Date();
-        const tgl = String(d.getDate()).padStart(2,'0') + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + d.getFullYear() + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+        let d = new Date();
+        if(tanggalStr) {
+            let parsed = new Date(tanggalStr);
+            if(!isNaN(parsed.getTime())) d = parsed;
+        }
         
+        const tglStr = String(d.getDate()).padStart(2,'0') + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + d.getFullYear() + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
         const ymd = d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
-        const noInvoice = `INV/${ymd}/${no_ppdb}`;
+        const noInvoice = `INV/${ymd}/${no_ppdb.replace(/[^A-Za-z0-9]/g, '')}`;
 
         const html = `<!DOCTYPE html>
         <html lang="id">
@@ -2163,12 +2171,12 @@ function bukaModalGrafik(no_ppdb) {
                 .col-desc  { width: 45%; text-align: left; } .col-qty   { width: 10%; text-align: center; } .col-price { width: 20%; text-align: right; } .col-total { width: 25%; text-align: right; }
                 .totals-table { width: 100%; margin-top: 5px; font-size: 11px; text-align: left; } .totals-table td { padding: 2px 0; } .grand-total { font-size: 14px; font-weight: bold; }
                 .footer { margin-top: 15px; font-size: 11px; }
-                .no-print { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-family: sans-serif; margin: 20px auto; display: block; }
+                .no-print { background-color: #0F2747; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-family: sans-serif; margin: 20px auto; display: block; }
                 @media print { .no-print { display: none; } }
             </style>
         </head>
         <body>
-            <button class="no-print" onclick="window.print()">Cetak Struk</button>
+            <button class="no-print" onclick="window.print()">🖨️ Cetak Struk</button>
             <div class="text-center">
                 <img src="https://iili.io/nuUTLcN.md.png" alt="Logo SDM" style="width: 50px; height: auto; margin: 0 auto; margin-bottom: 5px;">
                 <div class="shop-name">SD MUH. SUDAGARAN</div>
@@ -2178,7 +2186,7 @@ function bukaModalGrafik(no_ppdb) {
             <div class="line-double"></div>
             <table class="meta-table">
                 <tr><td style="width: 25%;">No. Nota</td><td>: ${noInvoice}</td></tr>
-                <tr><td>Tanggal</td><td>: ${tgl}</td></tr>
+                <tr><td>Tanggal</td><td>: ${tglStr}</td></tr>
                 <tr><td>Kasir</td><td>: ${currentUsername.toUpperCase()}</td></tr>
                 <tr><td>Siswa</td><td>: <span class="bold">${sMaster.nama_murid}</span></td></tr>
             </table>
@@ -2186,15 +2194,15 @@ function bukaModalGrafik(no_ppdb) {
             <table class="receipt-table">
                 <thead><tr><th class="col-desc">Uraian</th><th class="col-qty">Qty</th><th class="col-price">Harga</th><th class="col-total">Total</th></tr></thead>
                 <tbody>
-                    <tr><td class="col-desc">Pembayaran ${title}</td><td class="col-qty">1</td><td class="col-price">${formatRp(info.tagihan).replace('Rp','').trim()}</td><td class="col-total">${formatRp(info.tagihan).replace('Rp','').trim()}</td></tr>
+                    <tr><td class="col-desc">Pembayaran ${judul_pembayaran}</td><td class="col-qty">1</td><td class="col-price">${formatRp(nominal).replace('Rp','').trim()}</td><td class="col-total">${formatRp(nominal).replace('Rp','').trim()}</td></tr>
                 </tbody>
             </table>
             <div class="line-single"></div>
             <table class="totals-table">
                 <tr><td style="width: 40%;">Metode</td><td class="text-right" style="width: 20%;">Status</td><td class="text-right col-total">TOTAL</td></tr>
-                <tr><td class="bold">${metode}</td><td class="text-right bold">LUNAS</td><td class="text-right col-total bold">${formatRp(info.tagihan).replace('Rp','').trim()}</td></tr>
+                <tr><td class="bold">${metode}</td><td class="text-right bold">LUNAS</td><td class="text-right col-total bold">${formatRp(nominal).replace('Rp','').trim()}</td></tr>
                 <tr><td colspan="3"><div class="line-single" style="margin: 2px 0;"></div></td></tr>
-                <tr class="grand-total"><td></td><td class="text-right">GRAND TOTAL</td><td class="text-right col-total">${formatRp(info.tagihan).replace('Rp','').trim()}</td></tr>
+                <tr class="grand-total"><td></td><td class="text-right">GRAND TOTAL</td><td class="text-right col-total">${formatRp(nominal).replace('Rp','').trim()}</td></tr>
             </table>
             <div class="line-double"></div>
             <div class="text-center footer">
@@ -2204,7 +2212,10 @@ function bukaModalGrafik(no_ppdb) {
         </body>
         </html>`;
 
-        const w = window.open('', '_blank', 'width=350,height=600'); if(!w) return showToast("Izinkan pop-up browser!", true); w.document.write(html); w.document.close();
+        const w = window.open('', '_blank', 'width=350,height=600'); 
+        if(!w) return showToast("Izinkan pop-up browser!", true); 
+        w.document.write(html); 
+        w.document.close();
         setTimeout(() => { w.print(); }, 800);
     }
 
@@ -2414,6 +2425,14 @@ function bukaModalGrafik(no_ppdb) {
         const nominalMasuk = currentDataKasir.totalTagihanActive;
         const isLunasPenuh = (nominalMasuk === currentDataKasir.sisaTagihanAsli);
         
+        let judulStrukPembayaran = itemKat.toUpperCase();
+        if(itemKat === 'pendaftaran') judulStrukPembayaran = 'PENDAFTARAN';
+        else if(itemKat === 'daftar_ulang') judulStrukPembayaran = 'DAFTAR ULANG';
+        else if(itemKat === 'bopd_lunas') judulStrukPembayaran = 'BOPD (LUNAS)';
+        else if(itemKat === 'bopd1') judulStrukPembayaran = 'BOPD (TAHAP 1)';
+        else if(itemKat === 'bopd2') judulStrukPembayaran = 'BOPD (TAHAP 2)';
+        else if(itemKat === 'bopd3') judulStrukPembayaran = 'BOPD (TAHAP 3)';
+        
         const btn = document.getElementById('btn-bayar-dyn'); btn.disabled = true; btn.innerHTML = 'Memproses...';
 
         try {
@@ -2444,7 +2463,13 @@ function bukaModalGrafik(no_ppdb) {
                     }
                 }
             }
-            showToast("Pembayaran Berhasil"); closeModal('modal-kasir-dinamis'); await loadData();
+            showToast("Pembayaran Berhasil"); 
+            closeModal('modal-kasir-dinamis'); 
+            
+            // CETAK STRUK OTOMATIS:
+            cetakStrukBendahara(no, judulStrukPembayaran, nominalMasuk, false, nowLocalStr);
+            
+            await loadData();
         } catch(e) { showToast(e.message, true); }
         btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-printer text-lg"></i> Bayar & Cetak Struk';
     }
