@@ -1279,7 +1279,7 @@
         if(!document.getElementById('panel-akun-progress').classList.contains('hidden') && isAdmin) renderAkunProgress();
         if(!document.getElementById('panel-kelola-akses').classList.contains('hidden') && isAdmin) renderStaf();
         if(!document.getElementById('panel-menu-app').classList.contains('hidden') && isAdmin) renderMenuApp();
-        if(!document.getElementById('panel-dashboard').classList.contains('hidden') && isAdmin) renderDashboardEksekutif();
+        if(!document.getElementById('panel-dashboard').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('dashboard'))) renderDashboardEksekutif();
     }
     function renderAkunProgress() {
         const tbody = document.getElementById('tbody-akun-progress'); if(!tbody) return;
