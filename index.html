@@ -2977,8 +2977,7 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
                 showToast("Siswa Dihapus"); loadData(); 
             } catch(e) { showToast(e.message, true); } 
         });
-    }
-
+    
     function bukaModalBiodata(id) {
         const s = masterData.find(x => x.id == id); if(!s) return;
         const canManageBiaya = currentUserRoleArr.includes('admin') || currentUserRoleArr.includes('pewawancara');
