@@ -2453,41 +2453,62 @@ function bukaModalGrafik(no_ppdb) {
         const btn = document.getElementById('btn-bayar-dyn'); btn.disabled = true; btn.innerHTML = 'Memproses...';
 
         try {
-            const sUangCache = keuanganData.find(x => x.no_ppdb === no) || {};
+            // LOGIKA DETEKSI AKURAT: Cari data asli, jika undefined berarti belum ada (isExist = false)
+            const sUangCache = keuanganData.find(x => x.no_ppdb === no);
+            const isExist = sUangCache !== undefined; 
+
             if (itemKat === 'pendaftaran') {
                 const pl = { konf_pendaftaran: true, pendaftaran: 300000, tgl_bayar_pendaftaran: nowLocalStr, kasir_pendaftaran: currentUsername };
-                if (!sUangCache.tgl_pendaftaran) pl.tgl_pendaftaran = nowLocalStr;
-                await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no}`, 'PATCH', pl);
+                if (!isExist || !sUangCache.tgl_pendaftaran) pl.tgl_pendaftaran = nowLocalStr;
+                
+                // MURNI: Update jika ada, Insert jika baru
+                if (isExist) {
+                    await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no}`, 'PATCH', pl);
+                } else { 
+                    pl.no_ppdb = no; pl.tahun_ajaran = activeTahunAjaran; 
+                    await apiRequest(`${SUPABASE_URL}keuangan`, 'POST', pl); 
+                }
+                
             } else {
                 if (currentDataKasir.tipeBayar === 'cash') {
                     const pl = {};
-                    if (!sUangCache.tgl_pendaftaran) pl.tgl_pendaftaran = nowLocalStr;
+                    if (!isExist || !sUangCache.tgl_pendaftaran) pl.tgl_pendaftaran = nowLocalStr;
+                    
                     if(itemKat === 'daftar_ulang') { pl.konf_daftar_ulang = true; pl.tgl_bayar_daftar_ulang = nowLocalStr; pl.kasir_daftar_ulang = currentUsername; }
                     else if (itemKat === 'bopd_lunas') { pl.konfirmasi_bopd = true; pl.tgl_bayar_bopd_lunas = nowLocalStr; pl.kasir_bopd_lunas = currentUsername; }
                     else if (itemKat.startsWith('bopd')) { pl[`konf_${itemKat}`] = true; pl[`tgl_bayar_${itemKat}`] = nowLocalStr; pl[`kasir_${itemKat}`] = currentUsername; }
-                    await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no}`, 'PATCH', pl);
+                    
+                    if (isExist) await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no}`, 'PATCH', pl);
+                    else { pl.no_ppdb = no; pl.tahun_ajaran = activeTahunAjaran; await apiRequest(`${SUPABASE_URL}keuangan`, 'POST', pl); }
+                    
                 } else {
                     const plAngsuran = { no_ppdb: no, kategori: itemKat, nominal: nominalMasuk, metode: 'Tunai', tgl_bayar: nowLocalStr, kasir: currentUsername, tahun_ajaran: activeTahunAjaran };
                     await apiRequest(`${SUPABASE_URL}angsuran`, 'POST', plAngsuran);
 
                     if (isLunasPenuh) {
                         const pl = {};
-                        if (!sUangCache.tgl_pendaftaran) pl.tgl_pendaftaran = nowLocalStr;
+                        if (!isExist || !sUangCache.tgl_pendaftaran) pl.tgl_pendaftaran = nowLocalStr;
+                        
                         if(itemKat === 'daftar_ulang') { pl.konf_daftar_ulang = true; pl.tgl_bayar_daftar_ulang = nowLocalStr; pl.kasir_daftar_ulang = currentUsername; }
                         else if (itemKat === 'bopd_lunas') { pl.konfirmasi_bopd = true; pl.tgl_bayar_bopd_lunas = nowLocalStr; pl.kasir_bopd_lunas = currentUsername; }
                         else if (itemKat.startsWith('bopd')) { pl[`konf_${itemKat}`] = true; pl[`tgl_bayar_${itemKat}`] = nowLocalStr; pl[`kasir_${itemKat}`] = currentUsername; }
-                        await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no}`, 'PATCH', pl);
+                        
+                        if (isExist) await apiRequest(`${SUPABASE_URL}keuangan?no_ppdb=eq.${no}`, 'PATCH', pl);
+                        else { pl.no_ppdb = no; pl.tahun_ajaran = activeTahunAjaran; await apiRequest(`${SUPABASE_URL}keuangan`, 'POST', pl); }
                     }
                 }
             }
+            
             showToast("Pembayaran Berhasil"); 
             closeModal('modal-kasir-dinamis'); 
             
-            // CETAK STRUK OTOMATIS:
+            // CETAK STRUK & SEGAR KAN DATA
             cetakStrukBendahara(no, judulStrukPembayaran, nominalMasuk, false, nowLocalStr);
-            
             await loadData();
-        } catch(e) { showToast(e.message, true); }
+            
+        } catch(e) { 
+            showToast("Gagal: " + e.message, true); 
+        }
         btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-printer text-lg"></i> Bayar & Cetak Struk';
     }
 
