@@ -1609,22 +1609,26 @@ function bukaModalGrafik(no_ppdb) {
             angBox.classList.remove('hidden'); 
             
             const opt = { year: 'numeric', month: 'long', day: 'numeric' };
+            const addSafeMonths = (baseDate, m) => {
+                let d = new Date(baseDate);
+                let expectedMonth = (d.getMonth() + m) % 12;
+                d.setMonth(d.getMonth() + m);
+                if (d.getMonth() !== expectedMonth) d.setDate(0);
+                return d;
+            };
+            
             const hariIni = new Date();
             
-            // Logika disamakan persis dengan cetakan: Hari ini + 7 Hari
             let dDU = new Date(hariIni);
             dDU.setDate(dDU.getDate() + 7);
             
-            // Tahap 1: Batas DU + 2 Bulan
-            let d1 = new Date(dDU); d1.setMonth(d1.getMonth() + 2); 
+            let d1 = addSafeMonths(dDU, 2);
             document.getElementById('lbl-tgl-a1').innerText = d1.toLocaleDateString('id-ID', opt);
             
-            // Tahap 2: Tahap 1 + 2 Bulan
-            let d2 = new Date(d1); d2.setMonth(d2.getMonth() + 2); 
+            let d2 = addSafeMonths(dDU, 4);
             document.getElementById('lbl-tgl-a2').innerText = d2.toLocaleDateString('id-ID', opt);
             
-            // Tahap 3: Tahap 2 + 2 Bulan
-            let d3 = new Date(d2); d3.setMonth(d3.getMonth() + 2); 
+            let d3 = addSafeMonths(dDU, 6);
             document.getElementById('lbl-tgl-a3').innerText = d3.toLocaleDateString('id-ID', opt);
             
             hitungAngsuranBOPD();
@@ -2740,26 +2744,31 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
 
         const opt = { year: 'numeric', month: 'long', day: 'numeric' };
         
-        // LOGIKA ABSOLUT: Semua patokan ditarik murni dari "Hari Ini"
-        const hariIni = new Date();
-        const tglSekarang = hariIni.toLocaleDateString('id-ID', opt); // Titi mangsa ttd
+        // FUNGSI PENGAMAN: Menambah bulan kalender tanpa meluber ke bulan depannya
+        const addSafeMonths = (baseDate, m) => {
+            let d = new Date(baseDate);
+            let expectedMonth = (d.getMonth() + m) % 12;
+            d.setMonth(d.getMonth() + m);
+            if (d.getMonth() !== expectedMonth) d.setDate(0); // Kunci di hari terakhir bulan target
+            return d;
+        };
         
-        // 1. Daftar Ulang (Maks: Hari Ini + 7 Hari)
+        const hariIni = new Date();
+        const tglSekarang = hariIni.toLocaleDateString('id-ID', opt); 
+        
+        // 1. Daftar Ulang (Hari Ini + 7 Hari)
         let dDU = new Date(hariIni); 
         dDU.setDate(dDU.getDate() + 7);
         const strDU = dDU.toLocaleDateString('id-ID', opt);
         
-        // 2. Tahap 1 (Batas Daftar Ulang + 2 Bulan)
-        let d1 = new Date(dDU); 
-        d1.setMonth(d1.getMonth() + 2); 
+        // 2. Tahap 1 (Jangkar Daftar Ulang + 2 Bulan Kalender)
+        let d1 = addSafeMonths(dDU, 2);
         
-        // 3. Tahap 2 (Jatuh Tempo Tahap 1 + 2 Bulan)
-        let d2 = new Date(d1); 
-        d2.setMonth(d2.getMonth() + 2);             
+        // 3. Tahap 2 (Jangkar Daftar Ulang + 4 Bulan Kalender)
+        let d2 = addSafeMonths(dDU, 4);             
         
-        // 4. Tahap 3 (Jatuh Tempo Tahap 2 + 2 Bulan)
-        let d3 = new Date(d2); 
-        d3.setMonth(d3.getMonth() + 2);           
+        // 4. Tahap 3 (Jangkar Daftar Ulang + 6 Bulan Kalender)
+        let d3 = addSafeMonths(dDU, 6);         
         
         const isAngsuran = sUang.jenis_pembayaran_bopd === 'Angsuran';
         const isLunas = sUang.jenis_pembayaran_bopd === 'Lunas';
