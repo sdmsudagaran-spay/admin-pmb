@@ -160,6 +160,7 @@
                             <div><label class="text-xs font-bold text-blue-600 block mb-1">Password (Otomatis)</label><input type="text" id="fib-no" class="w-full border border-blue-300 bg-blue-50 rounded-lg p-2.5 text-sm font-bold" readonly></div>
                             <div><label class="text-xs font-medium text-brand-navy block mb-1">Jenis Kelamin</label><select id="fib-jk" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"><option value="L">Laki-laki (L)</option><option value="P">Perempuan (P)</option></select></div>
                             <div><label class="text-xs font-medium text-brand-navy block mb-1">Asal TK / PAUD</label><select id="fib-tk" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-brand-bg focus:border-brand-gold outline-none font-medium"><option value="">-- Pilih Asal TK --</option></select></div>
+                            <div><label class="text-xs font-medium text-brand-navy block mb-1">No. WhatsApp</label><input type="text" id="fib-wa" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Contoh: 0812..."></div>
                         </div>
                         <button onclick="simpanInputBaru()" id="btn-simpan-baru" class="w-full bg-brand-navy hover:bg-brand-gold transition-colors text-white py-4 rounded-xl font-bold shadow-lg mt-6 text-lg">Simpan Pendaftar Baru</button>
                     </div>
@@ -571,6 +572,49 @@
             </div>
 
         </div>
+    <!-- PANEL BROADCAST WA -->
+            <div id="panel-broadcast-wa" class="panel-view hidden space-y-6">
+                <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 border-b border-gray-100 pb-4">
+                        <div>
+                            <h2 class="font-heading font-semibold text-lg text-brand-navy"><i class="ph-fill ph-whatsapp-logo text-green-500"></i> Broadcast WA Tagihan</h2>
+                            <p class="text-xs text-brand-muted mt-1">Kirim pesan WhatsApp satuan berdasarkan filter tagihan yang belum lunas. Nomor WA akan tersimpan otomatis saat diketik.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <select id="filter-wa-kategori" onchange="renderBroadcastWA()" class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-brand-bg focus:border-brand-gold font-bold">
+                                <option value="daftar_ulang">Tagihan Daftar Ulang</option>
+                                <option value="bopd">Tagihan Biaya BOPD</option>
+                            </select>
+                            <select id="filter-wa-status" onchange="renderBroadcastWA()" class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-brand-bg focus:border-brand-gold font-bold">
+                                <option value="belum">Belum Lunas / Kurang</option>
+                                <option value="lunas">Sudah Lunas</option>
+                                <option value="all">Semua Status</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4 bg-green-50 border border-green-200 rounded-xl p-4">
+                        <label class="text-xs font-bold text-green-800 block mb-2">Template Pesan WhatsApp (Otomatis):</label>
+                        <p class="text-[10px] text-green-600 mb-1">Kode dinamis: <b>[NAMA]</b> (Nama Anak), <b>[TAGIHAN]</b> (Jenis Pembayaran), <b>[NOMINAL]</b> (Sisa Hutang)</p>
+                        <textarea id="template-wa" rows="3" class="w-full border border-green-200 rounded-lg p-2.5 text-sm focus:border-green-500 outline-none resize-none">Assalamu'alaikum Bapak/Ibu dari Ananda [NAMA]. Mohon maaf mengganggu waktunya. Kami dari Panitia PMB SD Muh Sudagaran menginformasikan bahwa masih terdapat sisa tanggungan [TAGIHAN] sebesar [NOMINAL]. Mohon berkenan untuk menyelesaikannya. Terima kasih.</textarea>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100">
+                                <tr>
+                                    <th class="py-3.5 px-4">Nama Siswa</th>
+                                    <th class="py-3.5 px-4 text-center">No WA (Tersimpan Otomatis)</th>
+                                    <th class="py-3.5 px-4 text-center">Status</th>
+                                    <th class="py-3.5 px-4 text-center">Sisa Tagihan</th>
+                                    <th class="py-3.5 px-4 text-center">Aksi WA</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-broadcast-wa" class="divide-y divide-gray-100 bg-white"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
     </main>
 </div>
 
@@ -674,6 +718,7 @@
                 <div><label class="text-xs font-medium text-brand-navy block mb-1">Asal TK / PAUD</label><select id="fs-tk" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-brand-bg focus:border-brand-gold outline-none font-medium"><option value="">-- Pilih Asal TK --</option></select></div>
                 <div><label class="text-xs font-medium text-brand-navy block mb-1">Tempat Lahir</label><input type="text" id="fs-tmplahir" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></div>
                 <div><label class="text-xs font-medium text-brand-navy block mb-1">Tanggal Lahir</label><input type="date" id="fs-tgllahir" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></div>
+                <div><label class="text-xs font-medium text-brand-navy block mb-1">No. WhatsApp</label><input type="text" id="fs-wa" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></div>
                 <div class="md:col-span-2"><label class="text-xs font-medium text-brand-navy block mb-1">Alamat Lengkap</label><textarea id="fs-alamat" rows="2" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm resize-none"></textarea></div>
             </div>
             <h3 class="font-bold text-blue-500 text-sm border-b border-gray-100 pb-1 mt-6 uppercase tracking-wide">Data Ayah</h3>
@@ -967,6 +1012,7 @@
 
         const allPanelsDef = [
         { id: 'panel-dashboard', role: 'dashboard', icon: 'ph-chart-line-up', text: 'Dasbor Utama' },
+        { id: 'panel-broadcast-wa', role: 'admin', icon: 'ph-whatsapp-logo', text: 'Broadcast WA' },
         { id: 'panel-akun-progress', role: 'admin', icon: 'ph-users-three', text: 'Akun & Progres' },
         { id: 'panel-pengaturan', role: 'admin', icon: 'ph-gear', text: 'Pengaturan Global' },
         { id: 'panel-menu-app', role: 'admin', icon: 'ph-list-dashes', text: 'Kelola Menu App' },
@@ -1280,6 +1326,8 @@
         if(!document.getElementById('panel-kelola-akses').classList.contains('hidden') && isAdmin) renderStaf();
         if(!document.getElementById('panel-menu-app').classList.contains('hidden') && isAdmin) renderMenuApp();
         if(!document.getElementById('panel-dashboard').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('dashboard'))) renderDashboardEksekutif();
+        if(!document.getElementById('panel-dashboard').classList.contains('hidden') && (isAdmin || currentUserRoleArr.includes('dashboard'))) renderDashboardEksekutif();
+        if(!document.getElementById('panel-broadcast-wa').classList.contains('hidden') && isAdmin) renderBroadcastWA(); // <--- TAMBAHKAN INI
     }
     function renderAkunProgress() {
         const tbody = document.getElementById('tbody-akun-progress'); if(!tbody) return;
@@ -1751,7 +1799,89 @@ function bukaModalGrafik(no_ppdb) {
         renderTableBendahara();
     }
 
-    // --- HELPER UNTUK BENDAHARA ---
+    // --- FITUR BROADCAST WA TERINTEGRASI DB ---
+    function renderBroadcastWA() {
+        const tbody = document.getElementById('tbody-broadcast-wa'); if(!tbody) return;
+        const kat = document.getElementById('filter-wa-kategori').value;
+        const stat = document.getElementById('filter-wa-status').value;
+
+        let filtered = masterData.map(s => {
+            const su = keuanganData.find(x => x.no_ppdb === s.no_ppdb) || {};
+            let tagihan = 0; let isLunas = false;
+
+            if (kat === 'daftar_ulang') {
+                const totalDU = parseInt(su.daftar_ulang) || 0;
+                const tbDU = (angsuranData||[]).filter(x => x.no_ppdb === s.no_ppdb && x.kategori === 'daftar_ulang').reduce((a,b)=>a+parseInt(b.nominal),0);
+                isLunas = isTrue(su.konf_daftar_ulang);
+                tagihan = isLunas ? 0 : Math.max(0, totalDU - tbDU);
+            } else if (kat === 'bopd') {
+                const totalBopd = parseInt(su.bopd) || 0;
+                const eb = parseInt(su.early_bird)||0; const aum = parseInt(su.kader_aum)||0; const bea = parseInt(su.beasiswa_lainnya)||0;
+                const tagihanBersih = Math.max(0, totalBopd - (eb+aum+bea));
+                
+                if (String(su.jenis_pembayaran_bopd).toLowerCase() === 'angsuran') {
+                    const tb = (angsuranData||[]).filter(x => x.no_ppdb === s.no_ppdb && x.kategori.startsWith('bopd')).reduce((a,b)=>a+parseInt(b.nominal),0);
+                    const l1 = isTrue(su.konf_bopd1); const l2 = isTrue(su.konf_bopd2); const l3 = isTrue(su.konf_bopd3);
+                    isLunas = l1 && l2 && l3;
+                    tagihan = isLunas ? 0 : Math.max(0, tagihanBersih - tb);
+                } else {
+                    const tb = (angsuranData||[]).filter(x => x.no_ppdb === s.no_ppdb && x.kategori === 'bopd_lunas').reduce((a,b)=>a+parseInt(b.nominal),0);
+                    isLunas = isTrue(su.konfirmasi_bopd);
+                    tagihan = isLunas ? 0 : Math.max(0, tagihanBersih - tb);
+                }
+            }
+            return { ...s, _isLunas: isLunas, _tagihan: tagihan };
+        }).filter(s => {
+            if (s.is_mundur === true || String(s.is_mundur) === 'true') return false; 
+            if (stat === 'belum') return !s._isLunas && s._tagihan > 0;
+            if (stat === 'lunas') return s._isLunas;
+            return true;
+        });
+
+        filtered.sort((a,b) => (a.nama_murid||'').localeCompare(b.nama_murid||''));
+
+        tbody.innerHTML = filtered.map(s => {
+            const badge = s._isLunas ? `<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold border border-green-200">LUNAS</span>` : `<span class="bg-red-100 text-red-700 px-2 py-1 rounded text-[10px] font-bold border border-red-200">KURANG</span>`;
+            const katLabel = kat === 'daftar_ulang' ? 'Daftar Ulang' : 'BOPD';
+            
+            // Auto-Save: onchange akan langsung menembak API Supabase untuk menyimpan No WA ke tabel pendaftar
+            return `<tr class="border-b hover:bg-gray-50">
+                <td class="py-3 px-4 font-bold text-brand-navy">${s.nama_murid}</td>
+                <td class="py-3 px-4 text-center"><input type="text" id="wa-${s.id}" value="${s.no_wa || ''}" onchange="simpanWaOtomatis('${s.id}', this.value)" placeholder="08..." class="border-2 border-brand-navy rounded-lg p-1.5 text-xs w-32 text-center focus:border-brand-gold outline-none font-semibold text-brand-navy"></td>
+                <td class="py-3 px-4 text-center">${badge}</td>
+                <td class="py-3 px-4 text-center font-mono font-bold text-red-500">${formatRp(s._tagihan)}</td>
+                <td class="py-3 px-4 text-center"><button onclick="kirimWASatuan('${s.id}', '${s.nama_murid}', '${katLabel}', ${s._tagihan})" class="bg-[#25D366] hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-md flex items-center justify-center gap-1 mx-auto"><i class="ph-bold ph-paper-plane-tilt text-sm"></i> Kirim</button></td>
+            </tr>`;
+        }).join('');
+        
+        if(filtered.length === 0) tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500 text-sm">Semua tagihan sudah bersih untuk filter ini.</td></tr>`;
+    }
+
+    async function simpanWaOtomatis(id, valWa) {
+        try {
+            await apiRequest(`${SUPABASE_URL}pendaftar?id=eq.${id}`, 'PATCH', { no_wa: valWa.trim() });
+            const s = masterData.find(x => x.id == id);
+            if(s) s.no_wa = valWa.trim(); // Update memori lokal agar tidak hilang saat ganti filter
+            showToast("Nomor WA berhasil disimpan permanen");
+        } catch(e) { showToast("Gagal menyimpan WA: " + e.message, true); }
+    }
+
+    function kirimWASatuan(id, nama, tagihanJenis, nominal) {
+        let hp = document.getElementById(`wa-${id}`).value.replace(/[^0-9+]/g, '').trim();
+        
+        if(!hp) return showToast("Ketikkan nomor WA di kotak tabel terlebih dahulu!", true);
+        
+        if(hp.startsWith('0')) hp = '62' + hp.substring(1);
+        else if(hp.startsWith('+62')) hp = '62' + hp.substring(3);
+
+        let template = document.getElementById('template-wa').value;
+        template = template.replace(/\[NAMA\]/g, nama);
+        template = template.replace(/\[TAGIHAN\]/g, tagihanJenis);
+        template = template.replace(/\[NOMINAL\]/g, formatRp(nominal));
+
+        const textUrl = encodeURIComponent(template);
+        window.open(`https://api.whatsapp.com/send?phone=${hp}&text=${textUrl}`, '_blank');
+    }
     // --- HELPER UNTUK BENDAHARA ---
     function getLocalYYYYMMDD(val) {
         if(!val) return '';
