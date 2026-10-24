@@ -574,35 +574,38 @@
         </div>
     <!-- PANEL BROADCAST WA -->
             <div id="panel-broadcast-wa" class="panel-view hidden space-y-6">
-                <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
+                <div class="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm relative">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 border-b border-gray-100 pb-4">
                         <div>
-                            <h2 class="font-heading font-semibold text-lg text-brand-navy"><i class="ph-fill ph-whatsapp-logo text-green-500"></i> Broadcast WA Tagihan</h2>
-                            <p class="text-xs text-brand-muted mt-1">Kirim pesan WhatsApp satuan berdasarkan filter tagihan yang belum lunas. Nomor WA akan tersimpan otomatis saat diketik.</p>
+                            <h2 class="font-heading font-semibold text-lg text-brand-navy"><i class="ph-fill ph-whatsapp-logo text-green-500"></i> Broadcast WA (Tagihan & Info Umum)</h2>
+                            <p class="text-xs text-brand-muted mt-1">Kirim pesan WA satuan atau massal. Hapus kode [TAGIHAN] di template untuk info umum.</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2">
                             <select id="filter-wa-kategori" onchange="renderBroadcastWA()" class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-brand-bg focus:border-brand-gold font-bold">
-                                <option value="daftar_ulang">Tagihan Daftar Ulang</option>
-                                <option value="bopd">Tagihan Biaya BOPD</option>
+                                <option value="daftar_ulang">Daftar Ulang</option>
+                                <option value="bopd">Biaya BOPD</option>
                             </select>
                             <select id="filter-wa-status" onchange="renderBroadcastWA()" class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-brand-bg focus:border-brand-gold font-bold">
-                                <option value="belum">Belum Lunas / Kurang</option>
-                                <option value="lunas">Sudah Lunas</option>
-                                <option value="all">Semua Status</option>
+                                <option value="all">Semua Siswa (Info Umum)</option>
+                                <option value="belum">Hanya Belum Lunas</option>
+                                <option value="lunas">Hanya Sudah Lunas</option>
                             </select>
+                            <button onclick="mulaiBroadcastMassal()" class="bg-brand-gold hover:bg-yellow-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold shadow-md flex items-center gap-2 transition-colors"><i class="ph-bold ph-paper-plane-tilt"></i> Kirim Terpilih</button>
                         </div>
                     </div>
                     
                     <div class="mb-4 bg-green-50 border border-green-200 rounded-xl p-4">
                         <label class="text-xs font-bold text-green-800 block mb-2">Template Pesan WhatsApp (Otomatis):</label>
-                        <p class="text-[10px] text-green-600 mb-1">Kode dinamis: <b>[NAMA]</b> (Nama Anak), <b>[TAGIHAN]</b> (Jenis Pembayaran), <b>[NOMINAL]</b> (Sisa Hutang)</p>
-                        <textarea id="template-wa" rows="3" class="w-full border border-green-200 rounded-lg p-2.5 text-sm focus:border-green-500 outline-none resize-none">Assalamu'alaikum Bapak/Ibu dari Ananda [NAMA]. Mohon maaf mengganggu waktunya. Kami dari Panitia PMB SD Muh Sudagaran menginformasikan bahwa masih terdapat sisa tanggungan [TAGIHAN] sebesar [NOMINAL]. Mohon berkenan untuk menyelesaikannya. Terima kasih.</textarea>
+                        <p class="text-[10px] text-green-600 mb-1">Kode dinamis (opsional): <b>[NAMA]</b>, <b>[TAGIHAN]</b>, <b>[NOMINAL]</b></p>
+                        <textarea id="template-wa" rows="3" class="w-full border border-green-200 rounded-lg p-2.5 text-sm focus:border-green-500 outline-none resize-none">Assalamu'alaikum Bapak/Ibu dari Ananda [NAMA]. Mohon maaf mengganggu waktunya. Kami menginformasikan bahwa masih terdapat sisa tanggungan [TAGIHAN] sebesar [NOMINAL]. Mohon berkenan untuk menyelesaikannya. Terima kasih.</textarea>
                     </div>
 
-                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+                    <!-- KUNCI SCROLL DIHAPUS: Tabel kini memanjang alami dan di-scroll oleh halaman utama -->
+                    <div class="overflow-x-auto rounded-xl border border-gray-100 shadow-sm mb-10">
                         <table class="w-full text-left text-sm whitespace-nowrap">
                             <thead class="bg-gray-50 text-brand-navy font-semibold border-b border-gray-100">
                                 <tr>
+                                    <th class="py-3.5 px-4 text-center w-10"><input type="checkbox" onchange="document.querySelectorAll('.chk-wa-item').forEach(c => c.checked = this.checked)" class="rounded text-brand-gold w-4 h-4 cursor-pointer" title="Pilih Semua"></th>
                                     <th class="py-3.5 px-4">Nama Siswa</th>
                                     <th class="py-3.5 px-4 text-center">No WA (Tersimpan Otomatis)</th>
                                     <th class="py-3.5 px-4 text-center">Status</th>
@@ -612,6 +615,17 @@
                             </thead>
                             <tbody id="tbody-broadcast-wa" class="divide-y divide-gray-100 bg-white"></tbody>
                         </table>
+                    </div>
+
+                    <!-- UI ANTREAN (Menggunakan Fixed agar selalu di tengah layar saat di-scroll) -->
+                    <div id="wa-queue-container" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.3)] border-2 border-brand-gold p-6 z-[100] w-[90%] max-w-sm flex flex-col gap-4">
+                        <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                            <h3 class="font-bold text-brand-navy text-lg">Antrean Kirim WA</h3>
+                            <button onclick="stopBroadcastMassal()" class="text-red-500 hover:text-red-700 font-bold bg-red-50 p-1.5 rounded-lg"><i class="ph-bold ph-x"></i> Stop</button>
+                        </div>
+                        <p class="text-sm text-center font-medium text-gray-500">Mengirim <span id="wa-q-current" class="text-brand-gold text-2xl font-bold">1</span> dari <span id="wa-q-total" class="font-bold text-lg text-brand-navy">10</span></p>
+                        <p id="wa-q-nama" class="text-center font-bold text-xl text-brand-navy truncate mb-2">Nama Siswa</p>
+                        <button onclick="prosesAntreanWA()" id="btn-wa-lanjut" class="w-full bg-[#25D366] text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-green-600 transition-colors flex items-center justify-center gap-2"><i class="ph-bold ph-paper-plane-tilt text-lg"></i> Buka WA & Lanjut</button>
                     </div>
                 </div>
             </div>
@@ -3149,6 +3163,103 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
         document.getElementById('modal-biodata').classList.replace('hidden', 'flex');
     }
 
+    // --- BLOK MESIN ANTREAN BROADCAST WA ---
+    let waQueueList = [];
+    let currentWaIndex = 0;
+
+    function mulaiBroadcastMassal() {
+        const selectedChks = Array.from(document.querySelectorAll('.chk-wa-item:checked'));
+        if(selectedChks.length === 0) return showToast("Pilih minimal 1 siswa dengan mencentang kotak di kiri!", true);
+
+        waQueueList = [];
+        selectedChks.forEach(chk => {
+            const id = chk.value;
+            let hp = document.getElementById(`wa-${id}`).value.replace(/[^0-9+]/g, '').trim();
+            if(hp) {
+                waQueueList.push({
+                    nama: chk.getAttribute('data-nama'),
+                    tagihanJenis: chk.getAttribute('data-kat'),
+                    nominal: parseInt(chk.getAttribute('data-tagihan')) || 0,
+                    hp: hp
+                });
+            }
+        });
+
+        if(waQueueList.length === 0) return showToast("Siswa terpilih tidak memiliki nomor WA di tabel.", true);
+
+        currentWaIndex = 0;
+        document.getElementById('wa-queue-container').classList.remove('hidden');
+        document.getElementById('wa-q-total').innerText = waQueueList.length;
+        siapkanAntreanUI();
+    }
+
+    function siapkanAntreanUI() {
+        if(currentWaIndex >= waQueueList.length) {
+            document.getElementById('wa-queue-container').classList.add('hidden');
+            return showToast("Semua antrean WA berhasil dieksekusi!");
+        }
+        document.getElementById('wa-q-current').innerText = currentWaIndex + 1;
+        document.getElementById('wa-q-nama').innerText = waQueueList[currentWaIndex].nama;
+        
+        const btn = document.getElementById('btn-wa-lanjut');
+        btn.innerHTML = '<i class="ph-bold ph-paper-plane-tilt text-lg"></i> Buka WA & Lanjut';
+        btn.classList.remove('bg-gray-400', 'bg-orange-400', 'cursor-not-allowed'); 
+        btn.classList.add('bg-[#25D366]', 'hover:bg-green-600');
+        btn.disabled = false;
+    }
+
+    function prosesAntreanWA() {
+        const item = waQueueList[currentWaIndex];
+        let hp = item.hp;
+        
+        if(hp.startsWith('0')) hp = '62' + hp.substring(1);
+        else if(hp.startsWith('+62')) hp = '62' + hp.substring(3);
+
+        let template = document.getElementById('template-wa').value;
+        template = template.replace(/\[NAMA\]/g, item.nama).replace(/\[TAGIHAN\]/g, item.tagihanJenis).replace(/\[NOMINAL\]/g, formatRp(item.nominal));
+        
+        const waUrl = `https://wa.me/${hp}?text=${encodeURIComponent(template)}`;
+        window.open(waUrl, '_blank');
+
+        currentWaIndex++;
+        const btn = document.getElementById('btn-wa-lanjut');
+        
+        if (currentWaIndex >= waQueueList.length) {
+            btn.innerHTML = '<i class="ph-bold ph-check text-lg"></i> Selesai!';
+            btn.classList.replace('bg-[#25D366]', 'bg-gray-400');
+            btn.disabled = true;
+            setTimeout(() => {
+                document.getElementById('wa-queue-container').classList.add('hidden');
+                showToast("Semua antrean WA berhasil dieksekusi!");
+            }, 1500);
+        } else {
+            btn.innerHTML = '<i class="ph-bold ph-hourglass text-lg"></i> Jeda Aman...';
+            btn.classList.remove('bg-[#25D366]', 'hover:bg-green-600'); 
+            btn.classList.add('bg-orange-400');
+            btn.disabled = true;
+            
+            setTimeout(() => { 
+                siapkanAntreanUI();
+            }, 1500);
+        }
+    }
+
+    function stopBroadcastMassal() {
+        waQueueList = [];
+        document.getElementById('wa-queue-container').classList.add('hidden');
+    }
+
+    function kirimWASatuan(id, nama, tagihanJenis, nominal) {
+        let hp = document.getElementById(`wa-${id}`).value.replace(/[^0-9+]/g, '').trim();
+        if(!hp) return showToast("Ketikkan nomor WA di kotak tabel terlebih dahulu!", true);
+        
+        if(hp.startsWith('0')) hp = '62' + hp.substring(1);
+        else if(hp.startsWith('+62')) hp = '62' + hp.substring(3);
+        
+        let template = document.getElementById('template-wa').value.replace(/\[NAMA\]/g, nama).replace(/\[TAGIHAN\]/g, tagihanJenis).replace(/\[NOMINAL\]/g, formatRp(nominal));
+        window.open(`https://wa.me/${hp}?text=${encodeURIComponent(template)}`, '_blank');
+    }
+    // --- AKHIR BLOK MESIN WA ---
     // ==========================================
     window.onload = () => { fetchStaffAccounts(); setRealtimeDate(); };
     // Registrasi PWA Service Worker
