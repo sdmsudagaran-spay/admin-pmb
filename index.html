@@ -3047,7 +3047,7 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
         document.getElementById('modal-siswa-title').innerText = id ? "Edit Data Siswa" : "Tambah Siswa Baru"; 
         document.getElementById('fs-id').value = id || '';
         const s = id ? masterData.find(x => x.id == id) : {};
-        const mapping = { 'noppdb': 'no_ppdb', 'no': 'password', 'nama': 'nama_murid', 'tk': 'tk', 'tmplahir': 'tempat_lahir', 'tgllahir': 'tgl_lahir', 'alamat': 'alamat', 'ayah': 'ayah', 'agayah': 'agama_ayah', 'pendayah': 'pend_ayah', 'krjayah': 'pekrj_ayah', 'ibu': 'ibu', 'agibu': 'agama_ibu', 'pendibu': 'pend_ibu', 'krjibu': 'pekrj_ibu' };
+        const mapping = { 'noppdb': 'no_ppdb', 'no': 'password', 'nama': 'nama_murid', 'tk': 'tk', 'tmplahir': 'tempat_lahir', 'tgllahir': 'tgl_lahir', 'alamat': 'alamat', 'ayah': 'ayah', 'agayah': 'agama_ayah', 'pendayah': 'pend_ayah', 'krjayah': 'pekrj_ayah', 'ibu': 'ibu', 'agibu': 'agama_ibu', 'pendibu': 'pend_ibu', 'krjibu': 'pekrj_ibu','wa': 'no_wa' };
         
         for (const [keyHtml, keyDb] of Object.entries(mapping)) { 
             document.getElementById(`fs-${keyHtml}`).value = s[keyDb] || ''; 
@@ -3088,6 +3088,7 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
             agama_ibu: document.getElementById('fs-agibu').value.trim(), 
             pend_ibu: document.getElementById('fs-pendibu').value.trim(), 
             pekrj_ibu: document.getElementById('fs-krjibu').value.trim(),
+            no_wa: document.getElementById('fs-wa').value.trim(),
             tahun_ajaran: document.getElementById('fs-tahun').value // Murni ditarik dari form
         };
         
