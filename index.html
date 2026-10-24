@@ -2727,14 +2727,12 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
 
         const opt = { year: 'numeric', month: 'long', day: 'numeric' };
         
-        // LOGIKA ABSOLUT 1: Daftar Ulang dikunci maksimal 1 minggu (7 hari) dari Tanggal Pendaftaran Siswa
-        let dDU = new Date(tglDaftar); 
-        dDU.setDate(dDU.getDate() + 7);
-        const strDU = dDU.toLocaleDateString('id-ID', opt);
-        
-        // Tanggal Cetak (Hari ini, HANYA untuk titi mangsa tanda tangan di pojok kanan bawah)
+        // Tanggal berjalan (Hari ini)
         const tglSekarangRaw = new Date(); 
         const tglSekarang = tglSekarangRaw.toLocaleDateString('id-ID', opt);
+        
+        // REVISI: Batas pelunasan Daftar Ulang dibuat sama persis dengan tanggal hari ini
+        const strDU = tglSekarang;
         
         // LOGIKA ABSOLUT 2: Angsuran ditarik berjenjang (+2, +4, +6 bulan) murni dari Tanggal Pendaftaran
         let d1 = new Date(tglDaftar); d1.setMonth(d1.getMonth() + 2); 
