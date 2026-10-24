@@ -1595,28 +1595,41 @@ function bukaModalGrafik(no_ppdb) {
     }
 
     function toggleJenisPembayaranBOPD() {
-        const jp = document.getElementById('pewa-jenis-bopd').value; const lunasBox = document.getElementById('pewa-lunas-box'); const angBox = document.getElementById('pewa-angsuran-box');
-        lunasBox.classList.add('hidden'); angBox.classList.add('hidden');
-        if (jp === 'Lunas') { lunasBox.classList.remove('hidden'); } 
+        const jp = document.getElementById('pewa-jenis-bopd').value; 
+        const lunasBox = document.getElementById('pewa-lunas-box'); 
+        const angBox = document.getElementById('pewa-angsuran-box');
+        
+        lunasBox.classList.add('hidden'); 
+        angBox.classList.add('hidden');
+        
+        if (jp === 'Lunas') { 
+            lunasBox.classList.remove('hidden'); 
+        } 
         else if (jp === 'Angsuran') {
             angBox.classList.remove('hidden'); 
-            const no_ppdb = document.getElementById('pewa-id').value;
-            const sMaster = masterData.find(x => x.no_ppdb === no_ppdb);
             
-            let d = new Date();
-            if (sMaster && sMaster.tgl_pendaftaran) {
-                let parsed = new Date(sMaster.tgl_pendaftaran);
-                if (!isNaN(parsed.getTime())) d = parsed;
-            }
-
-            const opt = { year: 'numeric', month: 'long' };
-            let d1 = new Date(d); d1.setMonth(d1.getMonth() + 2); document.getElementById('lbl-tgl-a1').innerText = d1.toLocaleDateString('id-ID', opt);
-            let d2 = new Date(d); d2.setMonth(d2.getMonth() + 4); document.getElementById('lbl-tgl-a2').innerText = d2.toLocaleDateString('id-ID', opt);
-            let d3 = new Date(d); d3.setMonth(d3.getMonth() + 6); document.getElementById('lbl-tgl-a3').innerText = d3.toLocaleDateString('id-ID', opt);
+            const opt = { year: 'numeric', month: 'long', day: 'numeric' };
+            const hariIni = new Date();
+            
+            // Logika disamakan persis dengan cetakan: Hari ini + 7 Hari
+            let dDU = new Date(hariIni);
+            dDU.setDate(dDU.getDate() + 7);
+            
+            // Tahap 1: Batas DU + 2 Bulan
+            let d1 = new Date(dDU); d1.setMonth(d1.getMonth() + 2); 
+            document.getElementById('lbl-tgl-a1').innerText = d1.toLocaleDateString('id-ID', opt);
+            
+            // Tahap 2: Tahap 1 + 2 Bulan
+            let d2 = new Date(d1); d2.setMonth(d2.getMonth() + 2); 
+            document.getElementById('lbl-tgl-a2').innerText = d2.toLocaleDateString('id-ID', opt);
+            
+            // Tahap 3: Tahap 2 + 2 Bulan
+            let d3 = new Date(d2); d3.setMonth(d3.getMonth() + 2); 
+            document.getElementById('lbl-tgl-a3').innerText = d3.toLocaleDateString('id-ID', opt);
+            
             hitungAngsuranBOPD();
         }
     }
-
     function bukaModalPewawancara(no_ppdb) {
         document.getElementById('pewa-id').value = no_ppdb; 
         const sUang = keuanganData.find(x => x.no_ppdb === no_ppdb) || {};
@@ -2727,17 +2740,26 @@ function bukaDetailPerlengkapan(no_ppdb, nama_murid) {
 
         const opt = { year: 'numeric', month: 'long', day: 'numeric' };
         
-        // Tanggal berjalan (Hari ini)
-        const tglSekarangRaw = new Date(); 
-        const tglSekarang = tglSekarangRaw.toLocaleDateString('id-ID', opt);
+        // LOGIKA ABSOLUT: Semua patokan ditarik murni dari "Hari Ini"
+        const hariIni = new Date();
+        const tglSekarang = hariIni.toLocaleDateString('id-ID', opt); // Titi mangsa ttd
         
-        // REVISI: Batas pelunasan Daftar Ulang dibuat sama persis dengan tanggal hari ini
-        const strDU = tglSekarang;
+        // 1. Daftar Ulang (Maks: Hari Ini + 7 Hari)
+        let dDU = new Date(hariIni); 
+        dDU.setDate(dDU.getDate() + 7);
+        const strDU = dDU.toLocaleDateString('id-ID', opt);
         
-        // LOGIKA ABSOLUT 2: Angsuran ditarik berjenjang (+2, +4, +6 bulan) murni dari Tanggal Pendaftaran
-        let d1 = new Date(tglDaftar); d1.setMonth(d1.getMonth() + 2); 
-        let d2 = new Date(tglDaftar); d2.setMonth(d2.getMonth() + 4);             
-        let d3 = new Date(tglDaftar); d3.setMonth(d3.getMonth() + 6);             
+        // 2. Tahap 1 (Batas Daftar Ulang + 2 Bulan)
+        let d1 = new Date(dDU); 
+        d1.setMonth(d1.getMonth() + 2); 
+        
+        // 3. Tahap 2 (Jatuh Tempo Tahap 1 + 2 Bulan)
+        let d2 = new Date(d1); 
+        d2.setMonth(d2.getMonth() + 2);             
+        
+        // 4. Tahap 3 (Jatuh Tempo Tahap 2 + 2 Bulan)
+        let d3 = new Date(d2); 
+        d3.setMonth(d3.getMonth() + 2);           
         
         const isAngsuran = sUang.jenis_pembayaran_bopd === 'Angsuran';
         const isLunas = sUang.jenis_pembayaran_bopd === 'Lunas';
